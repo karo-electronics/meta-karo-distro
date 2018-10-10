@@ -143,6 +143,8 @@ PACKAGE_CLASSES ?= "package_deb"
 # We default to enabling the debugging tweaks.
 EXTRA_IMAGE_FEATURES ?= "debug-tweaks"
 
+IMAGE_FSTYPES = "tar.bz2"
+
 VIRTUAL-RUNTIME_init_manager = "sysvinit"
 
 #
