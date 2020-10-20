@@ -4,39 +4,41 @@ inherit core-image distro_features_check
 
 IMAGE_FEATURES += "tools-debug"
 
-IMAGE_INSTALL = "\
-              packagegroup-core-boot \
-              ${CORE_IMAGE_EXTRA_INSTALL} \
-              alsa-utils-aplay \
-              alsa-utils-amixer \
-              alsa-utils-alsamixer \
-              bash \
-              canutils \
-              coreutils \
-              dhcpcd \
-              dosfstools \
-              e2fsprogs \
-              file \
-              gdbserver \
-              kmod \
-              i2c-tools \
-              ldd \
-	      less \
-              libstdc++ \
-              lsof \
-              mmc-utils \
-	      ncurses \
-              ntp \
-              ntpdate \
-              parted \
-              rsync \
-              strace \
-	      tcp-wrappers \
-              tzdata \
-              util-linux-fsck \
-              util-linux-mkfs \
-              util-linux-setterm \
+IMAGE_INSTALL = " \
+                packagegroup-core-boot \
+                ${CORE_IMAGE_EXTRA_INSTALL} \
+                alsa-utils-aplay \
+                alsa-utils-amixer \
+                alsa-utils-alsamixer \
+                bash \
+                canutils \
+                coreutils \
+                dhcpcd \
+                dosfstools \
+                e2fsprogs \
+                file \
+                gdbserver \
+                kmod \
+                i2c-tools \
+                ldd \
+                less \
+                libstdc++ \
+                lsof \
+                mmc-utils \
+                ncurses \
+                ntp \
+                ntpdate \
+                parted \
+                rsync \
+                strace \
+                tcp-wrappers \
+                tzdata \
+                util-linux-fsck \
+                util-linux-mkfs \
+                util-linux-setterm \
 "
+
+DEPENDS_append = " cross-localedef-native qemuwrapper-cross"
 
 CORE_IMAGE_EXTRA_INSTALL += "kernel-modules"
 DEPENDS_mx6 += "u-boot-karo"
