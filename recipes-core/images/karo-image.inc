@@ -1,11 +1,13 @@
 LICENSE = "MIT"
 
-inherit core-image distro_features_check
+inherit core-image distro_features_check rootfs-postprocess relative_symlinks
 
-IMAGE_FEATURES += "tools-debug"
+ROOTFS_POSTPROCESS_COMMAND_remove = "\
+				     rootfs_update_timestamp; \
+				     ${bb.utils.contains('DISTRO_FEATURES','read-only-rootfs','empty_var_volatile;','',d)} \
+"
 
-IMAGE_INSTALL = "\
-              packagegroup-core-boot \
+IMAGE_INSTALL_append = " \
               ${CORE_IMAGE_EXTRA_INSTALL} \
               alsa-utils-aplay \
               alsa-utils-amixer \
@@ -29,6 +31,7 @@ IMAGE_INSTALL = "\
               ntp \
               ntpdate \
               parted \
+              pciutils \
               rsync \
               strace \
 	      tcp-wrappers \
@@ -38,8 +41,8 @@ IMAGE_INSTALL = "\
               util-linux-setterm \
 "
 
-CORE_IMAGE_EXTRA_INSTALL += "kernel-modules"
-DEPENDS_mx6 += "u-boot-karo"
+CORE_IMAGE_EXTRA_INSTALL_append = " kernel-modules"
+DEPENDS_append = " u-boot-karo"
 
 PREFERRED_PROVIDER_fdisk = "util-linux"
 PREFERRED_PROVIDER_virtual/bootloader = "u-boot-karo"
@@ -50,9 +53,9 @@ IMAGE_ROOTFS_ALIGNMENT ?= "${@bb.utils.contains('MACHINE_FEATURES',"nand",128*10
 IMAGE_ROOTFS_EXTRA_SPACE ?= "${@bb.utils.contains('MACHINE_FEATURES',"nand",2*128*1024,0,d)}"
 
 IMAGE_FSTYPES_remove = "tar.gz"
-IMAGE_FSTYPES += "tar.bz2"
-IMAGE_FSTYPES += "${@bb.utils.contains('MACHINE_FEATURES',"nand","ubi","",d)}"
-IMAGE_FSTYPES += "${@bb.utils.contains('MACHINE_FEATURES',"emmc","ext4","",d)}"
+IMAGE_FSTYPES_append = " tar.bz2"
+IMAGE_FSTYPES_append = "${@bb.utils.contains('MACHINE_FEATURES',"nand"," ubi","",d)}"
+IMAGE_FSTYPES_append = "${@bb.utils.contains('MACHINE_FEATURES',"emmc"," ext4","",d)}"
 
 MKUBIFS_ARGS ?= "-F -x zlib -m 2048 -e 126976 -c 256"
 UBINIZE_ARGS ?= "-m 2048 -s 2048 -p 128KiB"

@@ -1,11 +1,10 @@
-require karo-image.inc 
-
-inherit rootfs-postprocess
-
 SUMMARY = "A minimal Linux system without graphics support."
 
-IMAGE_LINGUAS = " "
+require karo-image.inc 
+
+IMAGE_LINGUAS = ""
 IMAGE_FEATURES += "read-only-rootfs"
+PACKAGE_EXCLUDE = "python3-core"
 
 IMAGE_ROOTFS_MAXSIZE ?= "${@bb.utils.contains('MACHINE_FEATURES',"nand","65536","",d)}"
 

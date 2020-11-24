@@ -1,19 +1,23 @@
 IMAGE_BASENAME = "karo-image-x11"
 SUMMARY = "A very basic X11 image with a terminal"
 
-IMAGE_FEATURES += " \
-	       splash \
-	       package-management \
-	       x11-base \
+require karo-image.inc
+
+IMAGE_FEATURES_append = " \
+                         hwcodecs \
+                         package-management \
+                         splash \
+                         ssh-server-dropbear \
+                         x11-base \
 "
 
+IMAGE_INSTALL_append = " \
+                        packagegroup-core-x11-xserver \
+"
 LICENSE = "MIT"
 
-inherit core-image distro_features_check
 
 REQUIRED_DISTRO_FEATURES = "x11"
-
-IMAGE_FSTYPES += "${@bb.utils.contains('MACHINE_FEATURES',"emmc","ext4","",d)}"
 
 QB_MEM = '${@bb.utils.contains("DISTRO_FEATURES", "opengl", "-m 512", "-m 256", d)}'
 
