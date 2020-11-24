@@ -12,7 +12,7 @@ rootfs_postinst_cleanup () {
 
     # copy local timezone file from host, if none is installed
     if [ ! -s ${IMAGE_ROOTFS}${sysconfdir}/localtime -a -s /etc/localtime ];then
-        cp -vL /etc/localtime ${IMAGE_ROOTFS}${sysconfdir}
+        install -v /etc/localtime ${IMAGE_ROOTFS}${sysconfdir}
     fi
 
     # remove unused file to prevent confusion
