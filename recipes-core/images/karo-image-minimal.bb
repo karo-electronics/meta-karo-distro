@@ -10,6 +10,10 @@ IMAGE_ROOTFS_MAXSIZE ?= "${@bb.utils.contains('MACHINE_FEATURES',"nand","65536",
 
 ROOTFS_POSTPROCESS_COMMAND_remove = "rootfs_update_timestamp; empty_var_volatile;"
 
+IMAGE_INSTALL_append = "\
+                        gdbserver \
+"
+
 python extend_recipe_sysroot_append() {
     bb.note("IMAGE_FEATURES[read-only-rootfs]='%s'" % bb.utils.filter('IMAGE_FEATURES','read-only-rootfs',d))
     if bb.utils.contains('IMAGE_FEATURES','read-only-rootfs',False,True,d):

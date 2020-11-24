@@ -33,3 +33,5 @@ VIRTUAL-RUNTIME_dev_manager ?= "udev"
 VIRTUAL-RUNTIME_init_manager ?= "${@bb.utils.contains('DISTRO_FEATURES',"systemd","systemd","sysvinit",d)}"
 
 WARN_QA_remove = "host-user-contaminated"
+
+VOLATILE_LOG_DIR = "no"

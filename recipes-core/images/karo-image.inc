@@ -8,7 +8,6 @@ ROOTFS_POSTPROCESS_COMMAND_remove = "\
 "
 
 IMAGE_INSTALL_append = " \
-                        ${CORE_IMAGE_EXTRA_INSTALL} \
                         alsa-utils-aplay \
                         alsa-utils-amixer \
                         alsa-utils-alsamixer \
@@ -19,7 +18,6 @@ IMAGE_INSTALL_append = " \
                         dosfstools \
                         e2fsprogs \
                         file \
-                        gdbserver \
                         kmod \
                         i2c-tools \
                         ldd \
