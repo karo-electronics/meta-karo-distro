@@ -157,7 +157,7 @@ def expand_var(var, bootscheme, config, partition, d):
     overrides = localdata.getVar('OVERRIDES')
     if not overrides:
         bb.fatal('OVERRIDES not defined')
-    localdata.setVar('OVERRIDES', partition + ':' + overrides)
+    localdata.setVar('OVERRIDES', partition.lower() + ':' + overrides)
     # Compute var according to priority assignment order defined above
     expanded_var = localdata.getVar('%s_%s_%s' % (var, bootscheme, config))
     if not expanded_var:
