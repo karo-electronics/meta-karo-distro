@@ -2,6 +2,7 @@ SUMMARY = "A console-only image for Ka-Ro electronics TX modules"
 IMAGE_BASENAME = "karo-image-base"
 
 require karo-image.inc
+require karo-minimal.inc
 
 DISTRO_FEATURES_append = " busybox-crond"
 

@@ -16,8 +16,10 @@ IMAGE_INSTALL_append = " \
 "
 LICENSE = "MIT"
 
-
 REQUIRED_DISTRO_FEATURES = "x11"
+
+# karo-image-x11 won't fit in any of our nand modules!
+IMAGE_FSTYPES_remove = "ubi"
 
 QB_MEM = '${@bb.utils.contains("DISTRO_FEATURES", "opengl", "-m 512", "-m 256", d)}'
 

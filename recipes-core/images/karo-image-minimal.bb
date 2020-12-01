@@ -1,6 +1,7 @@
 SUMMARY = "A minimal Linux system without graphics support."
 
 require karo-image.inc 
+require karo-minimal.inc
 
 IMAGE_LINGUAS = ""
 IMAGE_FEATURES += "read-only-rootfs"
