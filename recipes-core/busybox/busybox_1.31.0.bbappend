@@ -43,7 +43,8 @@ GROUPADD_PARAM_${PN} = "--system utmp"
 # need /etc/group in the staging directory
 DEPENDS += "base-passwd"
 
-FILES_${PN} += "/run/utmp ${localstatedir}/log/wtmp"
+FILES_${PN} += "/run/utmp"
+FILES_${PN} += "${localstatedir}/${@'volatile/' if oe.types.boolean(d.getVar('VOLATILE_LOG_DIR')) else ''}log/wtmp"
 
 do_install_append_${PN}-inetd() {
     mv -v ${D}${sysconfdir}/init.d/inetd.${BPN} ${D}${sysconfdir}/init.d/inetd

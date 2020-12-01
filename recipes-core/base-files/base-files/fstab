@@ -1,10 +1,9 @@
-# <file system>	<mount pt>	<type>	<options>	<dump>	<pass>
+# device	dir		type		options			dump	fsck
 
-/dev/root            /                    auto       defaults              1  1
-proc                 /proc                proc       defaults              0  0
-devpts               /dev/pts             devpts     mode=0620,gid=5       0  0
-tmpfs                /run                 tmpfs      mode=0755,nodev,nosuid,strictatime 0  0
-tmpfs                /var/volatile        tmpfs      defaults              0  0
-
-/dev/disk/by-partlabel/bootfs   /boot      ext4     defaults,sync        0  1
-/dev/disk/by-partlabel/userfs   /usr/local ext4     defaults,sync        0  1
+/dev/root	/		auto		defaults		0	0
+proc		/proc		proc		defaults		0	0
+sysfs		/sys		sysfs		defaults		0	0
+devtmpfs	/dev		devtmpfs	defaults		0	0
+devpts		/dev/pts	devpts		mode=0620,gid=5		0	0
+tmpfs		/tmp		tmpfs		defaults		0	0
+tmpfs		/var/tmp	tmpfs		defaults		0	0
