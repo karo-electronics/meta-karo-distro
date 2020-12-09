@@ -7,3 +7,6 @@ do_install_append() {
     install -v -m 0644 /dev/null ${D}${localstatedir}/log/lastlog
     rm -rvf ${D}${sysconfdir}/default/volatiles
 }
+
+RRECOMMENDS_${PN}-sshd_remove_class-target = " rng-tools"
+RRECOMMENDS_${PN}-sshd_append_class-target = " haveged"
