@@ -49,8 +49,9 @@ PREFERRED_PROVIDER_fdisk = "util-linux"
 PREFERRED_PROVIDER_virtual/bootloader = "u-boot-karo"
 PREFERRED_PROVIDER_virtual/kernel = "linux-karo"
 
-IMAGE_ROOTFS_SIZE ?= "${@bb.utils.contains('MACHINE_FEATURES',"nand", \
-                      65536-${IMAGE_ROOTFS_EXTRA_SPACE},128*1024,d)}"
+ROOTFS_PARTITION_SIZE ?= "2048*1048576" 
+IMAGE_ROOTFS_SIZE ?= "${@${ROOTFS_PARTITION_SIZE}-${IMAGE_ROOTFS_EXTRA_SPACE}}"
+
 IMAGE_ROOTFS_ALIGNMENT = "128"
 IMAGE_ROOTFS_EXTRA_SPACE = "${@bb.utils.contains('MACHINE_FEATURES',"nand",2*128,0,d)}"
 IMAGE_OVERHEAD_FACTOR = "1"
@@ -62,11 +63,9 @@ IMAGE_FSTYPES_append = " tar.bz2"
 IMAGE_FSTYPES_append = "${@bb.utils.contains('MACHINE_FEATURES',"emmc"," ext4","",d)}"
 
 MKUBIFS_LEB_SIZE = "126976"
-MKUBIFS_LEB_CNT = "`expr ${IMAGE_ROOTFS_SIZE} \* 1024 / ${MKUBIFS_LEB_SIZE}`"
+MKUBIFS_LEB_CNT = "${@int(((${IMAGE_ROOTFS_SIZE} + ${IMAGE_ROOTFS_EXTRA_SPACE}) * 1024 + ${MKUBIFS_LEB_SIZE} - 1) / ${MKUBIFS_LEB_SIZE})}"
 
-#MKUBIFS_ARGS ?= "-F -x zlib -m 2048 -e 126976 -c 256"
 UBINIZE_ARGS ?= "-m 2048 -s 2048 -p 128KiB"
-#UBI_VOLNAME = "rootfs"
 
 export MKUBIFS_ARGS_rootfs_qsmp-1510 = "-F -x zlib -m 2048 -e ${@d.getVar('MKUBIFS_LEB_SIZE')} -c ${@d.getVar('MKUBIFS_LEB_CNT')}"
 
@@ -96,5 +95,5 @@ export UBIVOL_TYPE_kernel = "static"
 export UBIVOL_SIZE_kernel = "16MiB"
 export UBIVOL_IMAGE_kernel = "uImage"
 
-export UBIVOL_SIZE_userfs = "79104"
+export UBIVOL_SIZE_userfs = "${@128*1024 - 32*1024 - 2*128 - 16*1024}"
 export UBIVOL_FLAGS_userfs = "autoresize"
