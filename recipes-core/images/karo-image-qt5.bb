@@ -11,7 +11,4 @@ IMAGE_INSTALL_append = " \
 # qt creator needs openssh
 IMAGE_FEATURES += "qtcreator-debug"
 
-python extend_recipe_sysroot_append() {
-    if d.getVar('DISTRO') != 'karo-wayland':
-        raise_sanity_error("cannot build 'karo-image-qt5' with DISTRO '%s'" % d.getVar('DISTRO'), d)
-}
+ROOTFS_PARTITION_SIZE = "2097152"

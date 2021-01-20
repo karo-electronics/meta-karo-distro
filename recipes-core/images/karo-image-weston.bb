@@ -30,6 +30,8 @@ IMAGE_INSTALL_append = " \
 # karo-image-weston won't fit in any of our nand modules!
 IMAGE_FSTYPES_remove = "ubi"
 
+ROOTFS_PARTITION_SIZE = "2097152"
+
 QB_MEM = '${@bb.utils.contains("DISTRO_FEATURES", "opengl", "-m 512", "-m 256", d)}'
 
 python extend_recipe_sysroot_append() {

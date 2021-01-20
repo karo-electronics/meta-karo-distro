@@ -27,3 +27,5 @@ python extend_recipe_sysroot_append() {
     if d.getVar('DISTRO') != 'karo-x11':
         raise_sanity_error("cannot build 'karo-image-x11' with DISTRO '%s'" % d.getVar('DISTRO'), d)
 }
+
+ROOTFS_PARTITION_SIZE = "2097152"

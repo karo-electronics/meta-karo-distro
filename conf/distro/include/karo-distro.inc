@@ -35,3 +35,6 @@ VIRTUAL-RUNTIME_init_manager ?= "${@bb.utils.contains('DISTRO_FEATURES',"systemd
 WARN_QA_remove = "host-user-contaminated"
 
 VOLATILE_LOG_DIR = "no"
+
+ROOTFS_PARTITION_SIZE ?= "${@bb.utils.contains('MACHINE_FEATURES',"nand", \
+                      65536-${IMAGE_ROOTFS_EXTRA_SPACE},128*1024,d)}"
