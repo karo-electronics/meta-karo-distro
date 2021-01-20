@@ -25,6 +25,7 @@ IMAGE_INSTALL_append = " \
 		       weston \
 		       weston-init \
 		       weston-examples \
+		       ${@bb.utils.contains('DISTRO_FEATURES', 'x11 wayland', 'weston-xwayland xterm', '', d)} \
 "
 
 # karo-image-weston won't fit in any of our nand modules!
@@ -33,8 +34,3 @@ IMAGE_FSTYPES_remove = "ubi"
 ROOTFS_PARTITION_SIZE = "2097152"
 
 QB_MEM = '${@bb.utils.contains("DISTRO_FEATURES", "opengl", "-m 512", "-m 256", d)}'
-
-python extend_recipe_sysroot_append() {
-    if d.getVar('DISTRO') != 'karo-wayland':
-        raise_sanity_error("cannot build 'karo-image-weston' with DISTRO '%s'" % d.getVar('DISTRO'), d)
-}
