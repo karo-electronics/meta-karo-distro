@@ -15,6 +15,10 @@ rootfs_postinst_cleanup () {
         install -v /etc/localtime ${IMAGE_ROOTFS}${sysconfdir}
     fi
 
+    if [ "${@ bb.utils.contains('IMAGE_INSTALL','bash','true','false',d)}" ];then
+       	grep -q "^${base_bindir}/bash$" $D${sysconfdir}/shells || echo ${base_bindir}/bash >> $D${sysconfdir}/shells
+    fi
+
     # remove unused file to prevent confusion
     rm -vf ${IMAGE_ROOTFS}${sysconfdir}/timezone
 
