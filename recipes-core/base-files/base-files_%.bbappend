@@ -1,7 +1,7 @@
 FILESEXTRAPATHS_prepend := "${THISDIR}/${PN}:"
-
-SRC_URI += "file://adjtime"
-
+SRC_URI += "\
+	    file://adjtime \
+"
 dirs1777 = " \
            /tmp \
            ${localstatedir}/tmp \
