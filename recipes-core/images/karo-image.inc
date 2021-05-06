@@ -24,6 +24,7 @@ IMAGE_INSTALL_append = " \
                         ldd \
                         less \
                         libstdc++ \
+                        libgpiod \
                         lsof \
                         mmc-utils \
                         ncurses \
@@ -49,7 +50,6 @@ PREFERRED_PROVIDER_fdisk = "util-linux"
 PREFERRED_PROVIDER_virtual/bootloader = "u-boot-karo"
 PREFERRED_PROVIDER_virtual/kernel = "linux-karo"
 
-ROOTFS_PARTITION_SIZE ?= "2048*1048576" 
 IMAGE_ROOTFS_SIZE ?= "${@${ROOTFS_PARTITION_SIZE}-(${IMAGE_ROOTFS_EXTRA_SPACE})}"
 
 IMAGE_ROOTFS_ALIGNMENT = "128"
