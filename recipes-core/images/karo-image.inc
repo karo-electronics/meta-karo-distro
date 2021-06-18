@@ -17,6 +17,7 @@ IMAGE_INSTALL_append = " \
                         dhcpcd \
                         dosfstools \
                         e2fsprogs \
+                        e2fsprogs-resize2fs \
                         file \
                         gdbserver \
                         i2c-tools \
@@ -25,6 +26,7 @@ IMAGE_INSTALL_append = " \
                         less \
                         libstdc++ \
                         libgpiod \
+                        libgpiod-tools \
                         lsof \
                         mmc-utils \
                         ncurses \
