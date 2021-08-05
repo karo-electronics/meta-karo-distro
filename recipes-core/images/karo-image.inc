@@ -35,6 +35,7 @@ IMAGE_INSTALL_append = " \
         mmc-utils \
         ${@bb.utils.contains('MACHINE_FEATURES',"nand"," mtd-utils","",d)} \
         ncurses \
+        nfs-utils \
         ntp \
         ntpdate \
         parted \
