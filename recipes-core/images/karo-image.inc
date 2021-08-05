@@ -1,71 +1,78 @@
 LICENSE = "MIT"
 
-inherit core-image rootfs-postprocess relative_symlinks
+inherit core-image features_check rootfs-postprocess relative_symlinks
 
 ROOTFS_POSTPROCESS_COMMAND_remove = "\
-                                     rootfs_update_timestamp; \
-                                     ${bb.utils.contains('DISTRO_FEATURES','read-only-rootfs','empty_var_volatile;','',d)} \
+        rootfs_update_timestamp; \
+        ${bb.utils.contains('DISTRO_FEATURES','read-only-rootfs','empty_var_volatile;','',d)} \
 "
 
+REQUIRED_DISTRO_FEATURES ??= ""
+IMAGE_FEATURES_append = " tools-debug"
+
 IMAGE_INSTALL_append = " \
-                        alsa-utils-aplay \
-                        alsa-utils-amixer \
-                        alsa-utils-alsamixer \
-                        bash \
-                        canutils \
-                        coreutils \
-                        dhcpcd \
-                        dosfstools \
-                        e2fsprogs \
-                        e2fsprogs-resize2fs \
-                        file \
-                        gdbserver \
-                        i2c-tools \
-                        kmod \
-                        ldd \
-                        less \
-                        libstdc++ \
-                        libgpiod \
-                        libgpiod-tools \
-                        lsof \
-                        mmc-utils \
-                        ncurses \
-                        ntp \
-                        ntpdate \
-                        parted \
-                        pciutils \
-                        rsync \
-                        strace \
-                        tcp-wrappers \
-                        tzdata \
-                        util-linux-fsck \
-                        util-linux-mkfs \
-                        util-linux-setterm \
+        alsa-utils-aplay \
+        alsa-utils-amixer \
+        alsa-utils-alsamixer \
+        bash \
+        canutils \
+        coreutils \
+        dhcpcd \
+        dosfstools \
+        e2fsprogs \
+        e2fsprogs-resize2fs \
+        file \
+        gdbserver \
+        i2c-tools \
+        kmod \
+        ldd \
+        less \
+        libstdc++ \
+        libgpiod \
+        libgpiod-tools \
+        ${@bb.utils.contains('DISTRO_FEATURES','wifi','linux-firmware-pcie8997','',d)} \
+        lsof \
+        mmc-utils \
+        ${@bb.utils.contains('MACHINE_FEATURES',"nand"," mtd-utils","",d)} \
+        ncurses \
+        ntp \
+        ntpdate \
+        parted \
+        ${@bb.utils.contains('DISTRO_FEATURES','pcie','pciutils','',d)} \
+        rsync \
+        strace \
+        tcp-wrappers \
+        tzdata \
+        util-linux-fsck \
+        util-linux-mkfs \
+        util-linux-setterm \
+        ${@bb.utils.contains('DISTRO_FEATURES','imx219','v4l-utils','',d)} \
+        ${@bb.utils.contains('DISTRO_FEATURES','wifi','wpa-supplicant','',d)} \
 "
 
 DEPENDS_append = " cross-localedef-native qemuwrapper-cross"
 
 CORE_IMAGE_EXTRA_INSTALL_append = " kernel-modules"
-DEPENDS_append = " u-boot-karo"
+DEPENDS_append_mx6 = " u-boot-karo"
+DEPENDS_append_mx8 = " imx-boot"
 
 PREFERRED_PROVIDER_fdisk = "util-linux"
 PREFERRED_PROVIDER_virtual/bootloader = "u-boot-karo"
 PREFERRED_PROVIDER_virtual/kernel = "linux-karo"
 
-IMAGE_ROOTFS_SIZE ?= "${@${ROOTFS_PARTITION_SIZE}-(${IMAGE_ROOTFS_EXTRA_SPACE})}"
-
-IMAGE_ROOTFS_ALIGNMENT = "128"
+IMAGE_ROOTFS_ALIGNMENT ?= "${@bb.utils.contains('MACHINE_FEATURES',"nand",128*1024,1024,d)}"
 IMAGE_ROOTFS_EXTRA_SPACE = "${@bb.utils.contains('MACHINE_FEATURES',"nand",2*128,0,d)}"
 IMAGE_OVERHEAD_FACTOR = "1"
-
-IMAGE_INSTALL_append = "${@bb.utils.contains('MACHINE_FEATURES',"nand"," mtd-utils","",d)}"
+IMAGE_ROOTFS_SIZE ?= "${@${ROOTFS_PARTITION_SIZE}-(${IMAGE_ROOTFS_EXTRA_SPACE})}"
 
 IMAGE_FSTYPES_remove = "tar.gz"
 IMAGE_FSTYPES_append = " tar.bz2"
 IMAGE_FSTYPES_append = "${@bb.utils.contains('MACHINE_FEATURES',"emmc"," ext4","",d)}"
+IMAGE_FSTYPES_append = "${@bb.utils.contains('MACHINE_FEATURES',"nand"," ubi","",d)}"
 
 MKUBIFS_LEB_SIZE = "126976"
 MKUBIFS_LEB_CNT = "${@int(((${IMAGE_ROOTFS_SIZE} + ${IMAGE_ROOTFS_EXTRA_SPACE}) * 1024 + ${MKUBIFS_LEB_SIZE} - 1) / ${MKUBIFS_LEB_SIZE})}"
+MKUBIFS_ARGS ?= "-F -x zlib -m 2048 -e ${MKUBIFS_LEB_SIZE} -c ${MKUBIFS_LEB_CNT}"
 
 UBINIZE_ARGS ?= "-m 2048 -s 2048 -p 128KiB"
 
@@ -99,3 +106,39 @@ export UBIVOL_IMAGE_kernel = "uImage"
 
 export UBIVOL_SIZE_userfs = "${@128*1024 - 32*1024 - 2*128 - 16*1024}"
 export UBIVOL_FLAGS_userfs = "autoresize"
+
+#
+# i.MX8 specific processing
+#
+# create bootfs image file with every karo-image-* build
+do_image_complete[depends] += "karo-image-bootfs:do_image_complete"
+
+# create uuu.auto file for image
+IMAGE_POSTPROCESS_COMMAND_append_mx8 = " do_create_uuu_auto_script;"
+
+UUU_TEMPLATE_PATH_mx8mm = "uuu-templates/mx8mm"
+UUU_TEMPLATE_PATH_mx8mn = "uuu-templates/mx8mn"
+UUU_TEMPLATE_PATH_mx8mp = "uuu-templates/mx8mp"
+
+python do_create_uuu_auto_script() {
+    import shutil
+    from string import Template
+
+    machine = d.getVar('MACHINE')
+    imxboot_target = d.getVar('IMXBOOT_TARGETS')
+    image = d.getVar('BPN')
+
+    uuu_template_path = d.expand("${THISDIR}/${UUU_TEMPLATE_PATH}/uuu.auto.template")
+    uuu_auto_path = d.expand("${IMGDEPLOYDIR}/uuu.auto")
+
+    f = open(uuu_template_path, 'r')
+    uuu_template_string = f.read()
+
+    try:
+        with open(uuu_auto_path, 'w') as uuu_script:
+            uuu_template = Template(uuu_template_string)
+            uuu_auto = uuu_template.substitute(image=image, machine=machine, imxboot_target=imxboot_target)
+            uuu_script.write(uuu_auto)
+    except OSError:
+        bb.fatal('Unable to open %s' % (uuu_auto_path))
+}
