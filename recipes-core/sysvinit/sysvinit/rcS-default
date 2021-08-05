@@ -29,3 +29,13 @@ FSCKFIX=yes
 
 # Set TICKADJ to the correct tick value for this specific machine
 #TICKADJ=10000
+
+# rcS is also used when using busybox init and shares initscripts, some initscripts
+# need to have specific behavior depending on init system
+INIT_SYSTEM=sysvinit
+
+# set the psplash fifo directory
+PSPLASH_FIFO_DIR=/mnt
+
+# psplash textual updates knob
+PSPLASH_TEXT_UPDATES=#PSPLASH_TEXT#
