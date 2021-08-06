@@ -29,7 +29,8 @@ reformat_rootfs() {
         done
 
         # Move all expected files from /boot to /
-        mv ${IMAGE_ROOTFS}${IMAGE_PARTITION_MOUNTPOINT}/* ${IMAGE_ROOTFS}/
+        cp -Hv ${IMAGE_ROOTFS}${IMAGE_PARTITION_MOUNTPOINT}/Image ${IMAGE_ROOTFS}/
+        cp -v ${IMAGE_ROOTFS}${IMAGE_PARTITION_MOUNTPOINT}/*.dtb ${IMAGE_ROOTFS}/
         # Remove empty /boot folder
         rm -rf ${IMAGE_ROOTFS}${IMAGE_PARTITION_MOUNTPOINT}/
     else
