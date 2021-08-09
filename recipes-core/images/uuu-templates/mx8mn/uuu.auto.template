@@ -17,11 +17,6 @@ SDPV: jump
 FB: flash bootloader imx-boot-$machine.bin-default-$imxboot_target
 FB: ucmd mmc partconf $${emmc_dev} 1 1 0
 
-### Set default u-boot environment
-FB: ucmd env default -a
-FB: ucmd setenv bootdelay 1
-FB: ucmd saveenv
-
 ### GPT partition layout
 #
 # 32M /boot
@@ -36,4 +31,10 @@ FB: ucmd setenv fastboot_dev mmc
 ### Flashing partitions
 FB: flash boot karo-image-bootfs-$machine.ext4
 FB: flash -raw2sparse rootfs $image-$machine.ext4
+
+### Set default u-boot environment
+FB: ucmd env default -a
+FB: ucmd setenv bootdelay 1
+FB: ucmd saveenv
+
 FB: done

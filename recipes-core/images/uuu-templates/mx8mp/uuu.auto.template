@@ -7,8 +7,10 @@ uuu_version 1.2.0
 #
 # This file flashes $image to $machine
 
+### boot uboot with fastboot support
 SDPS: boot -f imx-boot-$machine.bin-mfg-$imxboot_target
 
+### Writing default u-boot to emmc
 FB: flash bootloader imx-boot-$machine.bin-default-$imxboot_target
 FB: ucmd mmc partconf $${emmc_dev} 1 1 0
 
