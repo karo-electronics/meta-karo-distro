@@ -9,7 +9,6 @@ uuu_version 1.0.1
 
 ### boot uboot with fastboot support
 SDP: boot -f imx-boot-$machine.bin-mfg-$imxboot_target
-SDPV: delay 1000
 SDPV: write -f imx-boot-$machine.bin-mfg-$imxboot_target -offset 0x57c00
 SDPV: jump
 
