@@ -114,15 +114,26 @@ export UBIVOL_FLAGS_userfs = "autoresize"
 # create bootfs image file with every karo-image-* build
 do_image_complete[depends] += "karo-image-bootfs:do_image_complete"
 
-# create uuu.auto file for image
-IMAGE_POSTPROCESS_COMMAND_append_mx8 = " do_create_uuu_auto_script;"
+# create uuu.auto file for image if appropriate
+python () {
+    if "mx8" in d.getVar('MACHINEOVERRIDES').split(":"):
+        bb.build.addtask('do_create_uuu_auto_script', 'do_build', 'do_image_complete', d)
+}
 
 UUU_TEMPLATE_PATH_mx8mm = "uuu-templates/mx8mm"
 UUU_TEMPLATE_PATH_mx8mn = "uuu-templates/mx8mn"
 UUU_TEMPLATE_PATH_mx8mp = "uuu-templates/mx8mp"
 
 python do_create_uuu_auto_script() {
-    import shutil
+    def do_copyfile (src, destdir):
+        import shutil
+
+        bb.note("Copying %s to %s" % (src, destdir))
+        shutil.copyfile(src, os.path.join(destdir, os.path.basename(src)))
+
+    bb.note("DEPLOY_DIR_IMAGE='%s'" % d.expand("${DEPLOY_DIR_IMAGE}"))
+    bb.note("BPN='%s'" % d.expand("${BPN}"))
+
     from string import Template
 
     machine = d.getVar('MACHINE')
@@ -130,7 +141,10 @@ python do_create_uuu_auto_script() {
     image = d.getVar('BPN')
 
     uuu_template_path = d.expand("${THISDIR}/${UUU_TEMPLATE_PATH}/uuu.auto.template")
-    uuu_auto_path = d.expand("${IMGDEPLOYDIR}/uuu.auto")
+    img_dirname = d.expand("${DEPLOY_DIR_IMAGE}/${BPN}")
+    uuu_auto_path = os.path.join(img_dirname, "uuu.auto")
+
+    bb.utils.mkdirhier(img_dirname)
 
     f = open(uuu_template_path, 'r')
     uuu_template_string = f.read()
@@ -142,4 +156,25 @@ python do_create_uuu_auto_script() {
             uuu_script.write(uuu_auto)
     except OSError:
         bb.fatal('Unable to open %s' % (uuu_auto_path))
+
+    do_copyfile("%s/imx-boot-%s.bin-mfg-%s" % \
+        (d.getVar('DEPLOY_DIR_IMAGE'), machine, imxboot_target), img_dirname)
+    do_copyfile("%s/imx-boot-%s.bin-default-%s" % \
+        (d.getVar('DEPLOY_DIR_IMAGE'), machine, imxboot_target), img_dirname)
+    do_copyfile("%s/karo-image-bootfs-%s.ext4" % \
+        (d.getVar('DEPLOY_DIR_IMAGE'), machine), img_dirname)
+    do_copyfile("%s/%s-%s.ext4" % \
+        (d.getVar('DEPLOY_DIR_IMAGE'), image, machine), img_dirname)
+}
+
+addtask do_clean_uuu_dir before do_clean
+
+python do_clean_uuu_dir() {
+    import glob
+
+    for f in glob.glob(d.expand("${DEPLOY_DIR_IMAGE}/${BPN}/*")):
+        bb.note("Removing %s" % f)
+        os.remove(f)
+
+    os.rmdir(d.expand("${DEPLOY_DIR_IMAGE}/${BPN}"))
 }
