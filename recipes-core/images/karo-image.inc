@@ -17,7 +17,7 @@ IMAGE_INSTALL_append = " \
         bash \
         canutils \
         coreutils \
-        dhcpcd \
+        ${@bb.utils.contains('DISTRO_FEATURES','dhcpcd','dhcpcd','',d)} \
         dosfstools \
         e2fsprogs \
         e2fsprogs-resize2fs \
