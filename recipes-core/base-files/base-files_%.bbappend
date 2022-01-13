@@ -25,7 +25,7 @@ volatiles = ""
 inherit relative_symlinks
 
 do_install_append () {
-    if [ "${TXNVM}" = "emmc" ];then
+    if ${@ bb.utils.contains('MACHINE_FEATURES', 'emmc', 'true', 'false', d)};then
         sed -i '/root/s/0$/1/' ${D}${sysconfdir}/fstab
 
         if ${@ bb.utils.contains('DISTRO_FEATURES', 'sysvinit', 'true', 'false', d)}; then
