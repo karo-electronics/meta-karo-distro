@@ -36,6 +36,8 @@ WARN_QA_remove = "host-user-contaminated"
 
 VOLATILE_LOG_DIR = "no"
 
+MACHINE_FIRMWARE_remove = "${@ bb.utils.contains('DISTRO_FEATURES', 'wifi', "", "linux-firmware-ath10k", d)}"
+
 ROOTFS_PARTITION_SIZE ?= "${@bb.utils.contains('MACHINE_FEATURES',"nand", \
                       65536-${IMAGE_ROOTFS_EXTRA_SPACE},128*1024,d)}"
 
