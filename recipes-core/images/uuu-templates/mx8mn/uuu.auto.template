@@ -20,7 +20,7 @@ FB: ucmd mmc partconf $${emmc_dev} 1 1 0
 #
 # 32M /boot
 # MAX /
-FB: ucmd setenv partitions 'uuid_disk=$${uuid_gpt_disk};name=boot,size=32M,start=1MiB,uuid=$${uuid_boot};name=rootfs,size=MAX,uuid=0cc66cc0-5458-384d-1610-726f6f746673;'
+FB: ucmd setenv partitions 'uuid_disk=$${uuid_gpt_disk};name=boot,size=32M,start=1MiB,uuid=$${uuid_boot};name=rootfs,size=MAX;'
 FB: ucmd gpt write mmc 0 $${partitions}
 
 ### force re-read partition table
