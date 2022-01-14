@@ -41,5 +41,8 @@ MACHINE_FIRMWARE_remove = "${@ bb.utils.contains('DISTRO_FEATURES', 'wifi', "", 
 ROOTFS_PARTITION_SIZE ?= "${@bb.utils.contains('MACHINE_FEATURES',"nand", \
                       65536-${IMAGE_ROOTFS_EXTRA_SPACE},128*1024,d)}"
 
+# Remove some image types we don't need
+IMAGE_FSTYPES_remove = "sdcard.bz2 wic.bz2 wic.bmap"
+
 # mask out recipe breaking the weston desktop without systemd
 BBMASK += ".*/meta-imx/meta-bsp/recipes-graphics/wayland/weston-init.bbappend"
