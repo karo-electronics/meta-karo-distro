@@ -55,7 +55,7 @@ DEPENDS_append = " cross-localedef-native qemuwrapper-cross"
 
 CORE_IMAGE_EXTRA_INSTALL_append = " kernel-modules"
 DEPENDS_append_mx6 = " u-boot-karo"
-DEPENDS_append_mx8 = " imx-boot"
+DEPENDS_append_mx8 = " imx-boot uuu-script-template"
 
 PREFERRED_PROVIDER_fdisk = "util-linux"
 PREFERRED_PROVIDER_virtual/bootloader = "u-boot-karo"
@@ -113,16 +113,13 @@ export UBIVOL_FLAGS_userfs = "autoresize"
 #
 # create bootfs image file with every karo-image-* build
 do_image_complete[depends] += "karo-image-bootfs:do_image_complete"
+do_image_complete[depends] += "uuu-script-template:do_deploy"
 
 # create uuu.auto file for image if appropriate
 python () {
     if "mx8" in d.getVar('MACHINEOVERRIDES').split(":"):
         bb.build.addtask('do_create_uuu_auto_script', 'do_build', 'do_image_complete', d)
 }
-
-UUU_TEMPLATE_PATH_mx8mm = "uuu-templates/mx8mm"
-UUU_TEMPLATE_PATH_mx8mn = "uuu-templates/mx8mn"
-UUU_TEMPLATE_PATH_mx8mp = "uuu-templates/mx8mp"
 
 python do_create_uuu_auto_script() {
     def do_copyfile (src, destdir):
@@ -140,7 +137,7 @@ python do_create_uuu_auto_script() {
     imxboot_target = d.getVar('IMXBOOT_TARGETS')
     image = d.getVar('BPN')
 
-    uuu_template_path = d.expand("${THISDIR}/${UUU_TEMPLATE_PATH}/uuu.auto.template")
+    uuu_template_path = d.expand("${DEPLOY_DIR_IMAGE}/uuu.auto.template")
     img_dirname = d.expand("${DEPLOY_DIR_IMAGE}/${BPN}")
     uuu_auto_path = os.path.join(img_dirname, "uuu.auto")
 
