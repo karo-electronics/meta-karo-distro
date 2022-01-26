@@ -1,3 +1,5 @@
+inherit relative_symlinks
+
 FILES_${PN}_append = "/run/ /run/sshd ${localstatedir}/log ${localstatedir}/log/lastlog"
 
 do_install_append() {

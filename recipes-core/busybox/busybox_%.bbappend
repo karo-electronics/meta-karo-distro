@@ -9,6 +9,7 @@ SRC_URI_remove = " \
 SRC_URI_append = " \
                  file://rtcsymlink.sh \
                  ${@ bb.utils.contains('DISTRO_FEATURES','pam','file://pam.cfg','',d)} \
+                 ${@ bb.utils.contains('DISTRO_FEATURES','busybox-crond','','file://no-crond.cfg',d)} \
 "
 FILES_${PN} += "${sysconfdir}/network/run"
 
@@ -60,6 +61,6 @@ do_install_append () {
     install -v -d -m 0755 ${D}/run
     install -v -m 0664 -g utmp /dev/null ${D}/run/utmp
 
-    install -v -d -m 0755 ${D}/${localstatedir}/log
-    install -v -m 0664 -g utmp /dev/null ${D}/${localstatedir}/log/wtmp
+    install -v -d -m 0755 ${D}${localstatedir}/log
+    install -v -m 0664 -g utmp /dev/null ${D}${localstatedir}/log/wtmp
 }
