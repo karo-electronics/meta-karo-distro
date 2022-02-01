@@ -7,6 +7,9 @@ IMAGE_LINGUAS = ""
 IMAGE_FEATURES_remove = "tools-debug"
 PACKAGE_EXCLUDE = "python3-core"
 
+# remove packages that pull in openssl
+IMAGE_INSTALL_remove = "curl git"
+
 IMAGE_ROOTFS_MAXSIZE ?= "${@bb.utils.contains('MACHINE_FEATURES',"nand","65536","",d)}"
 
 ROOTFS_POSTPROCESS_COMMAND_remove = "rootfs_update_timestamp; empty_var_volatile;"
