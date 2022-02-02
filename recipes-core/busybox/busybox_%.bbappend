@@ -22,15 +22,17 @@ DEPENDS += "${@ bb.utils.contains('DISTRO_FEATURES','pam','libpam','',d)}"
 
 #BUSYBOX_SPLIT_SUID = "0"
 
-#PROVIDES += "${PN}-inetd"
-#PACKAGES =+ "${PN}-inetd"
-FILES_${PN}-inetd = "${sysconfdir}/init.d/inetd.${PN}"
-INITSCRIPT_NAME_${PN}-inetd = "inetd.${PN}"
-#INITSCRIPT_PARAMS_${PN}-inetd = "start 02 2 ."
-INITSCRIPT_PACKAGES += "${PN}-inetd"
-DEPENDS_${PN}-inetd += "update-rc.d-native"
+PACKAGES =+ "${PN}-inetd"
+FILES_${PN}-inetd = "${sysconfdir}/init.d/${PN}-inetd"
+PROVIDES += "${PN}-inetd"
 
-inherit useradd relative_symlinks update-rc.d
+INITSCRIPT_NAME_${PN}-inetd = "${PN}-inetd"
+INITSCRIPT_PARAMS_${PN}-inetd = "start 02 2 3 4 5 . stop 01 0 1 6 ."
+INITSCRIPT_PACKAGES += "${PN}-inetd"
+RDEPENDS_${PN}-inetd = "busybox"
+RRECOMMENDS_${PN} += "${INITSCRIPT_PACKAGES}"
+
+inherit useradd relative_symlinks
 
 USERADD_PACKAGES += "${PN}"
 USERADD_PARAM_${PN} = ""
@@ -42,17 +44,9 @@ DEPENDS += "base-passwd"
 FILES_${PN} += "/run/utmp"
 FILES_${PN} += "${localstatedir}/${@'volatile/' if oe.types.boolean(d.getVar('VOLATILE_LOG_DIR')) else ''}log/wtmp"
 
-do_install_append_${PN}-inetd() {
-    mv -v ${D}${sysconfdir}/init.d/inetd.${BPN} ${D}${sysconfdir}/init.d/inetd
-    update-rc.d -r ${D} inetd start 02 2 .
-}
-
 do_install_append () {
-    if ${@ bb.utils.contains('VIRTUAL-RUNTIME_dev_manager','udev','true','false',d)};then
-        echo "Using ${@ d.getVar('VIRTUAL-RUNTIME_dev_manager')} as device manager"
-    else
-        echo "ERROR: VIRTUAL-RUNTIME_dev_manager is not set!" >&2
-        exit 1
+    if [ -e ${D}${sysconfdir}/init.d/inetd.${BPN} ];then
+        mv -vi ${D}${sysconfdir}/init.d/inetd.${BPN} ${D}${sysconfdir}/init.d/${PN}-inetd
     fi
 
     install -d -m 0755 ${D}${sysconfdir}/network
