@@ -163,15 +163,3 @@ python do_create_uuu_auto_script() {
     do_copyfile("%s/%s-%s.ext4" % \
         (d.getVar('DEPLOY_DIR_IMAGE'), image, machine), img_dirname)
 }
-
-addtask do_clean_uuu_dir before do_clean
-
-python do_clean_uuu_dir() {
-    import glob
-
-    for f in glob.glob(d.expand("${DEPLOY_DIR_IMAGE}/${BPN}/*")):
-        bb.note("Removing %s" % f)
-        os.remove(f)
-
-    os.rmdir(d.expand("${DEPLOY_DIR_IMAGE}/${BPN}"))
-}
