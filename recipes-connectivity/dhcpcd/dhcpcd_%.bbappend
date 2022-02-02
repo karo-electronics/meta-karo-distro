@@ -2,9 +2,9 @@ FILESEXTRAPATHS_prepend := "${THISDIR}/${PN}:"
 
 PACKAGECONFIG_remove = "udev"
 FILES_${PN} += " \
-	    /run/dhcpc \
-	    ${localstatedir}/lib/dhcpcd \
-	    ${sysconfdir}/ntpd.conf \
+            /run/dhcpcd/hook-state \
+            ${localstatedir}/lib/dhcpcd \
+            ${sysconfdir}/ntpd.conf \
 "
 
 SRC_URI_append = " \
@@ -24,14 +24,14 @@ quiet
 EOF
     fi
     if ${@ bb.utils.contains('IMAGE_FEATURES','read-only-rootfs','true','false',d)};then
-        install -v -d -m 0755 ${D}/run/dhcpc
+        install -v -d -m 0755 ${D}/run/dhcpcd/hook-state
 
-        install -m 0644 ${WORKDIR}/ntp.conf ${D}/run/dhcpc/ntp.conf
-        ln -snvf /run/dhcpc/ntp.conf ${D}${sysconfdir}/
-        ln -snvf /run/dhcpc/ntpd.conf ${D}${sysconfdir}/
 
-        install -m 0644 ${WORKDIR}/resolv.conf ${D}/run/dhcpc/resolv.conf
-        ln -snvf /run/dhcpc/resolv.conf ${D}${sysconfdir}/
+        install -D -m 0644 ${WORKDIR}/ntp.conf ${D}/run/dhcpcd/hook-state/ntp.conf/eth0.dhcp
+        ln -snvf /run/dhcpcd/hook-state/ntp.conf/eth0.dhcp ${D}${sysconfdir}/ntp.conf
+
+        install -D -m 0644 ${WORKDIR}/resolv.conf ${D}/run/dhcpcd/hook-state/resolv.conf/eth0.dhcp
+        ln -snvf /run/dhcpcd/hook-state/resolv.conf/eth0.dhcp ${D}${sysconfdir}/resolv.conf
 
         install -v -m 0755 -d ${D}${localstatedir}/lib/dhcpcd
         install -v -m 0755 /dev/null ${D}${localstatedir}/lib/dhcpcd/dhcpcd.duid
