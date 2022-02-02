@@ -6,8 +6,8 @@ FILESEXTRAPATHS_prepend := "${THISDIR}/uuu-templates:"
 SRC_URI = " \
     file://uuu.auto.template \
 "
-
-LICENSE = "CLOSED"
+LICENSE = "GPLv2"
+LIC_FILES_CHKSUM = "file://uuu.auto.template;beginline=3;endline=8;md5=01388d9ecb5db377010590dc26f95680"
 
 S = "${WORKDIR}"
 
