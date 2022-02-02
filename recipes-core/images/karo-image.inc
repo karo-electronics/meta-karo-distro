@@ -137,8 +137,8 @@ python do_create_uuu_auto_script() {
     imxboot_target = d.getVar('IMXBOOT_TARGETS')
     image = d.getVar('BPN')
 
-    uuu_template_path = d.expand("${DEPLOY_DIR_IMAGE}/uuu.auto.template")
-    img_dirname = d.expand("${DEPLOY_DIR_IMAGE}/${BPN}")
+    uuu_template_path = os.path.join(d.getVar('DEPLOY_DIR_IMAGE'), "uuu.auto.template")
+    img_dirname = os.path.join(d.getVar('DEPLOY_DIR_IMAGE'), d.getVar('BPN'))
     uuu_auto_path = os.path.join(img_dirname, "uuu.auto")
 
     bb.utils.mkdirhier(img_dirname)
@@ -146,6 +146,7 @@ python do_create_uuu_auto_script() {
     f = open(uuu_template_path, 'r')
     uuu_template_string = f.read()
 
+    bb.note("Creating '%s' from '%s'" % (uuu_auto_path, uuu_template_path))
     try:
         with open(uuu_auto_path, 'w') as uuu_script:
             uuu_template = Template(uuu_template_string)
