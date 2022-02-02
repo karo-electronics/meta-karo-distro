@@ -57,4 +57,12 @@ do_install_append () {
 
     install -v -d -m 0755 ${D}${localstatedir}/log
     install -v -m 0664 -g utmp /dev/null ${D}${localstatedir}/log/wtmp
+
+    if ${@ bb.utils.contains('MACHINE_FEATURES', 'emmc', 'true', 'false', d)};then
+        if grep -q "CONFIG_INIT=y" ${B}/.config && \
+                ${@bb.utils.contains('VIRTUAL-RUNTIME_init_manager','busybox','true','false',d)}; then
+            # Change the value of ENABLE_ROOTFS_FSCK in ${sysconfdir}/default/rcS to yes
+            sed -i '/^ENABLE_ROOTFS_FSCK=/s/no/yes/' ${D}${sysconfdir}/default/rcS
+        fi
+    fi
 }

@@ -27,13 +27,6 @@ inherit relative_symlinks
 do_install_append () {
     if ${@ bb.utils.contains('MACHINE_FEATURES', 'emmc', 'true', 'false', d)};then
         sed -i '/root/s/0$/1/' ${D}${sysconfdir}/fstab
-
-        if ${@ bb.utils.contains('DISTRO_FEATURES', 'sysvinit', 'true', 'false', d)}; then
-            # Change the value of ENABLE_ROOTFS_FSCK in ${sysconfdir}/default/rcS to yes
-            if [ -e ${IMAGE_ROOTFS}${sysconfdir}/default/rcS ];then
-                sed -i '/^ENABLE_ROOTFS_FSCK=/s/no/yes/' ${IMAGE_ROOTFS}${sysconfdir}/default/rcS
-            fi
-        fi
     fi
     if ${@ bb.utils.contains('IMAGE_FEATURES','read-only-rootfs','true','false',d)};then
         install -v -m 0744 ${WORKDIR}/adjtime ${D}${localstatedir}/lib/hwclock/adjtime
