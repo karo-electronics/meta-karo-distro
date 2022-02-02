@@ -17,7 +17,7 @@ IMAGE_ROOTFS_SIZE        ?= "32768"
 
 IMAGE_PREPROCESS_COMMAND_append = "reformat_rootfs;"
 
-CORE_IMAGE_EXTRA_INSTALL += "kernel-devicetree"
+CORE_IMAGE_EXTRA_INSTALL += "kernel-devicetree kernel-image"
 
 # Cleanup rootfs newly created
 reformat_rootfs() {
