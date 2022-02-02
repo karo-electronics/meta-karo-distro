@@ -34,4 +34,7 @@ do_install_append () {
 
     install -m 0755 ${WORKDIR}/umountroot       ${D}${sysconfdir}/init.d/umountroot
     update-rc.d -r ${D} umountroot start 41 0 6 .
+
+    install -m 0755 ${WORKDIR}/checkfs.sh	${D}${sysconfdir}/init.d/checkfs.sh
+    update-rc.d -r ${D} checkfs.sh start 06 S .
 }
