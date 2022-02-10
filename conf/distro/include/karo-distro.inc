@@ -53,7 +53,7 @@ ROOTFS_PARTITION_SIZE ?= "${@bb.utils.contains('MACHINE_FEATURES',"nand", \
 IMAGE_FSTYPES_remove = "sdcard.bz2 wic.bz2 wic.bmap"
 
 # mask out sysvinit recipes from meta-imx layer
-BBMASK_karo-nxp += ".*/meta-imx/.*/sysvinit/.*"
+BBMASK_use-nxp-bsp += ".*/meta-imx/.*/sysvinit/.*"
 
 # mask out recipe breaking the weston desktop without systemd
 BBMASK += ".*/meta-imx/meta-bsp/recipes-graphics/wayland/weston-init.bbappend"
