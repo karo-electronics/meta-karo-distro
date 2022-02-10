@@ -38,9 +38,9 @@ case "$1" in
         halt
     fi
     # mount the devtmpfs on /dev, if not already done
-    grep -q '^[^ ]\+ /dev devtmpfs ' /proc/mounts && \
+    LANG=C awk '$2 == "/dev" && ($3 == "devtmpfs") { exit 1 }' /proc/mounts && {
 	mount -n -o mode=0755 -t devtmpfs udev /dev
-
+    }
     [ -e /dev/pts ] || mkdir -m 0755 /dev/pts
     [ -e /dev/shm ] || mkdir -m 1777 /dev/shm
 

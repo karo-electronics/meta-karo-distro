@@ -2,12 +2,13 @@ LICENSE = "MIT"
 
 inherit core-image features_check rootfs-postprocess relative_symlinks
 
+REQUIRED_DISTRO_FEATURES ??= ""
+
 ROOTFS_POSTPROCESS_COMMAND_remove = "\
         rootfs_update_timestamp; \
         ${bb.utils.contains('DISTRO_FEATURES','read-only-rootfs','empty_var_volatile;','',d)} \
 "
 
-REQUIRED_DISTRO_FEATURES ??= ""
 IMAGE_FEATURES_append = " tools-debug"
 
 IMAGE_INSTALL_append = " \
@@ -54,12 +55,10 @@ IMAGE_INSTALL_append = " \
 DEPENDS_append = " cross-localedef-native qemuwrapper-cross"
 
 CORE_IMAGE_EXTRA_INSTALL_append = " kernel-modules"
-DEPENDS_append_mx6 = " u-boot-karo"
-DEPENDS_append_mx8 = " imx-boot uuu-script-template"
+DEPENDS_append_karo = " u-boot-karo"
+DEPENDS_append_karo-nxp = " imx-boot uuu-script-template"
 
 PREFERRED_PROVIDER_fdisk = "util-linux"
-PREFERRED_PROVIDER_virtual/bootloader = "u-boot-karo"
-PREFERRED_PROVIDER_virtual/kernel = "linux-karo"
 
 IMAGE_ROOTFS_ALIGNMENT ?= "${@bb.utils.contains('MACHINE_FEATURES',"nand",128*1024,1024,d)}"
 IMAGE_ROOTFS_EXTRA_SPACE = "${@bb.utils.contains('MACHINE_FEATURES',"nand",2*128,0,d)}"
@@ -113,7 +112,6 @@ export UBIVOL_FLAGS_userfs = "autoresize"
 #
 # create bootfs image file with every karo-image-* build
 do_image_complete[depends] += "karo-image-bootfs:do_image_complete"
-do_image_complete[depends] += "uuu-script-template:do_deploy"
 
 # create uuu.auto file for image if appropriate
 python () {

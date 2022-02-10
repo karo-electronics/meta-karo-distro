@@ -25,12 +25,12 @@ do_start () {
 		;;
 	esac
 
-	# Create /var/run/utmp so we can login.
-	: > /var/run/utmp
+	# Create /run/utmp so we can login.
+	: > /run/utmp
 	if grep -q ^utmp: /etc/group
 	then
-		chmod 664 /var/run/utmp
-		chgrp utmp /var/run/utmp
+		chmod 664 /run/utmp
+		chgrp utmp /run/utmp
 	fi
 
 	# Set pseudo-terminal access permissions.
@@ -42,7 +42,7 @@ do_start () {
 
 	# Remove bootclean's flag files.
 	# Don't run bootclean again after this!
-	rm -f /tmp/.clean /var/run/.clean /var/lock/.clean
+	rm -f /tmp/.clean /run/.clean /var/lock/.clean
 }
 
 case "$1" in

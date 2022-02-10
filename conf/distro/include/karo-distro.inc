@@ -13,6 +13,7 @@ DISTRO_FEATURES_DEFAULT_remove = "\
         3g \
         argp \
         bluetooth \
+        ipv6 \
         nfc \
         pcmcia \
         wifi \
@@ -39,7 +40,7 @@ VIRTUAL-RUNTIME_base-utils-hwclock = "util-linux-hwclock"
 VIRTUAL-RUNTIME_dev_manager ?= "udev"
 VIRTUAL-RUNTIME_init_manager ?= "${@bb.utils.contains('DISTRO_FEATURES',"systemd","systemd","sysvinit",d)}"
 
-WARN_QA_remove = "host-user-contaminated"
+PREFERRED_PROVIDER_opencl-headers = "imx-gpu-viv"
 
 VOLATILE_LOG_DIR = "no"
 
@@ -50,6 +51,9 @@ ROOTFS_PARTITION_SIZE ?= "${@bb.utils.contains('MACHINE_FEATURES',"nand", \
 
 # Remove some image types we don't need
 IMAGE_FSTYPES_remove = "sdcard.bz2 wic.bz2 wic.bmap"
+
+# mask out sysvinit recipes from meta-imx layer
+BBMASK_karo-nxp += ".*/meta-imx/.*/sysvinit/.*"
 
 # mask out recipe breaking the weston desktop without systemd
 BBMASK += ".*/meta-imx/meta-bsp/recipes-graphics/wayland/weston-init.bbappend"

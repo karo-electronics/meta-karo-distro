@@ -15,7 +15,7 @@ FILES_${PN} = "uuu.auto.template"
 
 do_install[noexec] = "1"
 
-do_deploy() {
+do_deploy () {
     install -vD ${S}/uuu.auto.template ${DEPLOYDIR}/uuu.auto.template
 }
 addtask deploy after do_compile

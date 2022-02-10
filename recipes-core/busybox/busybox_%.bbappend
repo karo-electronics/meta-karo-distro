@@ -13,8 +13,6 @@ SRC_URI_append = " \
 "
 FILES_${PN} += "${sysconfdir}/network/run"
 
-DEPENDS += "${@ bb.utils.contains('DISTRO_FEATURES','pam','libpam','',d)}"
-
 # overrule prio 200 of sysvinit and shadow
 # if enabled, /bin/sh will be linked to /bin/busybox.nosuid
 # as workaround this is disabled, and will increase the size of the rootfs
