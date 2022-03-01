@@ -1,6 +1,6 @@
 LICENSE = "MIT"
 
-inherit core-image features_check rootfs-postprocess relative_symlinks
+inherit core-image features_check rootfs-postprocess
 
 REQUIRED_DISTRO_FEATURES ??= ""
 
