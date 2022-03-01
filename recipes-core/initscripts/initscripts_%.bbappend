@@ -21,7 +21,7 @@ rmfiles = " \
 
 do_install_append () {
     install -m 0755 ${WORKDIR}/initvar.sh ${D}${sysconfdir}/init.d
-    update-rc.d -r ${D} initvar.sh start 03 S .
+    update-rc.d -r ${D} -v initvar.sh start 02 S .
 
     install -d -m 0755 ${D}${sysconfdir}/.run
     install -d -m 0755 ${D}${sysconfdir}/.var
@@ -33,8 +33,14 @@ do_install_append () {
     done
 
     install -m 0755 ${WORKDIR}/umountroot       ${D}${sysconfdir}/init.d/umountroot
-    update-rc.d -r ${D} umountroot start 41 0 6 .
+    update-rc.d -r ${D} -v umountroot start 41 0 6 .
 
     install -m 0755 ${WORKDIR}/checkfs.sh	${D}${sysconfdir}/init.d/checkfs.sh
-    update-rc.d -r ${D} checkfs.sh start 06 S .
+    update-rc.d -r ${D} -v checkfs.sh start 04 S .
+
+    update-rc.d -r ${D} -v -f checkroot.sh remove
+    update-rc.d -r ${D} -v -f mountall.sh remove
+
+    update-rc.d -r ${D} -v checkroot.sh start 03 S .
+    update-rc.d -r ${D} -v mountall.sh start 05 S .
 }

@@ -5,6 +5,7 @@ SRC_URI_append = "\
 	       file://rtcsymlink.sh \
 	       file://rtcsymlink.rule \
 "
+INITSCRIPT_PARAMS = "start 02 S ."
 
 do_install_append() {
     install -v -m 0755 -d ${D}${nonarch_base_libdir}/udev
