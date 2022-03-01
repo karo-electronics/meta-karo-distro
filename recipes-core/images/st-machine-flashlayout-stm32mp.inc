@@ -1,7 +1,7 @@
 #@DESCRIPTION: STM32MP machine flashlayout configuration
 
 INHERIT += "flashlayout-stm32mp"
-
+#
 # Add specific dependencies to get all binaries generated before flashlayout files
 FLASHLAYOUT_DEPEND_TASKS += "${@bb.utils.contains('EXTRA_IMAGEDEPENDS', 'tf-a-stm32mp', 'tf-a-stm32mp:do_deploy', '', d)}"
 FLASHLAYOUT_DEPEND_TASKS += "${@bb.utils.contains('EXTRA_IMAGEDEPENDS', 'u-boot-karo', 'u-boot-karo:do_deploy', '', d)}"
@@ -29,7 +29,8 @@ DEVICE_ALIGNMENT_SIZE_spi-nand0 = "0x00020000"
 # -----------------------------------------------------------------------------
 # Define bootscheme labels
 # -----------------------------------------------------------------------------
-FLASHLAYOUT_BOOTSCHEME_LABELS ??= "basic trusted"
+FLASHLAYOUT_BOOTSCHEME_LABELS ?= "trusted"
+FLASHLAYOUT_BOOTSCHEME_LABELS += "${@bb.utils.contains('UBOOT_CONFIG','generic','basic','',d)}"
 
 # -----------------------------------------------------------------------------
 # Define config labels
@@ -39,10 +40,7 @@ FLASHLAYOUT_BOOTSCHEME_LABELS ??= "basic trusted"
 #           2) list
 #           3) Default 'list' to 'none' when not defined
 # -----------------------------------------------------------------------------
-FLASHLAYOUT_CONFIG_LABELS ??= "emmc"
-
-# Set by default this variable to 0, and set to 1 only when we are using st-example-image-*
-ST_EXAMPLE_IMAGE ??= "0"
+FLASHLAYOUT_CONFIG_LABELS ?= "emmc"
 
 # -----------------------------------------------------------------------------
 # Define label types
@@ -55,9 +53,7 @@ ST_EXAMPLE_IMAGE ??= "0"
 #           5) Default 'list' to 'none' when not defined
 # -----------------------------------------------------------------------------
 # EMMC
-# Set flashlayout file generation to eval board (mother and daughter) only
-FLASHLAYOUT_TYPE_LABELS_emmc = "${MACHINE}"
-FLASHLAYOUT_TYPE_LABELS_spinand = "${MACHINE}"
+FLASHLAYOUT_TYPE_LABELS = "${TF_A_DEVICETREE}"
 
 # -----------------------------------------------------------------------------
 # Define partitions to use
@@ -198,21 +194,10 @@ FLASHLAYOUT_PARTITION_BIN2LOAD_rootfs       = "${IMAGE_LINK_NAME}.ext4"
 FLASHLAYOUT_PARTITION_BIN2LOAD_userfs       = "${STM32MP_USERFS_IMAGE}-${MACHINE}.ext4"
 FLASHLAYOUT_PARTITION_BIN2LOAD_ubi          = "${IMAGE_LINK_NAME}.ubi"
 
-# -----------------------------------------------------------------------------
-# Use the 'BIN2BOOT_REPLACE_PATTERNS' var to allow dynamic binary renaming for
-# the bootloader binaries. This is only required for fsbl1-boot and ssbl-boot
-# partitions that provides the binary to flash the device.
-# The format to follow is:
-#   '<PATTERN2REPLACE_1>;<PATTERN2SET_1> <PATTERN2REPLACE_2>;<PATTERN2SET_2>'
-# And the pattern to replace in binary name is only searched as:
-#   '-<PATTERN>$'
-#   or
-#   '-<PATTERN>-'
-# -----------------------------------------------------------------------------
-# The 'basic' bootscheme does not support Programmer mode, so use 'trusted' one
-# (valid for both fsbl1-boot and ssbl-boot)
-#BIN2BOOT_REPLACE_PATTERNS_DEFAULT = "basic;trusted"
+# =========================================================================
+# Flashlayouts
+# =========================================================================
+ENABLE_FLASHLAYOUT_CONFIG = "1"
 
-# Apply for fsbl1-boot and ssbl-boot
-BIN2BOOT_REPLACE_PATTERNS_fsbl1-boot = "${BIN2BOOT_REPLACE_PATTERNS_DEFAULT}"
-BIN2BOOT_REPLACE_PATTERNS_ssbl-boot  = "${BIN2BOOT_REPLACE_PATTERNS_DEFAULT}"
+BIN2BOOT_REPLACE_PATTERNS_fsbl1-boot = "basic;serialboot trusted;serialboot"
+BIN2BOOT_REPLACE_PATTERNS_ssbl-boot = "basic;mfg trusted;mfg"

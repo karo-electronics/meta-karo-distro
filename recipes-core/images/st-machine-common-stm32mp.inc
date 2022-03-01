@@ -1,24 +1,14 @@
 #@DESCRIPTION: Common Machine configuration for STM32 systems
 
 require st-machine-flashlayout-stm32mp.inc
-
-# =========================================================================
-# boot scheme
-# =========================================================================
-# List of supported boot schemes
-BOOTSCHEME_LABELS ??= "basic trusted"
+require ${@ "qsmp-1510.inc" if 'qsmp-1510' in d.getVar('MACHINEOVERRIDES').split(":") else ""}
 
 # Don't include kernels in standard images
 #RDEPENDS_${KERNEL_PACKAGE_NAME}-base = ""
 
-MACHINE_FEATURES_append = " emmc"
 #IMAGE_FSTYPES ?= "tar.bz2"
 IMAGE_FSTYPES_append = "${@bb.utils.contains('MACHINE_FEATURES',"emmc"," ext4","",d)}"
 
-# =========================================================================
-# Image
-# =========================================================================
-# Partitions configuration
 IMAGE_CLASSES += "st-partitions-image"
 
 # Define image to use for extra partitions
@@ -57,51 +47,9 @@ BOOTFS_PARTITION_SIZE = "65536"
 #   rootfs < 120.5MiB - (256KiB + 64MiB + 16MiB + 128MiB + 53360KiB + 4 * 9 * 256KiB)
 # Proposed value for rootfs is 2GiB
 ROOTFS_PARTITION_SIZE ??= "2097152"
-ROOTFS_PARTITION_SIZE_qsmp-1510 ??= "32*1024"
 # Proposed value for userfs is 128MB (4*32MB)
 USERFS_PARTITION_SIZE ??= "131072"
 
 # Define the max size for ROOTFS image being built
 # On other image partition such settings is directly done in image recipe
 IMAGE_ROOTFS_MAXSIZE ?= ""
-
-# Define specific U-Boot config partition settings
-STM32MP_UBOOTCONFIG_NAME   = "uboot_config"
-UBOOTCONFIG_PARTITION_SIZE ??= "256"
-
-# Define specific EXT4 command line:
-#   - Create minimal inode number (as it is done by default in image_types.bbclass)
-#   - Add label name (maximum length of the volume label is 16 bytes)
-#     So use IMAGE_NAME_SUFFIX name by removing the '.' and truncating to 16 caracters
-#   - Deactivate metadata_csum and dir_index (hashed b-trees): update not supported
-#     by U-Boot
-EXTRA_IMAGECMD_ext4 = "-i 4096 -L ${@d.getVar('IMAGE_NAME_SUFFIX').replace('.', '', 1)[:16]} -O ^metadata_csum,^dir_index"
-
-# =========================================================================
-# tf-a
-# =========================================================================
-# Finally we must compile tf-a in all cases as we need trusted binary to boot
-EXTRA_IMAGEDEPENDS += "tf-a-stm32mp"
-
-# Define default TF-A config
-TF_A_CONFIG_append = "${@bb.utils.contains('BOOTSCHEME_LABELS', 'trusted', ' trusted', '', d)}"
-
-# Define SECURE_PAYLOAD config to set for each TF_A_CONFIG
-TF_A_CONFIG_serialboot  = "AARCH32_SP=sp_min"
-TF_A_CONFIG_trusted     = "AARCH32_SP=sp_min"
-
-# Manage proper update for TF_A_CONFIG_* var
-tfaconfig_env[vardeps] += "${@bb.utils.contains('TF_A_CONFIG', 'serialboot', 'TF_A_CONFIG_serialboot', '', d)}"
-tfaconfig_env[vardeps] += "${@bb.utils.contains('TF_A_CONFIG', 'trusted', 'TF_A_CONFIG_trusted', '', d)}"
-
-# List of TF-A device tree to use
-TF_A_DEVICETREE = "${STM32MP_DEVICETREE}"
-
-# =========================================================================
-# flashlayout
-# =========================================================================
-# Define bootscheme label to allow specific expansion for partition vars
-FLASHLAYOUT_BOOTSCHEME_LABELS += "${BOOTSCHEME_LABELS}"
-
-# Default config labels supported
-FLASHLAYOUT_CONFIG_LABELS ??= ""
