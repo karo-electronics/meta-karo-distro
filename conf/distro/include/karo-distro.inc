@@ -22,7 +22,6 @@ DISTRO_FEATURES_DEFAULT_remove = "\
 "
 
 DISTRO_FEATURES_append = "\
-        alternatives-symlinks-relative \
         dhcpcd \
         ldconfig \
         pam \
