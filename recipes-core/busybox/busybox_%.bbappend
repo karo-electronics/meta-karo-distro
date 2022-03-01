@@ -7,7 +7,6 @@ SRC_URI_remove = " \
                  file://sha1sum.cfg \
 "
 SRC_URI_append = " \
-                 file://rtcsymlink.sh \
                  ${@ bb.utils.contains('DISTRO_FEATURES','pam','file://pam.cfg','',d)} \
                  ${@ bb.utils.contains('DISTRO_FEATURES','busybox-crond','','file://no-crond.cfg',d)} \
 "
@@ -39,8 +38,7 @@ GROUPADD_PARAM_${PN} = "--system utmp"
 # need /etc/group in the staging directory
 DEPENDS += "base-passwd"
 
-FILES_${PN} += "/run/utmp"
-FILES_${PN} += "${localstatedir}/${@'volatile/' if oe.types.boolean(d.getVar('VOLATILE_LOG_DIR')) else ''}log/wtmp"
+FILES_${PN} += "/run/utmp ${localstatedir}/log/wtmp"
 
 do_install_append () {
     if [ -e ${D}${sysconfdir}/init.d/inetd.${BPN} ];then
