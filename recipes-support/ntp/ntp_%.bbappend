@@ -2,7 +2,10 @@ inherit relative_symlinks useradd
 
 PACKAGECONFIG_remove_karo-minimal = "openssl"
 
-FILES_${PN}_remove = "${@ bb.utils.contains('DISTRO_FEATURES', 'dhcpcd', "${sysconfdir}/ntp.conf", "", d)}"
+remove_ntp_conf = "${@ bb.utils.contains('DISTRO_FEATURES', 'dhcpcd', True, False, d) and \
+                       bb.utils.contains('IMAGE_FEATURES', 'read-only-rootfs', True, False, d)}"
+
+FILES_${PN}_remove := "${@ "${sysconfdir}/ntp.conf" if ${remove_ntp_conf} else ""}"
 
 DEPENDS += "busybox"
 
@@ -14,7 +17,7 @@ CRONTABS_DIR = "${localstatedir}/spool/cron/crontabs"
 FILES_${PN} += "${CRONTABS_DIR}/root"
 
 do_install_append() {
-    if ${@ bb.utils.contains('DISTRO_FEATURES', 'dhcpcd', "true", "false", d)};then
+    if [ "${remove_ntp_conf}" = "True" ];then
         rm -f ${D}${sysconfdir}/ntp.conf
     fi
 }
