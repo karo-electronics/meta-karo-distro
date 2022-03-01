@@ -1,5 +1,12 @@
 IMAGE_FSTYPES_append = "${@bb.utils.contains('MACHINE_FEATURES',"nand"," ubi","",d)}"
 
+IMAGE_LINGUAS = ""
+
+IMAGE_FEATURES_remove = "tools-debug"
+
+# remove packages that pull in openssl
+IMAGE_INSTALL_remove = "curl git"
+
 ROOTFS_PARTITION_SIZE ?= "${@bb.utils.contains('MACHINE_FEATURES',"nand", \
                           64*1024,128*1024,d)}"
 

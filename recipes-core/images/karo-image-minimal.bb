@@ -3,12 +3,6 @@ SUMMARY = "A minimal Linux system without graphics support."
 require karo-image.inc 
 require karo-minimal.inc
 
-IMAGE_LINGUAS = ""
-IMAGE_FEATURES_remove = "tools-debug"
-
-# remove packages that pull in openssl
-IMAGE_INSTALL_remove = "curl git"
-
 IMAGE_ROOTFS_MAXSIZE ?= "${@bb.utils.contains('MACHINE_FEATURES',"nand","65536","",d)}"
 
 python extend_recipe_sysroot_append() {
