@@ -4,7 +4,7 @@ PACKAGECONFIG_remove = "udev"
 FILES_${PN} += " \
             /run/dhcpcd/hook-state \
             ${localstatedir}/lib/dhcpcd \
-            ${sysconfdir}/ntpd.conf \
+            ${sysconfdir}/ntp.conf \
 "
 
 SRC_URI_append = " \
@@ -25,7 +25,6 @@ EOF
     fi
     if ${@ bb.utils.contains('IMAGE_FEATURES','read-only-rootfs','true','false',d)};then
         install -v -d -m 0755 ${D}/run/dhcpcd/hook-state
-
 
         install -D -m 0644 ${WORKDIR}/ntp.conf ${D}/run/dhcpcd/hook-state/ntp.conf/eth0.dhcp
         ln -snvf /run/dhcpcd/hook-state/ntp.conf/eth0.dhcp ${D}${sysconfdir}/ntp.conf
