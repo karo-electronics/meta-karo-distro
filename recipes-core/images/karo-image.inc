@@ -47,6 +47,7 @@ IMAGE_INSTALL_append = " \
         tzdata \
         util-linux-fsck \
         util-linux-mkfs \
+        util-linux-mount \
         util-linux-setterm \
         ${@bb.utils.contains('DISTRO_FEATURES','imx219','v4l-utils','',d)} \
         ${@bb.utils.contains('DISTRO_FEATURES','wifi','wpa-supplicant','',d)} \
