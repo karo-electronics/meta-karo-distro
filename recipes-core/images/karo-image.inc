@@ -71,6 +71,11 @@ IMAGE_FSTYPES_append = " tar.bz2"
 IMAGE_FSTYPES_append = "${@bb.utils.contains('MACHINE_FEATURES',"emmc"," ext4","",d)}"
 IMAGE_FSTYPES_append = "${@bb.utils.contains('MACHINE_FEATURES',"nand"," ubi","",d)}"
 
+# mkfs.ext4 parameters
+# set inode size to 256 to support timestamps beyond 2038-01-19
+EXTRA_IMAGECMD_ext4 += "-I 256"
+
+# mkubifs parameters
 MKUBIFS_LEB_SIZE = "126976"
 MKUBIFS_LEB_CNT = "${@int(((${IMAGE_ROOTFS_SIZE} + ${IMAGE_ROOTFS_EXTRA_SPACE}) * 1024 + ${MKUBIFS_LEB_SIZE} - 1) / ${MKUBIFS_LEB_SIZE})}"
 MKUBIFS_ARGS ?= "-F -x zlib -m 2048 -e ${MKUBIFS_LEB_SIZE} -c ${MKUBIFS_LEB_CNT}"
