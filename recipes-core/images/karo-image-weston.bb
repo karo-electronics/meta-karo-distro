@@ -1,32 +1,33 @@
 SUMMARY = "A very basic Wayland image with Weston desktop and terminal"
 
 inherit features_check
+require recipes-graphics/images/core-image-weston.bb
 require karo-image.inc
 
-IMAGE_FEATURES += " \
-	          hwcodecs \
-	          package-management \
-	          splash \
-		  ssh-server-openssh \
-"
+IMAGE_FEATURES_remove = "ssh-server-dropbear"
+IMAGE_FEATURES += "ssh-server-openssh"
 
 LICENSE = "MIT"
 
 REQUIRED_DISTRO_FEATURES = "wayland"
 
+CORE_IMAGE_BASE_INSTALL_append = " \
+        glmark2 \
+        weston \
+        weston-init \
+        weston-examples \
+"
+
 IMAGE_INSTALL_append = " \
-		       clutter-1.0-examples \
-		       glmark2 \
-		       gst-examples \
-		       gtk+3-demo \
-		       libdrm \
-		       libdrm-tests \
-		       libdrm-kms \
-		       libdrm-etnaviv \
-		       weston \
-		       weston-init \
-		       weston-examples \
-		       ${@bb.utils.contains('DISTRO_FEATURES', 'x11 wayland', 'weston-xwayland xterm', '', d)} \
+        gst-examples \
+        libdrm \
+        libdrm-tests \
+        libdrm-kms \
+        ${@bb.utils.contains('DISTRO_FEATURES', 'x11 wayland', 'weston-xwayland xterm', '', d)} \
+"
+
+IMAGE_INSTALL_append_use-mainline-bsp = " \
+        libdrm-etnaviv \
 "
 
 # karo-image-weston won't fit in any of our nand modules!
