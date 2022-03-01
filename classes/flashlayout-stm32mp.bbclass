@@ -349,15 +349,12 @@ python do_create_flashlayout_config() {
             for labeltype in labeltypes.split():
                 bb.note('*** Loop for label type: %s' % labeltype)
                 # Init flashlayout file name
-                if config == 'none':
-                    config_append = ''
-                else:
-                    config_append = '_' + config
-                if len(labeltypes.split()) < 2 and len(bootschemes.split()) < 2:
-                    labeltype_append = ''
-                else:
-                    labeltype_append = '_' + labeltype + '-' + bootscheme
-                flashlayout_file = d.expand("${FLASHLAYOUT_DESTDIR}/${FLASHLAYOUT_BASENAME}%s%s.${FLASHLAYOUT_SUFFIX}" % (config_append, labeltype_append))
+                config_append = '_' + config
+                labeltype_append = '_' + labeltype + '-' + bootscheme
+                flashlayout_file = os.path.join(d.expand("${FLASHLAYOUT_DESTDIR}"), \
+                                                "%s_%s_%s-%s.%s" % (d.expand("${FLASHLAYOUT_BASENAME}"), \
+                                                config, labeltype, bootscheme, \
+                                                d.expand("${FLASHLAYOUT_SUFFIX}")))
                 # Get the partition list to write in flashlayout file
                 partitions = expand_var('FLASHLAYOUT_PARTITION_LABELS', bootscheme, config, '', d)
                 bb.note('FLASHLAYOUT_PARTITION_LABELS: %s' % partitions)
@@ -366,6 +363,7 @@ python do_create_flashlayout_config() {
                     continue
                 # Generate flashlayout file for labeltype
                 try:
+                    bb.note("Creating '%s'" % flashlayout_file)
                     with open(flashlayout_file, 'w') as fl_file:
                         # Write to flashlayout file the first line header
                         fl_file.write('#Opt\tId\tName\tType\tIP\tOffset\tBinary\n')
