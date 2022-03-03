@@ -8,12 +8,12 @@ uuu_version 1.2.91
 # This file flashes $image to $machine
 
 ### boot U-Boot with fastboot support
-SDP: boot -f imx-boot-$machine.bin-mfg-$imxboot_target
-SDPV: write -f imx-boot-$machine.bin-mfg-$imxboot_target -offset 0x57c00
+SDP: boot -f $image_bootloader-$machine.bin-mfg-$imxboot_target
+SDPV: write -f $image_bootloader-$machine.bin-mfg-$imxboot_target -offset 0x57c00
 SDPV: jump
 
 ### Writing default u-boot to emmc
-FB: flash bootloader imx-boot-$machine.bin-default-$imxboot_target
+FB: flash bootloader $image_bootloader-$machine.bin-default-$imxboot_target
 FB: ucmd mmc partconf $${emmc_dev} 1 1 0
 
 ### GPT partition layout

@@ -36,15 +36,15 @@ python do_create_uuu_auto_script() {
     try:
         with open(uuu_auto_path, 'w') as uuu_script:
             uuu_template = Template(uuu_template_string)
-            uuu_auto = uuu_template.substitute(image=image, machine=machine, imxboot_target=imxboot_target)
+            uuu_auto = uuu_template.substitute(image=image, machine=machine, imxboot_target=imxboot_target, image_bootloader=d.getVar('IMAGE_BOOTLOADER'))
             uuu_script.write(uuu_auto)
     except OSError:
         bb.fatal('Unable to open %s' % (uuu_auto_path))
 
-    do_copyfile("%s/imx-boot-%s.bin-mfg-%s" % \
-        (d.getVar('DEPLOY_DIR_IMAGE'), machine, imxboot_target), img_dirname)
-    do_copyfile("%s/imx-boot-%s.bin-default-%s" % \
-        (d.getVar('DEPLOY_DIR_IMAGE'), machine, imxboot_target), img_dirname)
+    do_copyfile("%s/%s-%s.bin-mfg-%s" % (d.getVar('DEPLOY_DIR_IMAGE'), \
+        d.getVar('IMAGE_BOOTLOADER'), machine, imxboot_target), img_dirname)
+    do_copyfile("%s/%s-%s.bin-default-%s" % (d.getVar('DEPLOY_DIR_IMAGE'), \
+        d.getVar('IMAGE_BOOTLOADER'), machine, imxboot_target), img_dirname)
     do_copyfile("%s/karo-image-bootfs-%s.ext4" % \
         (d.getVar('DEPLOY_DIR_IMAGE'), machine), img_dirname)
     do_copyfile("%s/%s-%s.ext4" % \
