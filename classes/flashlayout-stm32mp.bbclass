@@ -136,9 +136,9 @@ python __anonymous () {
                     # We need to make sure to add all extra dependencies as 'depends'
                     # for image_complete task
                     if d.getVar('FLASHLAYOUT_DEPEND_TASKS'):
-                        d.appendVarFlag('do_image_complete', 'depends', ' %s' % (d.getVar('FLASHLAYOUT_DEPEND_TASKS',)))
+                        d.appendVarFlag('do_image_complete', 'depends', ' %s' % d.getVar('FLASHLAYOUT_DEPEND_TASKS'))
                     # We can append the flashlayout file creation task to this ROOTFS build
-                    d.appendVar('IMAGE_POSTPROCESS_COMMAND', 'do_create_flashlayout_config ; ')
+                    d.appendVar('IMAGE_POSTPROCESS_COMMAND', 'do_create_flashlayout_config; ')
 }
 
 def expand_var(var, bootscheme, config, partition, d):
@@ -366,7 +366,7 @@ python do_create_flashlayout_config() {
                     bb.note("Creating '%s'" % flashlayout_file)
                     with open(flashlayout_file, 'w') as fl_file:
                         # Write to flashlayout file the first line header
-                        fl_file.write('#Opt\tId\tName\tType\tIP\tOffset\tBinary\n')
+                        fl_file.write('#Opt\tId\tName\t\tType\t\tIP\tOffset\t\tBinary\n')
                         # Init partition next offset to 'none'
                         partition_nextoffset = "none"
                         for partition in partitions.split():
@@ -392,8 +392,13 @@ python do_create_flashlayout_config() {
                             bb.note('>>> FLASHLAYOUT_PARTITION_BIN2LOAD:    %s' % partition_bin2load)
                             bb.note('>>> done')
                             # Write to flashlayout file the partition configuration
-                            fl_file.write('%s\t%s\t%s\t%s\t%s\t%s\t%s\n' %
-                                         (partition_enable, partition_id, partition_name, partition_type, partition_device, partition_offset, partition_bin2load))
+                            fl_file.write('%s\t%s\t%s' % (partition_enable, partition_id, partition_name))
+                            fl_file.write("%s" % "\t" * int((16 - len(partition_name) + 7) / 8))
+                            fl_file.write('%s' % partition_type)
+                            fl_file.write("%s" % "\t" * int((16 - len(partition_type) + 7) / 8))
+                            fl_file.write('%s\t%s' % (partition_device, partition_offset))
+                            fl_file.write("%s" % "\t" * int((16 - len(partition_offset) + 7) / 8))
+                            fl_file.write('%s\n' % partition_bin2load)
                 except OSError:
                     bb.fatal('Unable to open %s' % (fl_file))
 }
