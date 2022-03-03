@@ -59,7 +59,7 @@ IMAGE_INSTALL_append = " \
 
 DEPENDS_append = " cross-localedef-native qemuwrapper-cross"
 
-CORE_IMAGE_EXTRA_INSTALL_append = " kernel-modules"
+IMAGE_INSTALL_append = " kernel-modules"
 DEPENDS_append_use-mainline-bsp = " u-boot-karo"
 DEPENDS_append_use-nxp-bsp = " imx-boot-karo uuu-script-template"
 
