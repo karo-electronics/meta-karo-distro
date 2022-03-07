@@ -1,5 +1,7 @@
 LICENSE = "MIT"
 
+IMAGE_PREPROCESS_COMMAND_append = " image_rootfs_image_clean_task;"
+
 inherit core-image features_check rootfs-postprocess
 inherit ${@ "flashlayout-stm32mp" if 'stm32mp1' in d.getVar('MACHINEOVERRIDES').split(":") else ""}
 
@@ -10,7 +12,7 @@ REQUIRED_DISTRO_FEATURES ??= ""
 
 ROOTFS_POSTPROCESS_COMMAND_remove = "\
         rootfs_update_timestamp; \
-        ${bb.utils.contains('DISTRO_FEATURES','read-only-rootfs','empty_var_volatile;','',d)} \
+        ${@bb.utils.contains('DISTRO_FEATURES','read-only-rootfs','empty_var_volatile;','',d)} \
 "
 
 IMAGE_FEATURES_append = " tools-debug"

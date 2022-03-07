@@ -9,19 +9,15 @@ require ${@ "qsmp-1510.inc" if 'qsmp-1510' in d.getVar('MACHINEOVERRIDES').split
 #IMAGE_FSTYPES ?= "tar.bz2"
 IMAGE_FSTYPES_append = "${@bb.utils.contains('MACHINE_FEATURES',"emmc"," ext4","",d)}"
 
-IMAGE_CLASSES += "st-partitions-image"
-
 # Define image to use for extra partitions
 STM32MP_BOOTFS_IMAGE = "karo-image-bootfs"
-STM32MP_BOOTFS_LABEL = "bootfs"
-STM32MP_BOOTFS_MOUNTPOINT_IMAGE = "/boot"
+STM32MP_BOOTFS_LABEL ?= "bootfs"
+STM32MP_BOOTFS_MOUNTPOINT_IMAGE ?= "/boot"
 STM32MP_USERFS_IMAGE = "karo-image-userfs"
-STM32MP_USERFS_LABEL = "userfs"
-STM32MP_USERFS_MOUNTPOINT_IMAGE = "/usr/local"
+STM32MP_USERFS_LABEL ?= "userfs"
+STM32MP_USERFS_MOUNTPOINT_IMAGE ?= "/usr/local"
 
 # Define extra partition to build
-PARTITIONS_IMAGE  = "${STM32MP_BOOTFS_IMAGE}"
-PARTITIONS_IMAGE += "${STM32MP_USERFS_IMAGE}"
 PARTITIONS_MOUNTPOINT_IMAGE  = "${STM32MP_BOOTFS_MOUNTPOINT_IMAGE}"
 PARTITIONS_MOUNTPOINT_IMAGE += "${STM32MP_USERFS_MOUNTPOINT_IMAGE}"
 

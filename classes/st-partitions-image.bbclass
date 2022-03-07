@@ -45,12 +45,12 @@ image_rootfs_image_clean_task () {
             return;
         fi
     done
-    bbnote "Clean mount point on ${IMAGE_NAME}:"
-    LIST=`ls -l ${IMAGE_ROOTFS}`
+    bbnote "Clean mount points on ${IMAGE_NAME}:"
+    shopt -s dotglob
     for dir in ${PARTITIONS_MOUNTPOINT_IMAGE};
     do
-        bbnote "$dir on ${IMAGE_NAME} are cleanned because it's a mount point."
-        rm -rf ${IMAGE_ROOTFS}/$dir/*
+        bbnote "$dir on ${IMAGE_NAME} is cleaned because it's a mount point."
+        rm -rvf ${IMAGE_ROOTFS}/$dir/*
     done
 }
-IMAGE_PREPROCESS_COMMAND_append = " image_rootfs_image_clean_task; "
+IMAGE_PREPROCESS_COMMAND_append = " image_rootfs_image_clean_task;"

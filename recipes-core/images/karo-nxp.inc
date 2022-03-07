@@ -1,8 +1,6 @@
 #
 # i.MX8 specific processing
 #
-# create bootfs image file with every karo-image-* build
-do_image_complete[depends] += "karo-image-bootfs:do_image_complete"
 
 # create uuu.auto file for image
 addtask do_create_uuu_auto_script after do_image_complete before do_build

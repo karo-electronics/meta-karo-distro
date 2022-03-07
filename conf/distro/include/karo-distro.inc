@@ -28,6 +28,9 @@ DISTRO_FEATURES_append = "\
         telnet-login \
 "
 
+ENABLE_PARTITIONS_IMAGE ?= "${@ bb.utils.contains('MACHINE_FEATURES', 'emmc', "1", "0", d)}"
+PARTITIONS_IMAGE ?= "${@ "karo-image-bootfs karo-image-userfs" if ${ENABLE_PARTITIONS_IMAGE} == 1 else ""}"
+
 DISTRO_FEATURES_DEFAULT_append_mx8  = " dsi83"
 DISTRO_FEATURES_DEFAULT_append_tx8m = " pcie"
 DISTRO_FEATURES_DEFAULT_append_qs8m = " csi-camera imx219 raspi-display tc358867"

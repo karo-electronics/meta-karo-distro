@@ -15,14 +15,14 @@ reformat_rootfs() {
     if [ -z "${IMAGE_PARTITION_MOUNTPOINT}" ];then
         bbfatal "IMAGE_PARTITION_MOUNTPOINT is not set for '${SUBIMAGE_NAME}'"
     fi
+    rm -rf "${WORKDIR}/${SUBIMAGE_NAME}"
     if [ -d ${IMAGE_ROOTFS}${IMAGE_PARTITION_MOUNTPOINT} ]; then
-        rm -rvf "${WORKDIR}/${SUBIMAGE_NAME}"
-        mv -v "${IMAGE_ROOTFS}${IMAGE_PARTITION_MOUNTPOINT}" "${WORKDIR}/${SUBIMAGE_NAME}"
-        rm -rv "${IMAGE_ROOTFS}"
-        mv -v "${WORKDIR}/${SUBIMAGE_NAME}" "${IMAGE_ROOTFS}"
-        ls -alR "${IMAGE_ROOTFS}"
+        mv "${IMAGE_ROOTFS}${IMAGE_PARTITION_MOUNTPOINT}" "${WORKDIR}/${SUBIMAGE_NAME}"
+        rm -r "${IMAGE_ROOTFS}"
+        mv "${WORKDIR}/${SUBIMAGE_NAME}" "${IMAGE_ROOTFS}"
     else
-        bbwarn "${IMAGE_PARTITION_MOUNTPOINT} folder not available in rootfs folder, no reformat done..."
+        shopt -s dotglob
+        rm -rf "${IMAGE_ROOTFS}"/*
     fi
 }
 
