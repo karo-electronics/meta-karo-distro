@@ -21,7 +21,6 @@ reformat_rootfs() {
         rm -r "${IMAGE_ROOTFS}"
         mv "${WORKDIR}/${SUBIMAGE_NAME}" "${IMAGE_ROOTFS}"
     else
-        shopt -s dotglob
         rm -rf "${IMAGE_ROOTFS}"/*
     fi
 }

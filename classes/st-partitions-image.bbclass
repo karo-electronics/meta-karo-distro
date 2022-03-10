@@ -46,7 +46,6 @@ image_rootfs_image_clean_task () {
         fi
     done
     bbnote "Clean mount points on ${IMAGE_NAME}:"
-    shopt -s dotglob
     for dir in ${PARTITIONS_MOUNTPOINT_IMAGE};
     do
         bbnote "$dir on ${IMAGE_NAME} is cleaned because it's a mount point."
