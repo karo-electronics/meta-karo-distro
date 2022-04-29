@@ -7,6 +7,7 @@ inherit ${@ "flashlayout-stm32mp" if 'stm32mp1' in d.getVar('MACHINEOVERRIDES').
 
 require ${@ "st-machine-common-stm32mp.inc" if 'stm32mp1' in d.getVar('MACHINEOVERRIDES').split(":") else ""}
 require ${@ "karo-nxp.inc" if 'use-nxp-bsp' in d.getVar('MACHINEOVERRIDES').split(':') else ""}
+require ${@ "karo-rzg2.inc" if 'rzg2' in d.getVar('MACHINEOVERRIDES').split(':') else ""}
 
 REQUIRED_DISTRO_FEATURES ??= ""
 
@@ -64,6 +65,7 @@ DEPENDS_append = " cross-localedef-native qemuwrapper-cross"
 IMAGE_INSTALL_append = " kernel-modules"
 DEPENDS_append_use-mainline-bsp = " u-boot-karo"
 DEPENDS_append_use-nxp-bsp = " imx-boot-karo uuu-script-template"
+DEPENDS_append_rzg2 = " rzg2-install-scripts"
 
 PREFERRED_PROVIDER_fdisk = "util-linux"
 

@@ -10,3 +10,6 @@ if test -z "$XDG_RUNTIME_DIR"; then
 		chown $WESTON_USER:$WESTON_USER $XDG_RUNTIME_DIR
 	fi
 fi
+
+# for mali panfrost rzg2l gpu
+export PAN_MESA_DEBUG=”noafbc”
