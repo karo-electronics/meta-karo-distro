@@ -14,7 +14,7 @@ uuu_version 1.4.77
 #
 # 32M /boot
 # MAX /
-FB: oem ucmd:setenv partitions 'uuid_disk=$${uuid_gpt_disk};name=boot,size=32MiB,start=1MiB,uuid=$${uuid_boot};name=rootfs,size=MAX;'
+FB: oem ucmd:setenv partitions 'uuid_disk=$${uuid_gpt_disk};name=boot,size=32MiB,start=1MiB;name=rootfs,size=MAX;'
 FB: oem ucmd:gpt write mmc 0 $${partitions}
 
 ### force re-read partition table
@@ -29,6 +29,18 @@ FB: flash -raw2sparse rootfs $image-$machine.ext4
 FB: oem ucmd:env default -a
 FB: oem ucmd:setenv bootdelay 1
 FB: oem ucmd:saveenv
+
+### Re-program bootloader to newest
+FB: oem ucmd:setenv fastboot_buffer 0x58000000
+FB: oem ucmd:setenv erase_bootloader 'mmc erase 0 2000'
+FB: oem ucmd:setenv prog_bl2 'setexpr fs $${filesize} + 1ff; setexpr fs $${fs} / 200; mmc write $${fastboot_buffer} 1 $${fs}'
+FB: oem ucmd:setenv prog_fip 'setexpr fs $${filesize} + 1ff; setexpr fs $${fs} / 200; mmc write $${fastboot_buffer} 100 $${fs}'
+FB: oem ucmd:mmc partconf 0 $${emmc_boot_ack} $${emmc_boot_part} $${emmc_boot_part}
+FB: oem ucmd:run erase_bootloader
+FB: download -f bl2_bp-$machine.bin
+FB: oem ucmd:run prog_bl2
+FB: download -f fip-$machine.bin
+FB: oem ucmd:run prog_fip
 
 ### Normally we would continue, but this throws an error
 FB: reboot

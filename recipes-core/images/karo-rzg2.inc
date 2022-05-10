@@ -60,6 +60,10 @@ python do_create_install_scripts() {
         machine), img_dirname)
     do_copyfile("%s/fip-%s.srec" % (d.getVar('DEPLOY_DIR_IMAGE'), \
         machine), img_dirname)
+    do_copyfile("%s/bl2_bp-%s.bin" % (d.getVar('DEPLOY_DIR_IMAGE'), \
+        machine), img_dirname)
+    do_copyfile("%s/fip-%s.bin" % (d.getVar('DEPLOY_DIR_IMAGE'), \
+        machine), img_dirname)
     do_copyfile("%s/karo-image-bootfs-%s.ext4" % \
         (d.getVar('DEPLOY_DIR_IMAGE'), machine), img_dirname)
     do_copyfile("%s/%s-%s.ext4" % \

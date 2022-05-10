@@ -18,6 +18,7 @@ echo "Sending FlashWriter:"
 dd if=Flash_Writer_SCIF_TXRZ_DDR3L_1GB.mot of=$$SERIAL_PORT bs=1k status=progress
 echo
 
+sleep $$CMD_DELAY
 # Clear out the extra left over characters
 echo -en "\r" > $$SERIAL_PORT
 sleep $$CMD_DELAY
