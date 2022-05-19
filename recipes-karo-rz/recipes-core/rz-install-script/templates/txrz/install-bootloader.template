@@ -1,3 +1,5 @@
+#!/bin/sh
+set -e
 #
 # Author: Markus Bauer <mb@karo-electronics.de>
 # (c) 2022
@@ -7,59 +9,73 @@
 
 SERIAL_PORT=$$1
 CMD_DELAY="1.5"
+BOOT_PART=1
+
+if [ $$# = 0 ];then
+    echo "Serial port must be specified" >&2
+    exit 1
+fi
+
+boot_file() {
+    local fsize=`stat -c %s "$$1"`
+    printf "%u KiB\n" $$(($$fsize / 1024))
+    dd if="$$1" of=$$SERIAL_PORT bs=1k status=progress
+    sleep $$CMD_DELAY
+    echo
+
+    # Clear out the extra left over characters that randomly appear on some CPUs
+    printf "\r" > $$SERIAL_PORT
+    sleep $$CMD_DELAY
+}
+
+send_file() {
+    local fsize=`stat -c %s "$$1"`
+    printf "%u KiB\n" $$(($$fsize / 1024))
+    printf "EM_WB\r" > $$SERIAL_PORT
+    sleep $$CMD_DELAY
+    printf "%u\r" "$$BOOT_PART" > $$SERIAL_PORT
+    sleep $$CMD_DELAY
+    printf "%x\r" "$$2" > $$SERIAL_PORT
+    sleep $$CMD_DELAY
+    printf "%x\r" $$fsize > $$SERIAL_PORT
+    sleep $$CMD_DELAY
+    dd if="$$1" of=$$SERIAL_PORT bs=1k status=progress
+    echo
+    sleep $$CMD_DELAY
+}
 
 echo "Started bootloader flash process on $$1"
 echo
 echo "Put your board into SCIF Download mode"
-read -n 1 -s -r -p "When done press any key to continue..."
+read -r -p "When done press <ENTER> to continue..." line
 echo
 echo
-echo "Sending FlashWriter:"
-dd if=Flash_Writer_SCIF_TXRZ_DDR3L_1GB.mot of=$$SERIAL_PORT bs=1k status=progress
-echo
+printf "Sending FlashWriter: "
+boot_file Flash_Writer_SCIF_TXRZ_DDR3L_1GB.mot
 
-sleep $$CMD_DELAY
-# Clear out the extra left over characters
-echo -en "\r" > $$SERIAL_PORT
-sleep $$CMD_DELAY
+printf "BL2 transfer: "
+send_file bl2_bp-$machine.bin 1
 
-echo "BL2 transfer:"
-echo -en "EM_W\r" > $$SERIAL_PORT
-sleep $$CMD_DELAY
-echo -en "1\r" > $$SERIAL_PORT
-sleep $$CMD_DELAY
-echo -en "000001\r" > $$SERIAL_PORT
-sleep $$CMD_DELAY
-echo -en "00011E00\r" > $$SERIAL_PORT
-sleep $$CMD_DELAY
-dd if=bl2_bp-$machine.srec of=$$SERIAL_PORT bs=1k status=progress
-echo
-
-echo "FIP transfer:"
-echo -en "EM_W\r" > $$SERIAL_PORT
-sleep $$CMD_DELAY
-echo -en "1\r" > $$SERIAL_PORT
-sleep $$CMD_DELAY
-echo -en "100\r" > $$SERIAL_PORT
-sleep $$CMD_DELAY
-echo -en "00000000\r" > $$SERIAL_PORT
-sleep $$CMD_DELAY
-dd if=fip-$machine.srec of=$$SERIAL_PORT bs=1k status=progress
-echo
+printf "FIP transfer: "
+send_file fip-$machine.bin 0x100
 
 echo "Writing eMMC partconf"
-echo -en "EM_SECSD\r" > $$SERIAL_PORT
+# set BOOT_BUS_WIDTH
+printf "EM_SECSD\r" > $$SERIAL_PORT
 sleep $$CMD_DELAY
-echo -en "b1\r" > $$SERIAL_PORT
+printf "b1\r" > $$SERIAL_PORT
 sleep $$CMD_DELAY
-echo -en "02\r" > $$SERIAL_PORT
+printf "02\r" > $$SERIAL_PORT
 sleep $$CMD_DELAY
-echo -en "EM_SECSD\r" > $$SERIAL_PORT
+
+# set BOOT_PART
+printf "EM_SECSD\r" > $$SERIAL_PORT
 sleep $$CMD_DELAY
-echo -en "b3\r" > $$SERIAL_PORT
+printf "b3\r" > $$SERIAL_PORT
 sleep $$CMD_DELAY
-echo -en "08\r" > $$SERIAL_PORT
+printf "%02x\r" $$(($$BOOT_PART << 3)) > $$SERIAL_PORT
 sleep $$CMD_DELAY
+
 echo
 echo "======================================================"
 echo "Done. Put the board into normal bootmode and reset it."
