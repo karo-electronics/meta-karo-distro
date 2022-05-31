@@ -1,7 +1,5 @@
 LICENSE = "MIT"
 
-IMAGE_PREPROCESS_COMMAND_append = " image_rootfs_image_clean_task;"
-
 inherit core-image features_check rootfs-postprocess
 inherit ${@ "flashlayout-stm32mp" if 'stm32mp1' in d.getVar('MACHINEOVERRIDES').split(":") else ""}
 
