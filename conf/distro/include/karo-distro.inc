@@ -51,6 +51,9 @@ MACHINE_FIRMWARE_remove = "${@ bb.utils.contains('DISTRO_FEATURES', 'wifi', "", 
 ROOTFS_PARTITION_SIZE ?= "${@bb.utils.contains('MACHINE_FEATURES',"nand", \
                       65536-${IMAGE_ROOTFS_EXTRA_SPACE},128*1024,d)}"
 
+# list of mount points for subimages, that will be emptied in rootfs image
+PARTITIONS_MOUNTPOINT_IMAGE ?= "/boot"
+
 # Remove some image types we don't need
 IMAGE_FSTYPES_remove = "sdcard.bz2 wic.bz2 wic.bmap"
 
