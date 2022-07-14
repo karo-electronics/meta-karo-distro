@@ -51,7 +51,7 @@ read -r -p "When done press <ENTER> to continue..." line
 echo
 echo
 printf "Sending FlashWriter: "
-boot_file Flash_Writer_SCIF_TXRZ_DDR3L_1GB.mot
+boot_file Flash_Writer_SCIF_$machine.mot
 
 printf "BL2 transfer: "
 send_file bl2_bp-$machine.bin 1

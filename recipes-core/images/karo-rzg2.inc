@@ -54,8 +54,8 @@ python do_create_install_scripts() {
     except OSError:
         bb.fatal('Unable to open %s' % (uuu_auto_path))
 
-    do_copyfile("%s/Flash_Writer_SCIF_TXRZ_DDR3L_1GB.mot" % (d.getVar('DEPLOY_DIR_IMAGE')), \
-        img_dirname)
+    do_copyfile("%s/Flash_Writer_SCIF_%s.mot" % (d.getVar('DEPLOY_DIR_IMAGE'), \
+        machine), img_dirname)
     do_copyfile("%s/bl2_bp-%s.srec" % (d.getVar('DEPLOY_DIR_IMAGE'), \
         machine), img_dirname)
     do_copyfile("%s/fip-%s.srec" % (d.getVar('DEPLOY_DIR_IMAGE'), \
