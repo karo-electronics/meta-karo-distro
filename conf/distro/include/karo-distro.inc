@@ -32,6 +32,7 @@ ENABLE_PARTITIONS_IMAGE ?= "${@ bb.utils.contains('MACHINE_FEATURES', 'emmc', "1
 PARTITIONS_IMAGE ?= "${@ "karo-image-bootfs karo-image-userfs" if ${ENABLE_PARTITIONS_IMAGE} == 1 else ""}"
 
 DISTRO_FEATURES_DEFAULT_append_mx8  = " dsi83"
+DISTRO_FEATURES_DEFAULT_append_mx8mp  = " flexcan"
 DISTRO_FEATURES_DEFAULT_append_tx8m = " pcie"
 DISTRO_FEATURES_DEFAULT_append_qs8m = " csi-camera imx219 raspi-display tc358867"
 DISTRO_FEATURES_DEFAULT_append_qsxm = " basler csi-camera pcie raspi-display tc358867"
