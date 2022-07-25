@@ -34,6 +34,11 @@ IMAGE_INSTALL_append_stm32mp1 = " \
         libdrm-etnaviv \
 "
 
+IMAGE_INSTALL_append_mx8 = " \
+        imx-vpu-hantro-daemon \
+        packagegroup-fsl-gstreamer1.0 \
+"
+
 # karo-image-weston won't fit in any of our nand modules!
 IMAGE_FSTYPES_remove = "ubi"
 
