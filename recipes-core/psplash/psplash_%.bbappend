@@ -1,5 +1,5 @@
-FILES_${PN} += "/mnt/.psplash"
+FILES:${PN} += "/mnt/.psplash"
 
-do_install_append() {
+do_install:append() {
     install -d -m 0775 ${D}/mnt/.psplash
 }

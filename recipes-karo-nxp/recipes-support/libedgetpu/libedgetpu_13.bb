@@ -10,7 +10,7 @@ SRC_URI[sha256sum] = "b23b2c5a227d7f0e65dcc91585028d27c12e764f8ce4c4db3f114be4a4
 
 S = "${WORKDIR}/edgetpu_runtime"
 
-FILES_${PN} = "${libdir}/libedgetpu.so.*"
+FILES:${PN} = "${libdir}/libedgetpu.so.*"
 
 INHIBIT_PACKAGE_DEBUG_SPLIT = "1"
 INHIBIT_PACKAGE_STRIP = "1"

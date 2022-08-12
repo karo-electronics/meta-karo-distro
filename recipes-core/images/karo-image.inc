@@ -9,14 +9,14 @@ require ${@ "karo-rzg2.inc" if 'rzg2' in d.getVar('MACHINEOVERRIDES').split(':')
 
 REQUIRED_DISTRO_FEATURES ??= ""
 
-ROOTFS_POSTPROCESS_COMMAND_remove = "\
+ROOTFS_POSTPROCESS_COMMAND:remove = "\
         rootfs_update_timestamp; \
         ${@bb.utils.contains('DISTRO_FEATURES','read-only-rootfs','empty_var_volatile;','',d)} \
 "
 
-IMAGE_FEATURES_append = " tools-debug"
+IMAGE_FEATURES:append = " tools-debug"
 
-IMAGE_INSTALL_append = " \
+IMAGE_INSTALL:append = " \
         alsa-utils-aplay \
         alsa-utils-amixer \
         alsa-utils-alsamixer \
@@ -58,12 +58,12 @@ IMAGE_INSTALL_append = " \
         ${@bb.utils.contains('DISTRO_FEATURES','wifi','wpa-supplicant','',d)} \
 "
 
-DEPENDS_append = " cross-localedef-native qemuwrapper-cross"
+DEPENDS:append = " cross-localedef-native qemuwrapper-cross"
 
-IMAGE_INSTALL_append = " kernel-modules"
-DEPENDS_append_use-mainline-bsp = " u-boot-karo"
-DEPENDS_append_use-nxp-bsp = " imx-boot-karo uuu-script-template"
-DEPENDS_append_rzg2 = " rzg2-install-scripts"
+IMAGE_INSTALL:append = " kernel-modules"
+DEPENDS:append:use-mainline-bsp = " u-boot-karo"
+DEPENDS:append:use-nxp-bsp = " imx-boot-karo uuu-script-template"
+DEPENDS:append:rzg2 = " rzg2-install-scripts"
 
 PREFERRED_PROVIDER_fdisk = "util-linux"
 
@@ -72,10 +72,10 @@ IMAGE_ROOTFS_EXTRA_SPACE = "${@bb.utils.contains('MACHINE_FEATURES',"nand",2*128
 IMAGE_OVERHEAD_FACTOR = "1"
 IMAGE_ROOTFS_SIZE ?= "${@${ROOTFS_PARTITION_SIZE}-(${IMAGE_ROOTFS_EXTRA_SPACE})}"
 
-IMAGE_FSTYPES_remove = "tar.gz"
-IMAGE_FSTYPES_append = " tar.bz2"
-IMAGE_FSTYPES_append = "${@bb.utils.contains('MACHINE_FEATURES',"emmc"," ext4","",d)}"
-IMAGE_FSTYPES_append = "${@bb.utils.contains('MACHINE_FEATURES',"nand"," ubi","",d)}"
+IMAGE_FSTYPES:remove = "tar.gz"
+IMAGE_FSTYPES:append = " tar.bz2"
+IMAGE_FSTYPES:append = "${@bb.utils.contains('MACHINE_FEATURES',"emmc"," ext4","",d)}"
+IMAGE_FSTYPES:append = "${@bb.utils.contains('MACHINE_FEATURES',"nand"," ubi","",d)}"
 
 # mkfs.ext4 parameters
 # set inode size to 256 to support timestamps beyond 2038-01-19

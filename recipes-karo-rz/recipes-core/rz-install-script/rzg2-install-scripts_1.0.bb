@@ -2,7 +2,7 @@ inherit deploy
 
 COMPATIBLE_MACHINE = "(rzg2)"
 
-FILESEXTRAPATHS_prepend := "${THISDIR}/templates:"
+FILESEXTRAPATHS:prepend := "${THISDIR}/templates:"
 SRC_URI = " \
     file://install-bootloader.template \
     file://uuu.auto.template \
@@ -11,7 +11,7 @@ LICENSE = "CLOSED"
 
 S = "${WORKDIR}"
 
-FILES_${PN} = " \
+FILES:${PN} = " \
     install-bootloader.template \
     uuu.auto.template \
 "

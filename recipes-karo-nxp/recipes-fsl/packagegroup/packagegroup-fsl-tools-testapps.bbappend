@@ -1,1 +1,1 @@
-RDEPENDS_${PN}_remove = "can-utils"
+RDEPENDS:${PN}:remove = "can-utils"

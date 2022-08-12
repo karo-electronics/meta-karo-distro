@@ -1,5 +1,5 @@
-FILES_${PN}_remove = "${sysconfdir}/default/volatiles/99_lmbench"
+FILES:${PN}:remove = "${sysconfdir}/default/volatiles/99_lmbench"
 
-do_install_append() {
+do_install:append() {
     rm -rvf ${D}${sysconfdir}/default/volatiles
 }

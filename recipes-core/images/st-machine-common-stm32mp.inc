@@ -7,7 +7,7 @@ require ${@ "qsmp-1510.inc" if 'qsmp-1510' in d.getVar('MACHINEOVERRIDES').split
 #RDEPENDS_${KERNEL_PACKAGE_NAME}-base = ""
 
 #IMAGE_FSTYPES ?= "tar.bz2"
-IMAGE_FSTYPES_append = "${@bb.utils.contains('MACHINE_FEATURES',"emmc"," ext4","",d)}"
+IMAGE_FSTYPES:append = "${@bb.utils.contains('MACHINE_FEATURES',"emmc"," ext4","",d)}"
 
 # Define image to use for extra partitions
 STM32MP_BOOTFS_IMAGE = "karo-image-bootfs"

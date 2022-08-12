@@ -52,4 +52,4 @@ image_rootfs_image_clean_task () {
         rm -rvf ${IMAGE_ROOTFS}/$dir/*
     done
 }
-IMAGE_PREPROCESS_COMMAND_append = " image_rootfs_image_clean_task;"
+IMAGE_PREPROCESS_COMMAND:append = " image_rootfs_image_clean_task;"

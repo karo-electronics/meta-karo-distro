@@ -1,7 +1,7 @@
-FILESEXTRAPATHS_prepend := "${THISDIR}/${PN}:"
+FILESEXTRAPATHS:prepend := "${THISDIR}/${PN}:"
 inherit relative_symlinks
 
-do_install_append () {
+do_install:append () {
     rm -rvf ${D}${sysconfdir}/default/volatiles
 
     if ${@ bb.utils.contains('MACHINE_FEATURES', 'emmc', 'true', 'false', d)} && \

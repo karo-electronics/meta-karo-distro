@@ -4,7 +4,7 @@ require karo-image-ml.bb
 
 REQUIRED_DISTRO_FEATURES = "x11 wayland"
 
-IMAGE_INSTALL_append = " \
+IMAGE_INSTALL:append = " \
         kernel-module-basler-camera \
         pylon \
         python3-pypylon \
@@ -16,7 +16,7 @@ IMAGE_INSTALL_append = " \
         packagegroup-fsl-gstreamer1.0-full \
 "
 
-IMAGE_INSTALL_append_mx8mp = " \
+IMAGE_INSTALL:append:mx8mp-nxp-bsp = " \
         kernel-module-isp-vvcam \
         imx8mp-modprobe-config \
         basler-camera \

@@ -2,13 +2,13 @@ inherit core-image
 
 require ${@ "recipes-core/images/st-machine-common-stm32mp.inc" if 'stm32mp1' in d.getVar('MACHINEOVERRIDES').split(":") else ""}
 
-IMAGE_FSTYPES_append = " ext4"
+IMAGE_FSTYPES:append = " ext4"
 
 SUBIMAGE_NAME ?= "${@ "${IMAGE_BASENAME}".split("-")[-1]}"
 
 IMAGE_ROOTFS_SIZE ?= "32768"
 
-IMAGE_PREPROCESS_COMMAND_append = "reformat_rootfs;"
+IMAGE_PREPROCESS_COMMAND:append = "reformat_rootfs;"
 
 # Cleanup rootfs newly created
 reformat_rootfs() {

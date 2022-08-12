@@ -25,6 +25,6 @@ IMAGE_INSTALL += " \
 
 #    gstreamer1.0-plugins-good-qt 
 
-RDEPENDS_${PN} += " \
+RDEPENDS:${PN} += " \
     ${QT5_IMAGE_INSTALL} \
 "

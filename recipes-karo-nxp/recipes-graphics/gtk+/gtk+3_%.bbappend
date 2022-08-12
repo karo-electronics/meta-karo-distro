@@ -1,1 +1,1 @@
-DEPENDS_append_imxgpu2d = " virtual/egl"
+DEPENDS:append:imxgpu2d = " virtual/egl"

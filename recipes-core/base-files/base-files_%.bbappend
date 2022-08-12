@@ -1,4 +1,4 @@
-FILESEXTRAPATHS_prepend := "${THISDIR}/${PN}:"
+FILESEXTRAPATHS:prepend := "${THISDIR}/${PN}:"
 SRC_URI += "\
 	    file://adjtime \
 "
@@ -6,25 +6,25 @@ dirs1777 = " \
            /tmp \
            ${localstatedir}/tmp \
 "
-dirs755_remove = " \
+dirs755:remove = " \
                ${localstatedir}/volatile \
                ${localstatedir}/volatile/log \
 "
-dirs755_append = " \
+dirs755:append = " \
                ${localstatedir}/log \
                ${localstatedir}/lib/hwclock \
                ${@ 'run/dbus' if d.getVar('IMAGE_TYPE') != 'core-image-minimal' else ''} \
                /run/lock \
                /run/network \
 "
-dirs755_append_stm32mp1 = " ${STM32MP_USERFS_MOUNTPOINT_IMAGE}"
-dirs755_append_stm32mp1 = " ${STM32MP_VENDORFS_MOUNTPOINT_IMAGE}"
+dirs755:append:stm32mp1 = " ${STM32MP_USERFS_MOUNTPOINT_IMAGE}"
+dirs755:append:stm32mp1 = " ${STM32MP_VENDORFS_MOUNTPOINT_IMAGE}"
 
 volatiles = ""
 
 inherit relative_symlinks
 
-do_install_append () {
+do_install:append () {
     if ${@ bb.utils.contains('MACHINE_FEATURES', 'emmc', 'true', 'false', d)};then
         sed -i '/root/s/0$/1/' ${D}${sysconfdir}/fstab
     fi

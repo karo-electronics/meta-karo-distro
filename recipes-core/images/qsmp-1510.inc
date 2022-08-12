@@ -1,7 +1,7 @@
 ROOTFS_PARTITION_SIZE ??= "32*1024"
 
-IMAGE_FSTYPES_remove = "ubi"
-IMAGE_FSTYPES_append = " multivol_ubi"
+IMAGE_FSTYPES:remove = "ubi"
+IMAGE_FSTYPES:append = " multivol_ubi"
 
 # UBI partition size in KiB
 

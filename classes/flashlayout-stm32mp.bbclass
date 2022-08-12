@@ -1,6 +1,6 @@
 # -----------------------------------------------------------------------------
 # This class allows to output in deploy folder, along with the built image, the
-# 'flashlayout_${PN}' sub-folder, populated with the flashlayout files to use
+# 'flashlayout:${PN}' sub-folder, populated with the flashlayout files to use
 # with our STM32MP programmer tool to load the binaries in target device and
 # partitions.
 #
@@ -19,7 +19,7 @@
 #
 # Configuration example (machine file or local.conf):
 #   ENABLE_FLASHLAYOUT_DEFAULT = "1"
-#   FLASHLAYOUT_DEFAULT_SRC = "files/flashlayouts/FlashLayout_sdcard_stm32mp157c-ev1_sample.tsv"
+#   FLASHLAYOUT_DEFAULT_SRC = "files/flashlayouts/FlashLayout_sdcard:stm32mp157c-ev1_sample.tsv"
 #
 # ---------------------
 # Dynamic configuration
@@ -95,7 +95,7 @@
 
 ENABLE_FLASHLAYOUT_CONFIG ??= "1"
 
-FLASHLAYOUT_SUBDIR  = "flashlayout_${PN}"
+FLASHLAYOUT_SUBDIR  = "flashlayout:${PN}"
 FLASHLAYOUT_DESTDIR = "${IMGDEPLOYDIR}/${FLASHLAYOUT_SUBDIR}"
 
 FLASHLAYOUT_BASENAME ??= "FlashLayout"
@@ -349,8 +349,8 @@ python do_create_flashlayout_config() {
             for labeltype in labeltypes.split():
                 bb.note('*** Loop for label type: %s' % labeltype)
                 # Init flashlayout file name
-                config_append = '_' + config
-                labeltype_append = '_' + labeltype + '-' + bootscheme
+                config:append = '_' + config
+                labeltype:append = '_' + labeltype + '-' + bootscheme
                 flashlayout_file = os.path.join(d.expand("${FLASHLAYOUT_DESTDIR}"), \
                                                 "%s_%s_%s-%s.%s" % (d.expand("${FLASHLAYOUT_BASENAME}"), \
                                                 config, labeltype, bootscheme, \

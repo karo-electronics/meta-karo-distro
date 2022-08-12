@@ -13,7 +13,7 @@ OPENCV_PKGS_imxgpu = " \
         python3-pygobject \
 "
 
-IMAGE_INSTALL_append = " \
+IMAGE_INSTALL:append = " \
         ${GOOGLE_CORAL_PKGS} \
         ${OPENCV_PKGS} \
         packagegroup-fsl-tools-gpu \
@@ -23,6 +23,6 @@ IMAGE_INSTALL_append = " \
         tzdata \
 "
 
-TOOLCHAIN_TARGET_TASK_append = " \
+TOOLCHAIN_TARGET_TASK:append = " \
         tensorflow-lite-staticdev \
 "

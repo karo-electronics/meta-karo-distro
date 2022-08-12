@@ -1,4 +1,4 @@
-FILESEXTRAPATHS_prepend := "${THISDIR}/${PN}:"
-do_install_append () {
+FILESEXTRAPATHS:prepend := "${THISDIR}/${PN}:"
+do_install:append () {
 	rm ${D}${sysconfdir}/network/if-pre-up.d/nfsroot
 }

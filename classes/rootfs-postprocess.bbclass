@@ -1,4 +1,4 @@
-ROOTFS_POSTPROCESS_COMMAND_append = "rootfs_postinst_cleanup; "
+ROOTFS_POSTPROCESS_COMMAND:append = "rootfs_postinst_cleanup; "
 
 rootfs_postinst_cleanup () {
     set -x

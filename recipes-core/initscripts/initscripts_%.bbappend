@@ -1,13 +1,13 @@
-FILESEXTRAPATHS_prepend := "${THISDIR}/files:"
-SRC_URI_append = " \
+FILESEXTRAPATHS:prepend := "${THISDIR}/files:"
+SRC_URI:append = " \
                file://bootmisc.sh \
                file://initvar.sh \
                file://umountroot \
                file://vars.sh \
 "
 
-FILES_${PN} += "/lib/init/vars.sh"
-CONFFILES_${PN} += "${sysconfdir}/init.d/umountroot"
+FILES:${PN} += "/lib/init/vars.sh"
+CONFFILES:${PN} += "${sysconfdir}/init.d/umountroot"
 
 rmfiles = " \
         init.d/populate-volatile.sh \
@@ -19,7 +19,7 @@ rmfiles = " \
         default/volatiles \
 "
 
-do_install_append () {
+do_install:append () {
     install -m 0755 ${WORKDIR}/initvar.sh ${D}${sysconfdir}/init.d
     update-rc.d -r ${D} -v initvar.sh start 02 S .
 

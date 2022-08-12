@@ -4,21 +4,21 @@ inherit features_check
 require recipes-graphics/images/core-image-weston.bb
 require karo-image.inc
 
-IMAGE_FEATURES_remove = "ssh-server-dropbear"
+IMAGE_FEATURES:remove = "ssh-server-dropbear"
 IMAGE_FEATURES += "ssh-server-openssh"
 
 LICENSE = "MIT"
 
 REQUIRED_DISTRO_FEATURES = "wayland"
 
-CORE_IMAGE_BASE_INSTALL_append = " \
+CORE_IMAGE_BASE_INSTALL:append = " \
         glmark2 \
         weston \
         weston-init \
         weston-examples \
 "
 
-IMAGE_INSTALL_append = " \
+IMAGE_INSTALL:append = " \
         gst-examples \
         libdrm \
         libdrm-tests \
@@ -26,21 +26,21 @@ IMAGE_INSTALL_append = " \
         ${@bb.utils.contains('DISTRO_FEATURES', 'x11 wayland', 'weston-xwayland xterm', '', d)} \
 "
 
-IMAGE_INSTALL_append_mx6 = " \
+IMAGE_INSTALL:append:mx6 = " \
         libdrm-etnaviv \
 "
 
-IMAGE_INSTALL_append_stm32mp1 = " \
+IMAGE_INSTALL:append:stm32mp1 = " \
         libdrm-etnaviv \
 "
 
-IMAGE_INSTALL_append_mx8 = " \
+IMAGE_INSTALL:append:mx8-nxp-bsp = " \
         imx-vpu-hantro-daemon \
         packagegroup-fsl-gstreamer1.0 \
 "
 
 # karo-image-weston won't fit in any of our nand modules!
-IMAGE_FSTYPES_remove = "ubi"
+IMAGE_FSTYPES:remove = "ubi"
 
 ROOTFS_PARTITION_SIZE = "2097152"
 

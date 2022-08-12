@@ -1,20 +1,20 @@
-FILESEXTRAPATHS_prepend := "${THISDIR}/${PN}:"
+FILESEXTRAPATHS:prepend := "${THISDIR}/${PN}:"
 
-PACKAGECONFIG_remove = "udev"
-FILES_${PN} += " \
+PACKAGECONFIG:remove = "udev"
+FILES:${PN} += " \
             /run/dhcpcd/hook-state \
             ${localstatedir}/lib/dhcpcd \
             ${sysconfdir}/ntp.conf \
 "
 
-SRC_URI_append = " \
+SRC_URI:append = " \
            file://ntp.conf \
            file://resolv.conf \
 "
 
 inherit relative_symlinks
 
-do_install_append () {
+do_install:append () {
     sed -i 's/^duid/#duid/;s/^#clientid/clientid/' ${D}${sysconfdir}/dhcpcd.conf
     if ! grep -q '^quiet' ${D}${sysconfdir}/dhcpcd.conf;then
         cat << EOF >> ${D}${sysconfdir}/dhcpcd.conf
@@ -37,3 +37,6 @@ EOF
         ln -snvf ${localstatedir}/lib/dhcpcd/dhcpcd.duid ${D}${sysconfdir}/
     fi
 }
+
+# ignore empty dirs qa check
+INSANE_SKIP:${PN} += "empty-dirs"
