@@ -35,8 +35,11 @@ IMAGE_INSTALL:append:stm32mp1 = " \
 "
 
 IMAGE_INSTALL:append:mx8-nxp-bsp = " \
-        imx-vpu-hantro-daemon \
         packagegroup-fsl-gstreamer1.0 \
+"
+
+IMAGE_INSTALL:append:mx8mm-nxp-bsp = " \
+        imx-vpu-hantro-daemon \
 "
 
 # karo-image-weston won't fit in any of our nand modules!
