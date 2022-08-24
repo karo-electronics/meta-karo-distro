@@ -6,7 +6,7 @@ GOOGLE_CORAL_PKGS = " \
         libedgetpu \
 "
 
-OPENCV_PKGS_imxgpu = " \
+OPENCV_PKGS:imxgpu = " \
         opencv-apps \
         opencv-samples \
         python3-opencv \

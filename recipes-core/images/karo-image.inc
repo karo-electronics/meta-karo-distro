@@ -79,14 +79,14 @@ IMAGE_FSTYPES:append = "${@bb.utils.contains('MACHINE_FEATURES',"nand"," ubi",""
 
 # mkfs.ext4 parameters
 # set inode size to 256 to support timestamps beyond 2038-01-19
-EXTRA_IMAGECMD_ext4 += "-I 256"
+EXTRA_IMAGECMD:ext4 += "-I 256"
 
 # mkubifs parameters
 MKUBIFS_LEB_SIZE = "126976"
 
 MKUBIFS_ARGS ?= "-F -x zlib -m 2048 -e ${MKUBIFS_LEB_SIZE}"
 
-MKUBIFS_LEB_CNT_mx6 ?= "${@int(((${IMAGE_ROOTFS_SIZE} + ${IMAGE_ROOTFS_EXTRA_SPACE}) * 1024 + ${MKUBIFS_LEB_SIZE} - 1) / ${MKUBIFS_LEB_SIZE})}"
-MKUBIFS_ARGS_mx6 ?= "-F -x zlib -m 2048 -e ${MKUBIFS_LEB_SIZE} -c ${MKUBIFS_LEB_CNT}"
+MKUBIFS_LEB_CNT:mx6-mainline-bsp ?= "${@int(((${IMAGE_ROOTFS_SIZE} + ${IMAGE_ROOTFS_EXTRA_SPACE}) * 1024 + ${MKUBIFS_LEB_SIZE} - 1) / ${MKUBIFS_LEB_SIZE})}"
+MKUBIFS_ARGS:mx6-mainline-bsp ?= "-F -x zlib -m 2048 -e ${MKUBIFS_LEB_SIZE} -c ${MKUBIFS_LEB_CNT}"
 
 UBINIZE_ARGS ?= "-m 2048 -s 2048 -p 128KiB"

@@ -30,4 +30,4 @@ reformat_rootfs() {
 #   - Add label name (maximum length of the volume label is 16 bytes)
 #   - Deactivate metadata_csum and dir_index (hashed b-trees): update not supported
 #     by U-Boot; set inode size to 256 to support timestamps beyond 2038-01-19
-EXTRA_IMAGECMD_ext4 += "-I 256 -L ${SUBIMAGE_NAME} -O ^metadata_csum,^dir_index"
+EXTRA_IMAGECMD:ext4 += "-I 256 -L ${SUBIMAGE_NAME} -O ^metadata_csum,^dir_index"
