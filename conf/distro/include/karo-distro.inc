@@ -28,6 +28,8 @@ DISTRO_FEATURES:append = "\
         telnet-login \
 "
 
+IMAGE_CLASSES += "st-partitions-image"
+
 ENABLE_PARTITIONS_IMAGE ?= "${@ bb.utils.contains('MACHINE_FEATURES', 'emmc', "1", "0", d)}"
 PARTITIONS_IMAGE ?= "${@ "karo-image-bootfs karo-image-userfs" if ${ENABLE_PARTITIONS_IMAGE} == 1 else ""}"
 
