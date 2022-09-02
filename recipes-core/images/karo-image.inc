@@ -6,6 +6,7 @@ inherit ${@ "flashlayout-stm32mp" if 'stm32mp1' in d.getVar('MACHINEOVERRIDES').
 require ${@ "st-machine-common-stm32mp.inc" if 'stm32mp1' in d.getVar('MACHINEOVERRIDES').split(":") else ""}
 require ${@ "karo-nxp.inc" if 'use-nxp-bsp' in d.getVar('MACHINEOVERRIDES').split(':') else ""}
 require ${@ "karo-rzg2.inc" if 'rzg2' in d.getVar('MACHINEOVERRIDES').split(':') else ""}
+require ${@ "karo-stm.inc" if 'stm32mp1' in d.getVar('MACHINEOVERRIDES').split(':') else ""}
 
 REQUIRED_DISTRO_FEATURES ??= ""
 
@@ -64,6 +65,7 @@ IMAGE_INSTALL:append = " kernel-modules"
 DEPENDS:append:use-mainline-bsp = " u-boot-karo"
 DEPENDS:append:use-nxp-bsp = " imx-boot-karo uuu-script-template"
 DEPENDS:append:rzg2 = " rzg2-install-scripts"
+DEPENDS:append:stm32mp1 = " stm32mp1-install-scripts"
 
 PREFERRED_PROVIDER_fdisk = "util-linux"
 
