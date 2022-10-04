@@ -27,6 +27,7 @@ IMAGE_INSTALL:append = " \
         dosfstools \
         e2fsprogs \
         e2fsprogs-resize2fs \
+        ethtool \
         file \
         gdbserver \
         i2c-tools \
@@ -41,6 +42,7 @@ IMAGE_INSTALL:append = " \
         mmc-utils \
         ${@bb.utils.contains('MACHINE_FEATURES',"nand"," mtd-utils","",d)} \
         ncurses \
+        net-tools \
         nfs-utils \
         ntp \
         ntpdate \
