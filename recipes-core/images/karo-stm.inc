@@ -40,14 +40,16 @@ python do_create_install_scripts() {
     except OSError:
         bb.fatal('Unable to open %s' % (uuu_auto_path))
 
-    do_copyfile("%s/tf-a-%s-%s-serialboot.stm32" % (d.getVar('DEPLOY_DIR_IMAGE'), \
-        soc_family, machine), img_dirname)
-    do_copyfile("%s/tf-a-%s-%s-trusted.stm32" % (d.getVar('DEPLOY_DIR_IMAGE'), \
-        soc_family, machine), img_dirname)
-    do_copyfile("%s/u-boot-mfg.bin" % (d.getVar('DEPLOY_DIR_IMAGE')), img_dirname)
-    do_copyfile("%s/u-boot-trusted.bin" % (d.getVar('DEPLOY_DIR_IMAGE')), img_dirname)
-    do_copyfile("%s/karo-image-bootfs-%s.ext4" % \
-        (d.getVar('DEPLOY_DIR_IMAGE'), machine), img_dirname)
-    do_copyfile("%s/%s-%s.ext4" % \
-        (d.getVar('DEPLOY_DIR_IMAGE'), image, machine), img_dirname)
+    do_copyfile(os.path.join(d.getVar('DEPLOY_DIR_IMAGE'), "tf-a-%s-%s-serialboot.stm32" %
+                             (soc_family, machine)), img_dirname)
+    do_copyfile(os.path.join(d.getVar('DEPLOY_DIR_IMAGE'), "tf-a-%s-%s-trusted.stm32" %
+                             (soc_family, machine)), img_dirname)
+    do_copyfile(os.path.join(d.getVar('DEPLOY_DIR_IMAGE'), "u-boot-mfg.bin"),
+                img_dirname)
+    do_copyfile(os.path.join(d.getVar('DEPLOY_DIR_IMAGE'), "u-boot-trusted.bin"),
+                img_dirname)
+    do_copyfile(os.path.join(d.getVar('DEPLOY_DIR_IMAGE'),
+                             "karo-image-bootfs-%s.ext4" % machine), img_dirname)
+    do_copyfile(os.path.join(d.getVar('DEPLOY_DIR_IMAGE'), "%s-%s.ext4" %
+                             (image, machine)), img_dirname)
 }
