@@ -13,7 +13,6 @@ ROOTFS_PARTITION_SIZE ?= "${@bb.utils.contains('MACHINE_FEATURES',"nand", \
 # align partitions to eraseblock size
 IMAGE_ROOTFS_ALIGNMENT = "128"
 
-MKUBIFS_ARGS ?= "-F -x zlib -m 2048 -e ${MKUBIFS_LEB_SIZE}"
 UBI_VOLNAME = "rootfs"
 
 export UBIVOL_FILES_rootfs = "${IMAGE_ROOTFS}"

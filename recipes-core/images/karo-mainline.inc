@@ -1,0 +1,9 @@
+# mkubifs parameters
+MKUBIFS_LEB_SIZE = "126976"
+
+MKUBIFS_ARGS ?= "-F -x zlib -m 2048 -e ${MKUBIFS_LEB_SIZE}"
+
+MKUBIFS_LEB_CNT:mx6 ?= "${@int(((${IMAGE_ROOTFS_SIZE} + ${IMAGE_ROOTFS_EXTRA_SPACE}) * 1024 + ${MKUBIFS_LEB_SIZE} - 1) / ${MKUBIFS_LEB_SIZE})}"
+MKUBIFS_ARGS:mx6 ?= "-F -x zlib -m 2048 -e ${MKUBIFS_LEB_SIZE} -c ${MKUBIFS_LEB_CNT}"
+
+UBINIZE_ARGS ?= "-m 2048 -s 2048 -p 128KiB"
