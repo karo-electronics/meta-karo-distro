@@ -2,11 +2,10 @@ LICENSE = "MIT"
 
 inherit core-image features_check rootfs-postprocess
 inherit ${@ "flashlayout-stm32mp" if 'stm32mp1' in d.getVar('MACHINEOVERRIDES').split(":") else ""}
-
 require ${@ "st-machine-common-stm32mp.inc" if 'stm32mp1' in d.getVar('MACHINEOVERRIDES').split(":") else ""}
 require ${@ "karo-nxp.inc" if 'use-nxp-bsp' in d.getVar('MACHINEOVERRIDES').split(':') else ""}
 require ${@ "karo-rzg2.inc" if 'rzg2' in d.getVar('MACHINEOVERRIDES').split(':') else ""}
-require ${@ "karo-stm.inc" if 'stm32mp1' in d.getVar('MACHINEOVERRIDES').split(':') else ""}
+require ${@ "karo-stm.inc" if ('stm32mp1' in d.getVar('MACHINEOVERRIDES').split(':') and 'qsmp-1510' not in d.getVar('MACHINEOVERRIDES').split(':')) else ""}
 
 REQUIRED_DISTRO_FEATURES ??= ""
 
@@ -88,7 +87,7 @@ MKUBIFS_LEB_SIZE = "126976"
 
 MKUBIFS_ARGS ?= "-F -x zlib -m 2048 -e ${MKUBIFS_LEB_SIZE}"
 
-MKUBIFS_LEB_CNT:mx6-mainline-bsp ?= "${@int(((${IMAGE_ROOTFS_SIZE} + ${IMAGE_ROOTFS_EXTRA_SPACE}) * 1024 + ${MKUBIFS_LEB_SIZE} - 1) / ${MKUBIFS_LEB_SIZE})}"
-MKUBIFS_ARGS:mx6-mainline-bsp ?= "-F -x zlib -m 2048 -e ${MKUBIFS_LEB_SIZE} -c ${MKUBIFS_LEB_CNT}"
+MKUBIFS_LEB_CNT:mx6 ?= "${@int(((${IMAGE_ROOTFS_SIZE} + ${IMAGE_ROOTFS_EXTRA_SPACE}) * 1024 + ${MKUBIFS_LEB_SIZE} - 1) / ${MKUBIFS_LEB_SIZE})}"
+MKUBIFS_ARGS:mx6 ?= "-F -x zlib -m 2048 -e ${MKUBIFS_LEB_SIZE} -c ${MKUBIFS_LEB_CNT}"
 
 UBINIZE_ARGS ?= "-m 2048 -s 2048 -p 128KiB"

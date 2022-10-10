@@ -95,8 +95,8 @@
 
 ENABLE_FLASHLAYOUT_CONFIG ??= "1"
 
-FLASHLAYOUT_SUBDIR  = "flashlayout:${PN}"
-FLASHLAYOUT_DESTDIR = "${IMGDEPLOYDIR}/${FLASHLAYOUT_SUBDIR}"
+FLASHLAYOUT_SUBDIR  = "flashlayout_${PN}"
+FLASHLAYOUT_DESTDIR = "${@ os.path.join(d.getVar('IMGDEPLOYDIR'), d.getVar('FLASHLAYOUT_SUBDIR'))}"
 
 FLASHLAYOUT_BASENAME ??= "FlashLayout"
 FLASHLAYOUT_SUFFIX   ??= "tsv"
@@ -144,28 +144,25 @@ python __anonymous () {
 def expand_var(var, bootscheme, config, partition, d):
     """
     Compute and return 'var':
-        0) Prepend 'partition' to default OVERRIDES
-        1) Look for any 'bootscheme_config' expansion for 'var': 'var_bootscheme_config'
-        2) Look for any 'bootscheme' expansion for 'var': 'var_bootscheme'
-        3) Look for any 'config' expansion for 'var': 'var_config'
-        4) Then look for any 'var' override
+        1) Look for any 'bootscheme_config[_partition]' expansion for 'var': 'var_bootscheme_config[_partition]'
+        2) Look for any 'bootscheme[_partition]' expansion for 'var': 'var_bootscheme[_partition]'
+        3) Look for any 'config[_partition]' expansion for 'var': 'var_config[_partition]'
+        4) Then look for any 'var[_partition]' override
         5) Default 'var' to 'none' if not defined
     This is the priority order assignment for 'var'
     """
-    # Append 'partition' to OVERRIDES
-    localdata = bb.data.createCopy(d)
-    overrides = localdata.getVar('OVERRIDES')
-    if not overrides:
-        bb.fatal('OVERRIDES not defined')
-    localdata.setVar('OVERRIDES', partition.lower() + ':' + overrides)
     # Compute var according to priority assignment order defined above
-    expanded_var = localdata.getVar('%s_%s_%s' % (var, bootscheme, config))
+    expanded_var = d.getVar('%s_%s_%s_%s' % (var, bootscheme, config, partition)) or \
+        d.getVar('%s_%s_%s' % (var, bootscheme, config))
     if not expanded_var:
-        expanded_var = localdata.getVar('%s_%s' % (var, bootscheme))
+        expanded_var = d.getVar('%s_%s_%s' % (var, bootscheme, partition)) or \
+            d.getVar('%s_%s' % (var, bootscheme))
     if not expanded_var:
-        expanded_var = localdata.getVar('%s_%s' % (var, config))
+        expanded_var = d.getVar('%s_%s_%s' % (var, config, partition)) or \
+            d.getVar('%s_%s' % (var, config))
     if not expanded_var:
-        expanded_var = localdata.getVar(var)
+        expanded_var = d.getVar('%s_%s' % (var, partition)) or \
+            d.getVar(var)
     if not expanded_var:
         expanded_var = "none"
     # Return expanded and/or overriden var value
@@ -250,11 +247,13 @@ def get_binaryname(labeltype, bootscheme, config, partition, d):
         # Check for any replace pattern
         replace_patterns = expand_var('BIN2BOOT_REPLACE_PATTERNS', bootscheme, config, partition, d)
         bb.note('>>> Substitution patterns: %s' % replace_patterns)
+        bb.note('>>> Binary Name: %s' % binary_name)
         # Apply replacement patterns on binary_type
         if replace_patterns != 'none':
             for replace_pattern in replace_patterns.split():
                 pattern2replace = replace_pattern.split(';')[0]
                 pattern2use = replace_pattern.split(';')[1]
+                bb.note('Pattern2Replace: %s, pattern2use: %s' % (pattern2replace, pattern2use))
                 # Replace with pattern middle of string
                 binary_type = re.sub(r'-%s-' % pattern2replace, '-' + pattern2use + '-', binary_type)
                 # Replace with pattern end of string
@@ -279,7 +278,8 @@ def flashlayout_search(d, files):
     search_path = d.getVar("BBPATH").split(":")
     for file in files.split():
         for p in search_path:
-            file_path = p + "/" + file
+            bb.note("Looking for '%s' in '%s'" % (file, p))
+            file_path = os.path.join(p, file)
             if os.path.isfile(file_path):
                 return (True, file_path)
     return (False, "")
@@ -308,7 +308,8 @@ python do_create_flashlayout_config() {
         found, f = flashlayout_search(d, flashlayout_src)
         if found:
             flashlayout_staticname=os.path.basename(f)
-            flashlayout_file = d.expand("${FLASHLAYOUT_DESTDIR}/%s" % flashlayout_staticname)
+            flashlayout_file = os.path.join(d.getVar('FLASHLAYOUT_DESTDIR'),
+                                            flashlayout_staticname)
             shutil.copy2(f, flashlayout_file)
             bb.note('Copy %s to output file %s' % (f, flashlayout_file))
             return
@@ -342,22 +343,20 @@ python do_create_flashlayout_config() {
             bb.note('*** Loop for config label: %s' % config)
             # Set labeltypes list
             labeltypes = expand_var('FLASHLAYOUT_TYPE_LABELS', bootscheme, config, '', d)
-            bb.note('FLASHLAYOUT_TYPE_LABELS: %s' % labeltypes)
+            bb.note('FLASHLAYOUT_TYPE_LABELS: %s, config: %s' % (labeltypes, config))
             if labeltypes == 'none':
                 bb.note("FLASHLAYOUT_TYPE_LABELS is none, so no flashlayout file to generate.")
                 continue
             for labeltype in labeltypes.split():
                 bb.note('*** Loop for label type: %s' % labeltype)
                 # Init flashlayout file name
-                config:append = '_' + config
-                labeltype:append = '_' + labeltype + '-' + bootscheme
                 flashlayout_file = os.path.join(d.expand("${FLASHLAYOUT_DESTDIR}"), \
                                                 "%s_%s_%s-%s.%s" % (d.expand("${FLASHLAYOUT_BASENAME}"), \
                                                 config, labeltype, bootscheme, \
                                                 d.expand("${FLASHLAYOUT_SUFFIX}")))
                 # Get the partition list to write in flashlayout file
                 partitions = expand_var('FLASHLAYOUT_PARTITION_LABELS', bootscheme, config, '', d)
-                bb.note('FLASHLAYOUT_PARTITION_LABELS: %s' % partitions)
+                bb.note('FLASHLAYOUT_PARTITION_LABELS: %s %s %s' % (partitions, bootscheme, config))
                 if partitions == 'none':
                     bb.note("FLASHLAYOUT_PARTITION_LABELS is none, so no flashlayout file to generate.")
                     continue
