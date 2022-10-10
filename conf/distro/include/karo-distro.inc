@@ -9,23 +9,23 @@ POKY_DEFAULT_DISTRO_FEATURES:remove = "\
         wayland \
 "
 
-DISTRO_FEATURES_DEFAULT:remove = "\
-        3g \
+DISTRO_FEATURES_DEFAULT ?= "\
+        acl \
+        alsa \
         argp \
-        bluetooth \
-        ipv6 \
-        nfc \
-        pcmcia \
-        wifi \
-        x11 \
-        zeroconf \
-"
-
-DISTRO_FEATURES:append = "\
         dhcpcd \
+        ext2 \
+        ipv4 \
+        largefile \
         ldconfig \
         pam \
+        usbgadget \
+        usbhost \
+        xattr \
+        nfs \
         telnet-login \
+        vfat \
+        seccomp \
 "
 
 IMAGE_CLASSES += "st-partitions-image"
