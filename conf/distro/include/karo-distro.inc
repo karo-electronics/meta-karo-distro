@@ -44,6 +44,9 @@ VIRTUAL-RUNTIME_dev_manager ?= "udev"
 VIRTUAL-RUNTIME_init_manager ?= "${@bb.utils.contains('DISTRO_FEATURES',"systemd","systemd","sysvinit",d)}"
 
 PREFERRED_PROVIDER_opencl-headers = "imx-gpu-viv"
+PREFERRED_RPROVIDER_mfgtool-base ?= "linux-imx-mfgtool"
+PREFERRED_RPROVIDER_mfgtool-image ?= "${PREFERRED_RPROVIDER_mfgtool-base}"
+PREFERRED_RPROVIDER_mfgtool-image-image ?= "${PREFERRED_RPROVIDER_mfgtool-base}"
 
 VOLATILE_LOG_DIR = "no"
 
