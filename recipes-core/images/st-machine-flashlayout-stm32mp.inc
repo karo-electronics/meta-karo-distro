@@ -9,22 +9,22 @@ FLASHLAYOUT_DEPEND_TASKS += "${@bb.utils.contains('EXTRA_IMAGEDEPENDS', 'u-boot-
 # -----------------------------------------------------------------------------
 # Define flashlayout devices
 # -----------------------------------------------------------------------------
-DEVICE_EMMC    = "mmc0"
-DEVICE_SPINAND = "spi-nand0"
+DEVICE_EMMC    ?= "mmc0"
+DEVICE_SPINAND ?= "spi-nand0"
 
 # -----------------------------------------------------------------------------
 # EMMC
 # Extra space is required to store 'Protective MBR' and 'Primary GPT Header'
 # Currently the required size is 17kBytes (i.e. 0x4400)
 # We need to align this size to get the first offset to use
-DEVICE_START_OFFSET_mmc0    = "0x00100000"
-DEVICE_ALIGNMENT_SIZE_mmc0  = "0x00080000"
+DEVICE_START_OFFSET_${DEVICE_EMMC}    = "0x00100000"
+DEVICE_ALIGNMENT_SIZE_${DEVICE_EMMC}  = "0x00080000"
 
 # -----------------------------------------------------------------------------
 # SPINAND
 #
-DEVICE_START_OFFSET_spi-nand0 = "0x00000000"
-DEVICE_ALIGNMENT_SIZE_spi-nand0 = "0x00020000"
+DEVICE_START_OFFSET_${DEVICE_SPINAND} = "0x00000000"
+DEVICE_ALIGNMENT_SIZE_${DEVICE_SPINAND} = "0x00020000"
 
 # -----------------------------------------------------------------------------
 # Define bootscheme labels
@@ -153,7 +153,7 @@ FLASHLAYOUT_PARTITION_OFFSET_fsbl1-boot = "0x0"
 FLASHLAYOUT_PARTITION_OFFSET_ssbl-boot  = "0x0"
 FLASHLAYOUT_PARTITION_OFFSET_emmc_fsbl1 = "boot1"
 FLASHLAYOUT_PARTITION_OFFSET_emmc_fsbl2 = "boot2"
-FLASHLAYOUT_PARTITION_OFFSET_emmc_ssbl  = "${DEVICE_START_OFFSET_mmc0}"
+FLASHLAYOUT_PARTITION_OFFSET_emmc_ssbl  = "${DEVICE_START_OFFSET_${DEVICE_EMMC}}"
 FLASHLAYOUT_PARTITION_OFFSET_spinand_fsbl = "0x0"
 FLASHLAYOUT_PARTITION_OFFSET_spinand_ssbl = "0x00080000"
 
