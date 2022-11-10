@@ -1,4 +1,4 @@
-uuu_version 1.2.91
+uuu_version 1.4.77
 
 #
 # Author: Markus Bauer <mb@karo-electronics.de>
@@ -14,13 +14,13 @@ SDPV: jump
 
 ### Writing default u-boot to emmc
 FB: flash bootloader $image_bootloader-$machine.bin-default-$imxboot_target
-FB: ucmd mmc partconf $${emmc_dev} 1 1 0
+FB: ucmd mmc partconf $${emmc_dev} $${emmc_boot_ack} $${emmc_boot_part} 0
 
 ### GPT partition layout
 #
-# 32M /boot
+# 64MiB /boot
 # MAX /
-FB: ucmd setenv partitions 'uuid_disk=$${uuid_gpt_disk};name=boot,size=32MiB,start=1MiB,uuid=$${uuid_boot};name=rootfs,size=MAX;'
+FB: ucmd setenv partitions 'uuid_disk=$${uuid_gpt_disk};name=boot,size=64MiB,start=1MiB;name=rootfs,size=MAX;'
 FB: ucmd gpt write mmc 0 $${partitions}
 
 ### force re-read partition table
@@ -33,7 +33,7 @@ FB: flash -raw2sparse rootfs $image-$machine.ext4
 
 ### Set default u-boot environment
 FB: ucmd env default -a
-FB: ucmd setenv bootdelay 1
 FB: ucmd saveenv
 
+FB: continue
 FB: done
