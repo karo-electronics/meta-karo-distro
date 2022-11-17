@@ -42,19 +42,19 @@ DISTRO_FEATURES_DEFAULT:append:qsxp = " basler csi-camera pcie raspi-display tc3
 DISTRO_FEATURES_DEFAULT:append:tx8p = " lvds"
 
 VIRTUAL-RUNTIME_base-utils-hwclock = "util-linux-hwclock"
-VIRTUAL-RUNTIME_dev_manager ?= "udev"
-VIRTUAL-RUNTIME_init_manager ?= "${@bb.utils.contains('DISTRO_FEATURES',"systemd","systemd","sysvinit",d)}"
+VIRTUAL-RUNTIME_dev_manager ??= "udev"
+VIRTUAL-RUNTIME_init_manager ??= "${@bb.utils.contains('DISTRO_FEATURES',"systemd","systemd","sysvinit",d)}"
 
 PREFERRED_PROVIDER_opencl-headers = "imx-gpu-viv"
 PREFERRED_RPROVIDER_mfgtool-base ?= "linux-imx-mfgtool"
 PREFERRED_RPROVIDER_mfgtool-image ?= "${PREFERRED_RPROVIDER_mfgtool-base}"
 PREFERRED_RPROVIDER_mfgtool-image-image ?= "${PREFERRED_RPROVIDER_mfgtool-base}"
 
-VOLATILE_LOG_DIR = "no"
+VOLATILE_LOG_DIR ?= "no"
 
 MACHINE_FIRMWARE:remove = "${@ bb.utils.contains('DISTRO_FEATURES', 'wifi', "", "linux-firmware-ath10k", d)}"
 
-ROOTFS_PARTITION_SIZE ?= "${@bb.utils.contains('MACHINE_FEATURES',"nand", \
+ROOTFS_PARTITION_SIZE ??= "${@bb.utils.contains('MACHINE_FEATURES',"nand", \
                       65536-${IMAGE_ROOTFS_EXTRA_SPACE},128*1024,d)}"
 
 # list of mount points for subimages, that will be emptied in rootfs image
