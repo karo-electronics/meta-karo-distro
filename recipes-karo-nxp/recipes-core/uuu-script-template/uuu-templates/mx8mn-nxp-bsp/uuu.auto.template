@@ -9,7 +9,7 @@ uuu_version 1.4.77
 
 ### boot U-Boot with fastboot support
 SDPS: boot -f $image_bootloader-$machine.bin-mfg-$imxboot_target
-SDPV: write -f $image_bootloader-$machine.bin-mfg-$imxboot_target -offset 0x57c00
+SDPV: write -f $image_bootloader-$machine.bin-mfg-$imxboot_target -skipspl
 SDPV: jump
 
 ### Writing default u-boot to emmc
