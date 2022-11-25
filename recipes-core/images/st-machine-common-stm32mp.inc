@@ -11,7 +11,7 @@ IMAGE_FSTYPES:append = "${@bb.utils.contains('MACHINE_FEATURES',"emmc"," ext4","
 
 # Define image to use for extra partitions
 STM32MP_BOOTFS_IMAGE = "karo-image-bootfs"
-STM32MP_BOOTFS_LABEL ?= "bootfs"
+STM32MP_BOOTFS_LABEL ?= "boot"
 STM32MP_BOOTFS_MOUNTPOINT_IMAGE ?= "/boot"
 STM32MP_USERFS_IMAGE = "karo-image-userfs"
 STM32MP_USERFS_LABEL ?= "userfs"

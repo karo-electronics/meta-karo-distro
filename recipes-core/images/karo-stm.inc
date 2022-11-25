@@ -20,6 +20,7 @@ python do_create_install_scripts() {
     soc_family = d.getVar('SOC_FAMILY')
     machine = d.getVar('MACHINE')
     image = d.getVar('BPN')
+    rfs_size = d.getVar('ROOTFS_PARTITION_SIZE')
 
     template_path = os.path.join(d.getVar('DEPLOY_DIR_IMAGE'), "install-bootloader.template")
     uuu_template_path = os.path.join(d.getVar('DEPLOY_DIR_IMAGE'), "uuu.auto.template")
@@ -35,21 +36,21 @@ python do_create_install_scripts() {
     try:
         with open(uuu_auto_path, 'w') as uuu_script:
             uuu_template = Template(uuu_template_string)
-            uuu_auto = uuu_template.substitute(image=image, machine=machine, soc_family=soc_family)
+            uuu_auto = uuu_template.substitute(image=image, machine=machine, soc_family=soc_family, rfs_size=rfs_size)
             uuu_script.write(uuu_auto)
     except OSError:
         bb.fatal('Unable to open %s' % (uuu_auto_path))
 
-    do_copyfile(os.path.join(d.getVar('DEPLOY_DIR_IMAGE'), "tf-a-%s-%s-serialboot.stm32" %
-                             (soc_family, machine)), img_dirname)
-    do_copyfile(os.path.join(d.getVar('DEPLOY_DIR_IMAGE'), "tf-a-%s-%s-trusted.stm32" %
-                             (soc_family, machine)), img_dirname)
-    do_copyfile(os.path.join(d.getVar('DEPLOY_DIR_IMAGE'), "u-boot-mfg.bin"),
-                img_dirname)
-    do_copyfile(os.path.join(d.getVar('DEPLOY_DIR_IMAGE'), "u-boot-trusted.bin"),
-                img_dirname)
-    do_copyfile(os.path.join(d.getVar('DEPLOY_DIR_IMAGE'),
-                             "karo-image-bootfs-%s.ext4" % machine), img_dirname)
-    do_copyfile(os.path.join(d.getVar('DEPLOY_DIR_IMAGE'), "%s-%s.ext4" %
-                             (image, machine)), img_dirname)
+    do_copyfile("%s/tf-a-%s-%s-serialboot.stm32" % (d.getVar('DEPLOY_DIR_IMAGE'), \
+        soc_family, machine), img_dirname)
+    do_copyfile("%s/tf-a-%s-%s-trusted.stm32" % (d.getVar('DEPLOY_DIR_IMAGE'), \
+        soc_family, machine), img_dirname)
+    do_copyfile("%s/fip-%s-%s-serialboot.bin" % (d.getVar('DEPLOY_DIR_IMAGE'), \
+        soc_family, machine), img_dirname)
+    do_copyfile("%s/fip-%s-%s-trusted.bin" % (d.getVar('DEPLOY_DIR_IMAGE'), \
+        soc_family, machine), img_dirname)
+    do_copyfile("%s/karo-image-bootfs-%s.ext4" % \
+        (d.getVar('DEPLOY_DIR_IMAGE'), machine), img_dirname)
+    do_copyfile("%s/%s-%s.ext4" % \
+        (d.getVar('DEPLOY_DIR_IMAGE'), image, machine), img_dirname)
 }

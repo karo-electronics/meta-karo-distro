@@ -238,8 +238,8 @@ def get_binaryname(labeltype, bootscheme, config, partition, d):
     binary_name = expand_var('FLASHLAYOUT_PARTITION_BIN2LOAD', bootscheme, config, partition, d)
     bb.note('>>> Selected FLASHLAYOUT_PARTITION_BIN2LOAD: %s' % binary_name)
 
-    # Treat TF-A, TEE, U-BOOT and U-BOOT-SPL binary rename case
-    if re.match('^tf-a.*$', binary_name) or re.match('^tee-.*$', binary_name):
+    # Treat TF-A, TEE, FIP, U-BOOT and U-BOOT-SPL binary rename case
+    if re.match('^tf-a.*$', binary_name) or re.match('^tee-.*$', binary_name) or re.match('^fip.*$', binary_name):
         file_name, file_ext = os.path.splitext(binary_name)
         # Init binary_type to use from labeltype
         binary_type = labeltype + '-' + bootscheme
