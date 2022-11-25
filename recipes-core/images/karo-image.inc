@@ -39,6 +39,7 @@ IMAGE_INSTALL:append = " \
         libgpiod-tools \
         ${@bb.utils.contains('DISTRO_FEATURES','wifi','linux-firmware-pcie8997','',d)} \
         lsof \
+        ${@bb.utils.contains('DISTRO_FEATURES','copro','packagegroup-copro','',d)} \
         mmc-utils \
         ${@bb.utils.contains('MACHINE_FEATURES',"nand"," mtd-utils","",d)} \
         ncurses \
@@ -83,3 +84,10 @@ IMAGE_FSTYPES:append = "${@bb.utils.contains('MACHINE_FEATURES',"nand"," ubi",""
 # mkfs.ext4 parameters
 # set inode size to 256 to support timestamps beyond 2038-01-19
 EXTRA_IMAGECMD:ext4 += "-I 256"
+
+# mkubifs parameters
+MKUBIFS_LEB_SIZE = "126976"
+
+MKUBIFS_ARGS ?= "-F -x zlib -m 2048 -e ${MKUBIFS_LEB_SIZE}"
+
+UBINIZE_ARGS ?= "-m 2048 -s 2048 -p 128KiB"
