@@ -1,6 +1,8 @@
 POKY_DISTRO ??= "poky"
 require conf/distro/${POKY_DISTRO}.conf
 
+DISTRO_VERSION = "${PREFERRED_VERSION_linux-karo}-${DISTRO_CODENAME}"
+
 POKY_DEFAULT_DISTRO_FEATURES:remove = "\
         largefile \
         opengl \
