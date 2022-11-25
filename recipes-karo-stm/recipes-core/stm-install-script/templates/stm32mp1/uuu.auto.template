@@ -11,13 +11,13 @@ uuu_version 1.4.77
 # 'fastboot usb 0'
 
 ### Setup VID PID
-CFG: FB: -vid 0x0483 -pid 0x5720
+CFG: FB: -vid 0x0483 -pid 0x0afb
 
 ### GPT partition layout
 #
-# 32M /boot
+# 64M /boot
 # MAX /
-FB: oem ucmd:setenv partitions 'uuid_disk=$${uuid_gpt_disk};name=ssbl,size=2MiB,start=1MiB;name=bootfs,size=64MiB;name=rootfs,size=MAX;'
+FB: oem ucmd:setenv partitions 'uuid_disk=$${uuid_gpt_disk};name=fip,size=2MiB,start=1MiB;name=boot,size=64MiB;name=rootfs,size=${rfs_size}KiB;name=userfs,size=MAX;'
 FB: oem ucmd:gpt write mmc 0 $${partitions}
 
 ### force re-read partition table
@@ -25,11 +25,11 @@ FB: oem ucmd:setenv fastboot_dev sata
 FB: oem ucmd:setenv fastboot_dev mmc
 
 ### Flashing partitions
-FB: flash -raw2sparse bootfs karo-image-bootfs-$machine.ext4
+FB: flash -raw2sparse boot karo-image-bootfs-$machine.ext4
 FB: flash -raw2sparse rootfs $image-$machine.ext4
 
 ### Re-program bootloader to newest
-FB: flash ssbl u-boot-trusted.bin
+FB: flash fip fip-$soc_family-$machine-trusted.bin
 FB: oem ucmd:setenv fastboot_buffer 0xc0000000
 FB: oem ucmd:setenv erase_atf 'mmc erase 0 2000'
 FB: oem ucmd:setenv prog_atf 'setexpr fs $${filesize} + 1ff; setexpr fs $${fs} / 200; mmc write $${fastboot_buffer} 0 $${fs}'
