@@ -39,7 +39,6 @@ IMAGE_INSTALL:append = " \
         libgpiod-tools \
         ${@bb.utils.contains('DISTRO_FEATURES','wifi','linux-firmware-pcie8997','',d)} \
         lsof \
-        ${@bb.utils.contains('DISTRO_FEATURES','copro','packagegroup-copro','',d)} \
         mmc-utils \
         ${@bb.utils.contains('MACHINE_FEATURES',"nand"," mtd-utils","",d)} \
         ncurses \
