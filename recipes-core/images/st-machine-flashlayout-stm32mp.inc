@@ -73,7 +73,7 @@ FLASHLAYOUT_TYPE_LABELS = "${TF_A_DEVICETREE}"
 # -----------------------------------------------------------------------------
 
 FLASHLAYOUT_PARTITION_LABELS_trusted_emmc         = "fsbl1-boot ssbl-boot fsbl1 fip boot rootfs userfs"
-FLASHLAYOUT_PARTITION_LABELS_trusted_spinand        = "fsbl1-boot ssbl-boot fsbl1 fip UBI"
+FLASHLAYOUT_PARTITION_LABELS_trusted_spinand        = "fsbl1-boot ssbl-boot fsbl1 fip ubi"
 
 # -----------------------------------------------------------------------------
 # Partition configuration for each partition label
