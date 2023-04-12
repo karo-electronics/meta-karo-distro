@@ -66,7 +66,4 @@ PARTITIONS_MOUNTPOINT_IMAGE ?= "/boot"
 IMAGE_FSTYPES:remove = "sdcard.bz2 wic.bz2 wic.bmap"
 
 # mask out sysvinit recipes from meta-imx layer
-BBMASK:use-nxp-bsp += ".*/meta-imx/.*/sysvinit/.*"
-
-# mask out recipe breaking the weston desktop without systemd
-BBMASK += ".*/meta-imx/meta-bsp/recipes-graphics/wayland/weston-init.bbappend"
+BBMASK:use-nxp-bsp:append = " .*/meta-imx/.*/sysvinit/.*"
