@@ -17,9 +17,8 @@ ROOTFS_POSTPROCESS_COMMAND:remove = "\
 IMAGE_FEATURES:append = " tools-debug"
 
 IMAGE_INSTALL:append = " \
-        alsa-utils-aplay \
-        alsa-utils-amixer \
-        alsa-utils-alsamixer \
+        ${@bb.utils.contains('DISTRO_FEATURES','alsa', \
+                'alsa-utils-aplay alsa-utils-amixer alsa-utils-alsamixer','',d)} \
         bash \
         canutils \
         coreutils \
