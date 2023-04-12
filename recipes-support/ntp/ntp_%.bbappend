@@ -2,8 +2,7 @@ inherit relative_symlinks useradd
 
 PACKAGECONFIG:remove:karo-minimal = "openssl"
 
-remove_ntp_conf = "${@ bb.utils.contains('DISTRO_FEATURES', 'dhcpcd', True, False, d) and \
-                       bb.utils.contains('IMAGE_FEATURES', 'read-only-rootfs', True, False, d)}"
+remove_ntp_conf = "${@ bb.utils.contains('DISTRO_FEATURES', 'dhcpcd', True, False, d)}"
 
 FILES:${PN}:remove := "${@ "${sysconfdir}/ntp.conf" if ${remove_ntp_conf} else ""}"
 
@@ -13,7 +12,7 @@ USERADD_PACKAGES += "${PN}"
 USERADD_PARAM:${PN} = "--system -U -d /nonexistent --no-create-home -s /bin/false ntp"
 GROUPADD_PARAM:${PN} = "-f --system crontab"
 
-CRONTABS_DIR = "${localstatedir}/spool/cron/crontabs"
+CRONTABS_DIR = "${localstatedir}/spool/cron"
 FILES:${PN} += "${CRONTABS_DIR}/root"
 
 do_install:append() {
@@ -22,11 +21,10 @@ do_install:append() {
     fi
 }
 
-pkg_postinst_ntpdate() {
+pkg_postinst:ntpdate() {
     if ! grep -q -s ntpdate $D${CRONTABS_DIR}/root; then
         echo "adding crontab"
         test -d $D${CRONTABS_DIR} || install -d -g crontab -m 1730 $D${CRONTABS_DIR}
         echo "30 * * * *    ${bindir}/ntpdate-sync silent" >> $D${CRONTABS_DIR}/root
     fi
-# without this line the script will fail with: "ERROR: ntp: useradd command did not succeed"
 }
