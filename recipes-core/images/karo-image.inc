@@ -50,6 +50,7 @@ IMAGE_INSTALL:append = " \
         rsync \
         strace \
         tcp-wrappers \
+        tcpdump \
         tzdata \
         util-linux-fsck \
         util-linux-mkfs \
