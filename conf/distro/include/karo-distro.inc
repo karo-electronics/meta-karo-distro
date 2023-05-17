@@ -63,7 +63,7 @@ ROOTFS_PARTITION_SIZE ??= "${@bb.utils.contains('MACHINE_FEATURES',"nand", \
 PARTITIONS_MOUNTPOINT_IMAGE ?= "/boot"
 
 # Remove some image types we don't need
-IMAGE_FSTYPES:remove = "sdcard.bz2 wic.bz2 wic.bmap"
+IMAGE_FSTYPES = "ext4 tar.bz2"
 
 # mask out sysvinit recipes from meta-imx layer
 BBMASK:use-nxp-bsp:append = " .*/meta-imx/.*/sysvinit/.*"

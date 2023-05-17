@@ -18,7 +18,7 @@ python do_create_uuu_auto_script() {
     from string import Template
 
     machine = d.getVar('MACHINE')
-    imxboot_target = d.getVar('IMXBOOT_TARGETS')
+    imxboot_target = d.getVar('IMXBOOT_TARGETS').strip()
     image = d.getVar('BPN')
 
     uuu_template_path = os.path.join(d.getVar('DEPLOY_DIR_IMAGE'), "uuu.auto.template")
