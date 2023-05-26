@@ -1,0 +1,10 @@
+--- ./cmake/options.cmake.org	2018-11-27 11:45:30.911733800 +0900
++++ ./cmake/options.cmake	2018-11-27 11:03:10.026154000 +0900
+@@ -29,6 +29,7 @@
+ 
+ # handle if '-' in machine name
+ string (REPLACE "-" "_" MACHINE ${MACHINE})
++string (REPLACE ":" "_" MACHINE ${MACHINE})
+ 
+ if (NOT DEFINED PROJECT_SYSTEM)
+   string (TOLOWER ${CMAKE_SYSTEM_NAME}      PROJECT_SYSTEM)

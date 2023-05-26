@@ -1,0 +1,50 @@
+diff --git a/lib/remoteproc/remoteproc.c b/lib/remoteproc/remoteproc.c
+index be9b869..880901a 100755
+--- a/lib/remoteproc/remoteproc.c
++++ b/lib/remoteproc/remoteproc.c
+@@ -847,10 +847,12 @@ unsigned int remoteproc_allocate_id(struct remoteproc *rproc,
+ 		start = 0;
+ 	if (end == RSC_NOTIFY_ID_ANY)
+ 		end = METAL_BITS_PER_ULONG;
+-	notifyid = metal_bitmap_next_set_bit(&rproc->bitmap,
++	notifyid = metal_bitmap_next_clear_bit(&rproc->bitmap,
+ 					     start, end);
+ 	if (notifyid != end)
+ 		metal_bitmap_set_bit(&rproc->bitmap, notifyid);
++	else
++		notifyid = RSC_NOTIFY_ID_ANY;
+ 	return notifyid;
+ }
+ 
+diff --git a/lib/remoteproc/rsc_table_parser.c b/lib/remoteproc/rsc_table_parser.c
+index 37c6478..1bdfcf2 100755
+--- a/lib/remoteproc/rsc_table_parser.c
++++ b/lib/remoteproc/rsc_table_parser.c
+@@ -135,9 +135,9 @@ int handle_vdev_rsc(struct remoteproc *rproc, void *rsc)
+ 
+ 	/* only assign notification IDs but do not initialize vdev */
+ 	notifyid = vdev_rsc->notifyid;
+-	if (notifyid == RSC_NOTIFY_ID_ANY) {
+-		notifyid = remoteproc_allocate_id(rproc,
+-						  notifyid, notifyid + 1);
++	notifyid = remoteproc_allocate_id(rproc,
++					  notifyid, notifyid + 1);
++	if (notifyid != RSC_NOTIFY_ID_ANY) {
+ 		vdev_rsc->notifyid = notifyid;
+ 	}
+ 
+@@ -147,10 +147,10 @@ int handle_vdev_rsc(struct remoteproc *rproc, void *rsc)
+ 
+ 		vring_rsc = &vdev_rsc->vring[i];
+ 		notifyid = vring_rsc->notifyid;
+-		if (notifyid == RSC_NOTIFY_ID_ANY) {
+-			notifyid = remoteproc_allocate_id(rproc,
+-							  notifyid,
+-							  notifyid + 1);
++		notifyid = remoteproc_allocate_id(rproc,
++						  notifyid,
++						  notifyid + 1);
++		if (notifyid != RSC_NOTIFY_ID_ANY) {
+ 			vdev_rsc->notifyid = notifyid;
+ 		}
+ 	}

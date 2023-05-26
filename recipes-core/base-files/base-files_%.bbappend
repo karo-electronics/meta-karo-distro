@@ -16,6 +16,7 @@ dirs755:append = " \
                ${@ 'run/dbus' if d.getVar('IMAGE_TYPE') != 'core-image-minimal' else ''} \
                /run/lock \
                /run/network \
+			   ${prefix}/local \
 "
 dirs755:append:stm32mp1 = " ${STM32MP_USERFS_MOUNTPOINT_IMAGE}"
 dirs755:append:stm32mp1 = " ${STM32MP_VENDORFS_MOUNTPOINT_IMAGE}"

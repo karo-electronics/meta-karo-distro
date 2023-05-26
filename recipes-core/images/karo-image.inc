@@ -49,6 +49,7 @@ IMAGE_INSTALL:append = " \
         ${@bb.utils.contains('DISTRO_FEATURES','pcie','pciutils','',d)} \
         rsync \
         strace \
+        sysfsutils \
         tcp-wrappers \
         tcpdump \
         tzdata \

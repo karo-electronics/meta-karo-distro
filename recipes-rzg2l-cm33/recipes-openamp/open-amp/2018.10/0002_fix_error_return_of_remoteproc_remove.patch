@@ -1,0 +1,26 @@
+From de8c0df09ca84455fdce7e5550d4d9190c632be2 Mon Sep 17 00:00:00 2001
+From: Khanh Tran <khanh.tran.te@renesas.com>
+Date: Tue, 20 Apr 2021 16:30:49 +0700
+Subject: [PATCH] fix: variable `ret' may be uninitialized remoteproc_remove
+ should initialize ret for return later
+
+---
+ lib/remoteproc/remoteproc.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/lib/remoteproc/remoteproc.c b/lib/remoteproc/remoteproc.c
+index 880901a..088b705 100644
+--- a/lib/remoteproc/remoteproc.c
++++ b/lib/remoteproc/remoteproc.c
+@@ -171,7 +171,7 @@ struct remoteproc *remoteproc_init(struct remoteproc *rproc,
+ 
+ int remoteproc_remove(struct remoteproc *rproc)
+ {
+-	int ret;
++	int ret = 0;
+ 
+ 	if (rproc) {
+ 		metal_mutex_acquire(&rproc->lock);
+-- 
+2.7.4
+

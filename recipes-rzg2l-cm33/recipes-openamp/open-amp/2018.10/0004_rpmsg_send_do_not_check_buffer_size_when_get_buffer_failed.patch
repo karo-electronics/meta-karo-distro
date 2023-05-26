@@ -1,0 +1,27 @@
+From cdd8ea532a7b211eddc52baa61f42db1df25f481 Mon Sep 17 00:00:00 2001
+From: Khanh Tran <khanh.tran.te@renesas.com>
+Date: Tue, 20 Apr 2021 16:45:17 +0700
+Subject: [PATCH] openamp: rpmsg_send() shouldn't check buffer size when get
+ buffer failed cause _rpmsg_virtio_get_buffer_size() always return size > 0,
+ when role is RPMSG_MASTER.
+
+---
+ lib/rpmsg/rpmsg_virtio.c | 2 --
+ 1 file changed, 2 deletions(-)
+
+diff --git a/lib/rpmsg/rpmsg_virtio.c b/lib/rpmsg/rpmsg_virtio.c
+index c7ef1b5..1958165 100644
+--- a/lib/rpmsg/rpmsg_virtio.c
++++ b/lib/rpmsg/rpmsg_virtio.c
+@@ -331,8 +331,6 @@ static int rpmsg_virtio_send_offchannel_raw(struct rpmsg_device *rdev,
+ 		metal_mutex_release(&rdev->lock);
+ 		if (buffer || !tick_count)
+ 			break;
+-		if (avail_size != 0)
+-			return RPMSG_ERR_BUFF_SIZE;
+ 		metal_sleep_usec(RPMSG_TICKS_PER_INTERVAL);
+ 		tick_count--;
+ 	}
+-- 
+2.7.4
+
