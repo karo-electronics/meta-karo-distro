@@ -20,7 +20,7 @@ IMAGE_INSTALL:append = " \
         ${@bb.utils.contains('DISTRO_FEATURES','alsa', \
                 'alsa-utils-aplay alsa-utils-amixer alsa-utils-alsamixer','',d)} \
         bash \
-        canutils \
+        can-utils \
         coreutils \
         ${@bb.utils.contains('DISTRO_FEATURES','dhcpcd','dhcpcd','',d)} \
         dosfstools \
