@@ -1,6 +1,6 @@
 inherit relative_symlinks useradd
 
-PACKAGECONFIG:remove:karo-minimal = "openssl"
+PACKAGECONFIG:remove = "${@ bb.utils.contains('IMAGE_INSTALL','openssl',"","openssl",d)}"
 
 remove_ntp_conf = "${@ bb.utils.contains('DISTRO_FEATURES', 'dhcpcd', True, False, d)}"
 
