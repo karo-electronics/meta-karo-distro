@@ -4,9 +4,6 @@
 # Define bootfs partition size
 BOOTFS_PARTITION_SIZE = "32MiB"
 
-# Define image to use for extra partitions
-RZG2_USERFS_MOUNTPOINT_IMAGE ?= "/usr/local"
-
 # create shell scripts for image flashing
 addtask do_create_install_scripts after do_image_complete before do_build
 
