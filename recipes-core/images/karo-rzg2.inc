@@ -1,8 +1,8 @@
 #
 # RZ/G2L specific processing
 #
-# Define bootfs partition size
-BOOTFS_PARTITION_SIZE = "32MiB"
+# Define default boot partition size
+BOOTFS_PARTITION_SIZE ?= "32MiB"
 
 # create shell scripts for image flashing
 addtask do_create_install_scripts after do_image_complete before do_build
