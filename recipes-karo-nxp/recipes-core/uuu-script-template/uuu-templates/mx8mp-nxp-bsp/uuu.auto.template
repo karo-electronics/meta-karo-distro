@@ -12,26 +12,23 @@ SDPS: boot -f $image_bootloader-$machine.bin-mfg-$imxboot_target
 
 ### Writing default u-boot to emmc
 FB: flash bootloader $image_bootloader-$machine.bin-default-$imxboot_target
+# enable boot from eMMC
+FB: ucmd mmc partconf $${emmc_dev} $${emmc_boot_ack} $${emmc_boot_part} $${emmc_boot_part}
+# erase environment in eMMC
+FB: ucmd mmc erase 800 800
+# switch to eMMC user partition
 FB: ucmd mmc partconf $${emmc_dev} $${emmc_boot_ack} $${emmc_boot_part} 0
 
 ### GPT partition layout
-#
-# 64MiB /boot
-# MAX /
-FB: ucmd setenv partitions 'uuid_disk=$${uuid_gpt_disk};name=boot,size=64MiB,start=1MiB;name=rootfs,size=MAX;'
-FB: ucmd gpt write mmc 0 $${partitions}
+FB: ucmd gpt write mmc 0 '$partitions'
 
 ### force re-read partition table
 FB: ucmd setenv fastboot_dev sata
 FB: ucmd setenv fastboot_dev mmc
 
 ### Flashing partitions
-FB: flash boot karo-image-bootfs-$machine.ext4
-FB: flash -raw2sparse rootfs $image-$machine.ext4
+$flash_cmds
 
-### Set default u-boot environment
-FB: ucmd env default -a
-FB: ucmd saveenv
-
+### return to U-Boot prompt
 FB: continue
 FB: done

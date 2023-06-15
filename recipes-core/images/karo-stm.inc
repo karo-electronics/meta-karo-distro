@@ -19,7 +19,7 @@ python do_create_install_scripts() {
 
     soc_family = d.getVar('SOC_FAMILY')
     machine = d.getVar('MACHINE')
-    image = d.getVar('BPN')
+    rootfs_image = d.getVar('BPN')
     rfs_size = d.getVar('ROOTFS_PARTITION_SIZE')
 
     template_path = os.path.join(d.getVar('DEPLOY_DIR_IMAGE'), "install-bootloader.template")
@@ -27,30 +27,53 @@ python do_create_install_scripts() {
     img_dirname = os.path.join(d.getVar('DEPLOY_DIR_IMAGE'), d.getVar('BPN'))
     uuu_auto_path = os.path.join(img_dirname, "uuu.auto")
 
+    partlist = (d.getVar('PARTITIONS_IMAGE') or "").replace("karo-image-", "").split()
+    mntpoints = (d.getVar('PARTITIONS_MOUNTPOINT_IMAGE') or "").split()
+
+    if d.getVar('ROOTFS_PARTITION_INDEX') != None:
+        rootfs_partition_index = d.getVar('ROOTFS_PARTITION_INDEX')
+    else:
+        rootfs_partition_index = 1
+
+    partitions = "start=1MiB,name=fip,size=2MiB;"
+    flash_cmds = "FB: flash fip fip-%s-%s-trusted.bin\n" % (soc_family, machine)
+    dlm = ""
+    for index in range(0, len(partlist) + 1):
+        (partname, img, size) = get_part_info(d, partlist, index)
+        partitions += "name=%s,size=%s;" % (partname, size)
+        flash_cmds += dlm + "FB: flash -raw2sparse %s %s-%s.ext4" % (partname, img, machine)
+        dlm = "\n"
+
     bb.utils.mkdirhier(img_dirname)
 
     f = open(uuu_template_path, 'r')
     uuu_template_string = f.read()
+    f.close()
 
     bb.note("Creating '%s' from '%s'" % (uuu_auto_path, uuu_template_path))
     try:
         with open(uuu_auto_path, 'w') as uuu_script:
             uuu_template = Template(uuu_template_string)
-            uuu_auto = uuu_template.substitute(image=image, machine=machine, soc_family=soc_family, rfs_size=rfs_size)
+            uuu_auto = uuu_template.substitute(image=rootfs_image, machine=machine, \
+                soc_family=soc_family, partitions=partitions, flash_cmds=flash_cmds)
             uuu_script.write(uuu_auto)
+            uuu_script.close()
     except OSError:
         bb.fatal('Unable to open %s' % (uuu_auto_path))
 
-    do_copyfile("%s/tf-a-%s-%s-serialboot.stm32" % (d.getVar('DEPLOY_DIR_IMAGE'), \
-        soc_family, machine), img_dirname)
-    do_copyfile("%s/tf-a-%s-%s-trusted.stm32" % (d.getVar('DEPLOY_DIR_IMAGE'), \
-        soc_family, machine), img_dirname)
-    do_copyfile("%s/fip-%s-%s-serialboot.bin" % (d.getVar('DEPLOY_DIR_IMAGE'), \
-        soc_family, machine), img_dirname)
-    do_copyfile("%s/fip-%s-%s-trusted.bin" % (d.getVar('DEPLOY_DIR_IMAGE'), \
-        soc_family, machine), img_dirname)
-    do_copyfile("%s/karo-image-bootfs-%s.ext4" % \
-        (d.getVar('DEPLOY_DIR_IMAGE'), machine), img_dirname)
-    do_copyfile("%s/%s-%s.ext4" % \
-        (d.getVar('DEPLOY_DIR_IMAGE'), image, machine), img_dirname)
+    # copy trusted firmware and bootloader to uuu install dir
+    for type in d.getVar('FLASHLAYOUT_BOOTSCHEME_LABELS').split():
+        do_copyfile("%s/tf-a-%s-%s-%s.stm32" % (d.getVar('DEPLOY_DIR_IMAGE'), \
+            soc_family, machine, type), img_dirname)
+    for type in d.getVar('FLASHLAYOUT_BOOTSCHEME_LABELS').split():
+        do_copyfile("%s/fip-%s-%s-%s.bin" % (d.getVar('DEPLOY_DIR_IMAGE'), \
+            soc_family, machine, type), img_dirname)
+
+    # copy rootfs image file
+    do_copyfile("%s/%s-%s.ext4" % (d.getVar('DEPLOY_DIR_IMAGE'), rootfs_image, machine), img_dirname)
+
+    # copy other partition images
+    for partname in partlist:
+        do_copyfile("%s/karo-image-%s-%s.ext4" % (d.getVar('DEPLOY_DIR_IMAGE'), \
+            partname, machine), img_dirname)
 }

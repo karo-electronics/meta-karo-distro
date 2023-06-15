@@ -91,3 +91,41 @@ MKUBIFS_LEB_SIZE = "126976"
 MKUBIFS_ARGS ?= "-F -x zlib -m 2048 -e ${MKUBIFS_LEB_SIZE}"
 
 UBINIZE_ARGS ?= "-m 2048 -s 2048 -p 128KiB"
+
+PARTITION_NAMES[bootfs] ?= "boot"
+
+def get_part_info(d, partlist, index):
+    if d.getVar('ROOTFS_PARTITION_INDEX') != None:
+        rootfs_partition_index = d.getVar('ROOTFS_PARTITION_INDEX')
+    else:
+        rootfs_partition_index = 1
+
+    lastpart = index == len(partlist)
+
+    if index == rootfs_partition_index:
+        partname = "rootfs"
+        image = d.getVar('BPN')
+    else:
+        i = index if index < rootfs_partition_index else index - 1
+        partname = partlist[i]
+        image = "karo-image-%s" % partname
+
+    if partname in d.getVarFlags('IMAGE_ROOTFS_SIZE'):
+        size = d.getVarFlags('IMAGE_ROOTFS_SIZE')[partname]
+    elif d.getVar(partname.upper() + "_PARTITION_SIZE"):
+        size = d.getVar(partname.upper() + "_PARTITION_SIZE")
+    elif index == rootfs_partition_index:
+        size = d.getVar('IMAGE_ROOTFS_SIZE')
+    elif not lastpart:
+        bb.fatal("Cannot determine size for partition '%s'" % partname)
+
+    if lastpart:
+        size = "MAX"
+    elif size.isnumeric():
+        size = size + "KiB"
+
+    if d.getVarFlags('PARTITION_NAMES') and partname in d.getVarFlags('PARTITION_NAMES'):
+        partname = d.getVarFlag('PARTITION_NAMES', partname, True)
+
+    bb.note("partition[%s]='%s'" % (partname, size))
+    return (partname, image, size)
