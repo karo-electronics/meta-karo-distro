@@ -12,9 +12,6 @@ python do_create_install_scripts() {
         bb.note("Copying %s to %s" % (src, destdir))
         shutil.copyfile(src, os.path.join(destdir, os.path.basename(src)))
 
-    bb.note("DEPLOY_DIR_IMAGE='%s'" % d.expand("${DEPLOY_DIR_IMAGE}"))
-    bb.note("BPN='%s'" % d.expand("${BPN}"))
-
     from string import Template
 
     soc_family = d.getVar('SOC_FAMILY')
@@ -62,10 +59,9 @@ python do_create_install_scripts() {
         bb.fatal('Unable to open %s' % (uuu_auto_path))
 
     # copy trusted firmware and bootloader to uuu install dir
-    for type in d.getVar('FLASHLAYOUT_BOOTSCHEME_LABELS').split():
+    for type in d.getVar('TF_A_CONFIG').split():
         do_copyfile("%s/tf-a-%s-%s-%s.stm32" % (d.getVar('DEPLOY_DIR_IMAGE'), \
             soc_family, machine, type), img_dirname)
-    for type in d.getVar('FLASHLAYOUT_BOOTSCHEME_LABELS').split():
         do_copyfile("%s/fip-%s-%s-%s.bin" % (d.getVar('DEPLOY_DIR_IMAGE'), \
             soc_family, machine, type), img_dirname)
 
