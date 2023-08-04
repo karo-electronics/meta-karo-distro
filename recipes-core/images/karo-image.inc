@@ -7,6 +7,9 @@ require ${@ "karo-nxp.inc" if 'use-nxp-bsp' in d.getVar('MACHINEOVERRIDES').spli
 require ${@ "karo-rzg2.inc" if 'rzg2' in d.getVar('MACHINEOVERRIDES').split(':') else ""}
 require ${@ "karo-stm.inc" if ('stm32mp1' in d.getVar('MACHINEOVERRIDES').split(':') and 'qsmp-1510' not in d.getVar('MACHINEOVERRIDES').split(':')) else ""}
 
+inherit extrausers
+EXTRA_USERS_PARAMS ?= "usermod -p '' root"
+
 REQUIRED_DISTRO_FEATURES ??= ""
 
 ROOTFS_POSTPROCESS_COMMAND:remove = "\
