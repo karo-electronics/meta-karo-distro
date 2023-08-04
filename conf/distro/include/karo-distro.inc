@@ -58,6 +58,7 @@ MACHINE_FIRMWARE:remove = "${@ bb.utils.contains('DISTRO_FEATURES', 'wifi', "", 
 
 ROOTFS_PARTITION_SIZE ??= "${@bb.utils.contains('MACHINE_FEATURES',"nand", \
                       65536-${IMAGE_ROOTFS_EXTRA_SPACE},128*1024,d)}"
+BOOTFS_PARTITION_SIZE ??= "65536"
 
 # list of mount points for subimages, that will be emptied in rootfs image
 PARTITIONS_MOUNTPOINT_IMAGE ?= "/boot"
