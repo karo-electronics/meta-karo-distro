@@ -1,0 +1,2 @@
+SUBSYSTEM=="pxp_device", GROUP="weston", MODE="0660"
+SUBSYSTEM=="dma_heap", GROUP="weston", MODE="0660"

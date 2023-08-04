@@ -15,7 +15,7 @@ if [ -h /dev/rtc ];then
 	fi
     else
 	if [ "$target" != "$rtc" ];then
-	    if ! grep -q 'i2c:' "/sys/class/rtc/${rtc}/device/modalias" || [ ! -e /dev/rtc ];then
+	    if ! readlink "/sys/class/rtc/${rtc}/device/driver" | grep -q '/bus/i2c' || [ ! -e /dev/rtc ];then
 		rm -f /dev/rtc
 		ln -s "$rtc" /dev/rtc
 	    fi

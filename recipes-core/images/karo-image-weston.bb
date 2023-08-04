@@ -22,7 +22,6 @@ IMAGE_INSTALL:append = " \
         gst-examples \
         libdrm \
         libdrm-tests \
-        libdrm-kms \
         ${@bb.utils.contains('DISTRO_FEATURES', 'x11 wayland', 'weston-xwayland xterm', '', d)} \
 "
 

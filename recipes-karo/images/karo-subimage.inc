@@ -24,10 +24,3 @@ reformat_rootfs() {
         rm -rf "${IMAGE_ROOTFS}"/*
     fi
 }
-
-# Define specific EXT4 command line:
-#   - Create minimal inode number (as it is done by default in image_types.bbclass)
-#   - Add label name (maximum length of the volume label is 16 bytes)
-#   - Deactivate metadata_csum and dir_index (hashed b-trees): update not supported
-#     by U-Boot; set inode size to 256 to support timestamps beyond 2038-01-19
-EXTRA_IMAGECMD:ext4 += "-I 256 -L ${SUBIMAGE_NAME} -O ^metadata_csum,^dir_index"

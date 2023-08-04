@@ -76,8 +76,6 @@ IMAGE_ROOTFS_EXTRA_SPACE = "${@bb.utils.contains('MACHINE_FEATURES',"nand",2*128
 IMAGE_OVERHEAD_FACTOR = "1"
 IMAGE_ROOTFS_SIZE ?= "${@${ROOTFS_PARTITION_SIZE}-(${IMAGE_ROOTFS_EXTRA_SPACE})}"
 
-IMAGE_FSTYPES:remove = "tar.gz"
-IMAGE_FSTYPES:append = " tar.bz2"
 IMAGE_FSTYPES:append = "${@bb.utils.contains('MACHINE_FEATURES',"emmc"," ext4","",d)}"
 IMAGE_FSTYPES:append = "${@bb.utils.contains('MACHINE_FEATURES',"nand"," ubi","",d)}"
 

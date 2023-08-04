@@ -63,5 +63,8 @@ fi
 EDITOR="vi"			# needed for packages like cron, git-commit
 PAGER="less"
 export PATH PS1 OPIEDIR QPEDIR QTDIR EDITOR PAGER TERM
+if [ `id -u` != 0 ];then
+	export XDG_RUNTIME_DIR=/run/user/`id -u`
+fi
 
 umask 022

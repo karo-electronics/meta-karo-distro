@@ -45,7 +45,7 @@ DISTRO_FEATURES_DEFAULT:append:tx8p = " lvds"
 
 VIRTUAL-RUNTIME_base-utils-hwclock = "util-linux-hwclock"
 VIRTUAL-RUNTIME_dev_manager ??= "udev"
-VIRTUAL-RUNTIME_init_manager ??= "${@bb.utils.contains('DISTRO_FEATURES',"systemd","systemd","sysvinit",d)}"
+INIT_MANAGER ?= "${@bb.utils.contains('DISTRO_FEATURES',"systemd","systemd","sysvinit",d)}"
 
 PREFERRED_PROVIDER_opencl-headers = "imx-gpu-viv"
 PREFERRED_RPROVIDER_mfgtool-base ?= "linux-imx-mfgtool"
@@ -63,8 +63,7 @@ BOOTFS_PARTITION_SIZE ??= "65536"
 # list of mount points for subimages, that will be emptied in rootfs image
 PARTITIONS_MOUNTPOINT_IMAGE ?= "/boot"
 
-# Remove some image types we don't need
 IMAGE_FSTYPES = "ext4 tar.bz2"
 
 # mask out sysvinit recipes from meta-imx layer
-BBMASK:use-nxp-bsp:append = " .*/meta-imx/.*/sysvinit/.*"
+BBMASK:append:use-nxp-bsp = " .*/meta-imx/.*/sysvinit/.*"
