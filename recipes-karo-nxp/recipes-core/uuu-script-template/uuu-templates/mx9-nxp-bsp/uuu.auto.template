@@ -15,7 +15,7 @@ FB: flash bootloader $image_bootloader-$machine.bin-default-$imxboot_target
 # enable boot from eMMC
 FB: ucmd mmc partconf $${emmc_dev} $${emmc_boot_ack} $${emmc_boot_part} $${emmc_boot_part}
 # erase environment in eMMC
-FB: ucmd mmc erase 800 800
+FB: ucmd mmc erase c00 400
 # switch to eMMC user partition
 FB: ucmd mmc partconf $${emmc_dev} $${emmc_boot_ack} $${emmc_boot_part} 0
 

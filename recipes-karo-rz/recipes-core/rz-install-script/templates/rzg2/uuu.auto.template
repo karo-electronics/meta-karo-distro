@@ -13,7 +13,7 @@ uuu_version 1.4.77
 ### Re-program bootloader
 FB: oem ucmd:setenv fastboot_buffer 0x58000000
 FB: oem ucmd:setenv erase_bootloader 'mmc erase 0 800;mmc erase 1000 1000'
-FB: oem ucmd:setenv erase_env mmc erase 800 800
+FB: oem ucmd:setenv erase_env mmc erase c00 400
 FB: oem ucmd:setenv prog_bl2 'setexpr fs $${filesize} + 1ff; setexpr fs $${fs} / 200; mmc write $${fastboot_buffer} 1 $${fs}'
 FB: oem ucmd:setenv prog_fip 'setexpr fs $${filesize} + 1ff; setexpr fs $${fs} / 200; mmc write $${fastboot_buffer} 100 $${fs}'
 FB: oem ucmd:mmc partconf 0 $${emmc_boot_ack} $${emmc_boot_part} $${emmc_boot_part}

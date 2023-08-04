@@ -16,7 +16,7 @@ CFG: FB: -vid 0x0483 -pid 0x0afb
 ### Program Trusted Firmware image
 FB: oem ucmd:setenv fastboot_buffer 0xc0000000
 FB: oem ucmd:setenv erase_atf 'mmc erase 0 800;mmc erase 1000 1000'
-FB: oem ucmd:setenv erase_env mmc erase 800 800
+FB: oem ucmd:setenv erase_env mmc erase c00 400
 FB: oem ucmd:setenv prog_atf 'setexpr fs $${filesize} + 1ff; setexpr fs $${fs} / 200; mmc write $${fastboot_buffer} 0 $${fs}'
 FB: oem ucmd:mmc partconf 0 $${emmc_boot_ack} $${emmc_boot_part} $${emmc_boot_part}
 FB: download -f tf-a-$soc_family-$machine-trusted.stm32
