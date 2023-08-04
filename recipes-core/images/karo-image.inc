@@ -15,6 +15,15 @@ ROOTFS_POSTPROCESS_COMMAND:remove = "\
 "
 
 IMAGE_FEATURES:append = " tools-debug"
+DEBUG_TOOLS ?= " \
+        gdbserver \
+        i2c-tools \
+        libgpiod \
+        libgpiod-tools \
+        spidev-test \
+        strace \
+        tcpdump \
+"
 
 IMAGE_INSTALL:append = " \
         ${@bb.utils.contains('DISTRO_FEATURES','alsa', \
@@ -23,19 +32,16 @@ IMAGE_INSTALL:append = " \
         canutils \
         coreutils \
         ${@bb.utils.contains('DISTRO_FEATURES','dhcpcd','dhcpcd','',d)} \
+        ${DEBUG_TOOLS} \
         dosfstools \
         e2fsprogs \
         e2fsprogs-resize2fs \
         ethtool \
         file \
-        gdbserver \
-        i2c-tools \
         kmod \
         ldd \
         less \
         libstdc++ \
-        libgpiod \
-        libgpiod-tools \
         ${@bb.utils.contains('DISTRO_FEATURES','wifi','linux-firmware-pcie8997','',d)} \
         lsof \
         mmc-utils \
@@ -48,10 +54,8 @@ IMAGE_INSTALL:append = " \
         parted \
         ${@bb.utils.contains('DISTRO_FEATURES','pcie','pciutils','',d)} \
         rsync \
-        strace \
         sysfsutils \
         tcp-wrappers \
-        tcpdump \
         tzdata \
         util-linux-fsck \
         util-linux-mkfs \
