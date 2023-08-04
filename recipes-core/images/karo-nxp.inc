@@ -59,8 +59,9 @@ python do_create_uuu_auto_script() {
         bb.fatal('Unable to open %s' % (uuu_auto_path))
 
     for type in d.getVar('UBOOT_CONFIG').split():
-        do_copyfile("%s/%s-%s" % (d.getVar('DEPLOY_DIR_IMAGE'), \
-            d.getVar('IMAGE_BOOTLOADER'), type), img_dirname)
+        do_copyfile("%s/%s-%s.%s-%s-%s" % (d.getVar('DEPLOY_DIR_IMAGE'), \
+            d.getVar('IMAGE_BOOTLOADER'), machine, d.getVar('UBOOT_SUFFIX'), \
+            type, imxboot_target), img_dirname)
 
     do_copyfile("%s/%s-%s.ext4" % \
         (d.getVar('DEPLOY_DIR_IMAGE'), rootfs_image, machine), img_dirname)
