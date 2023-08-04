@@ -18,7 +18,7 @@ SRC_URI += "file://st-m4firmware-load-default.sh"
 SRC_URI += "file://st-m4firmware-load.service"
 SRC_URI += "file://shutdown-stm32mp1-m4.sh"
 
-DEPENDS += " gcc-arm-none-eabi-native "
+DEPENDS += "gcc-arm-none-eabi-native"
 
 # Create specific userfs package
 M4_PACKAGE_4USERFS ?= "0"
@@ -141,7 +141,7 @@ do_install() {
 
 # -----------------------------------------------------------
 # specific for service: start copro m4 firwmare at boot time
-SYSTEMD_PACKAGES += " m4-stm32mp1 "
+SYSTEMD_PACKAGES += "m4-stm32mp1"
 SYSTEMD_SERVICE:${PN} = "st-m4firmware-load.service"
 SYSTEMD_AUTO_ENABLE:${PN} = "disable"
 
