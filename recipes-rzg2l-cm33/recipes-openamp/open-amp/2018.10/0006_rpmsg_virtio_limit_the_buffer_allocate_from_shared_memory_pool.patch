@@ -1,0 +1,31 @@
+From f64acf23bd27e32f71a9ba4f2a3f5f5f51421ba8 Mon Sep 17 00:00:00 2001
+From: Khanh Tran <khanh.tran.te@renesas.com>
+Date: Tue, 20 Apr 2021 16:56:01 +0700
+Subject: [PATCH] rpmsg: virito: limit the buffer allocate from shared memory
+ pool rpmsg_virtio_get_tx_buffer shouldn't allocate the number of buffer
+ bigger than the virtio ring length of sending
+
+---
+ lib/rpmsg/rpmsg_virtio.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/lib/rpmsg/rpmsg_virtio.c b/lib/rpmsg/rpmsg_virtio.c
+index ca8db6a..2e9b161 100644
+--- a/lib/rpmsg/rpmsg_virtio.c
++++ b/lib/rpmsg/rpmsg_virtio.c
+@@ -149,10 +149,11 @@ static void *rpmsg_virtio_get_tx_buffer(struct rpmsg_virtio_device *rvdev,
+ #ifndef VIRTIO_SLAVE_ONLY
+ 	if (role == RPMSG_MASTER) {
+ 		data = virtqueue_get_buffer(rvdev->svq, (uint32_t *)len, idx);
+-		if (data == NULL) {
++		if (!data && rvdev->svq->vq_free_cnt) {
+ 			data = rpmsg_virtio_shm_pool_get_buffer(rvdev->shpool,
+ 							RPMSG_BUFFER_SIZE);
+ 			*len = RPMSG_BUFFER_SIZE;
++			*idx = 0;
+ 		}
+ 	}
+ #endif /*!VIRTIO_SLAVE_ONLY*/
+-- 
+2.7.4
+

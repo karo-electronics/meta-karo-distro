@@ -1,24 +1,26 @@
 FILESEXTRAPATHS:prepend := "${THISDIR}/${PN}:"
 SRC_URI += "\
-	    file://adjtime \
+    file://adjtime \
 "
+
 dirs1777 = " \
-           /tmp \
-           ${localstatedir}/tmp \
+    /tmp \
+    ${localstatedir}/tmp \
 "
+
 dirs755:remove = " \
-               ${localstatedir}/volatile \
-               ${localstatedir}/volatile/log \
+    ${localstatedir}/volatile \
+    ${localstatedir}/volatile/log \
 "
+
 dirs755:append = " \
-               ${localstatedir}/log \
-               ${localstatedir}/lib/hwclock \
-               ${@ 'run/dbus' if d.getVar('IMAGE_TYPE') != 'core-image-minimal' else ''} \
-               /run/lock \
-               /run/network \
+    ${localstatedir}/log \
+    ${localstatedir}/lib/hwclock \
+    ${@ 'run/dbus' if d.getVar('IMAGE_TYPE') != 'core-image-minimal' else ''} \
+    /run/lock \
+    /run/network \
+    ${prefix}/local \
 "
-dirs755:append:stm32mp1 = " ${STM32MP_USERFS_MOUNTPOINT_IMAGE}"
-dirs755:append:stm32mp1 = " ${STM32MP_VENDORFS_MOUNTPOINT_IMAGE}"
 
 volatiles = ""
 

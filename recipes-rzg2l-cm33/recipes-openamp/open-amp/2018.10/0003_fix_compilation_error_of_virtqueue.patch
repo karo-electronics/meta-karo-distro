@@ -1,0 +1,26 @@
+From 95eda03d6d1f84337eed587358c2331d79f3f7ef Mon Sep 17 00:00:00 2001
+From: Khanh Tran <khanh.tran.te@renesas.com>
+Date: Tue, 20 Apr 2021 16:35:40 +0700
+Subject: [PATCH] Fix compilation error.Add missing semicolon. The compilation
+ error if define VQUEUE_DEBUG
+
+---
+ lib/include/openamp/virtqueue.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/lib/include/openamp/virtqueue.h b/lib/include/openamp/virtqueue.h
+index ad24749..5114fb2 100644
+--- a/lib/include/openamp/virtqueue.h
++++ b/lib/include/openamp/virtqueue.h
+@@ -150,7 +150,7 @@ typedef void vq_notify(struct virtqueue *);
+ 			(vq)->vq_inuse = true;               \
+ 		else                                         \
+ 			VQASSERT(vq, !(vq)->vq_inuse,\
+-				"VirtQueue already in use")  \
++				"VirtQueue already in use");  \
+ 	} while (0)
+ 
+ #define VQUEUE_IDLE(vq)            ((vq)->vq_inuse = false)
+-- 
+2.7.4
+

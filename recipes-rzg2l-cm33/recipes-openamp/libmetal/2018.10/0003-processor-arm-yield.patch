@@ -1,0 +1,10 @@
+--- old/lib/processor/arm/cpu.h	2018-10-29 14:02:02.000000000 +0900
++++ new/lib/processor/arm/cpu.h	2020-01-22 10:26:48.166971752 +0900
+@@ -12,6 +12,6 @@
+ #ifndef __METAL_ARM_CPU__H__
+ #define __METAL_ARM_CPU__H__
+ 
+-#define metal_cpu_yield()
++#define metal_cpu_yield() asm volatile("yield")
+ 
+ #endif /* __METAL_ARM_CPU__H__ */

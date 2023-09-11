@@ -27,7 +27,7 @@ MOUNT_PARTITIONS_LIST += "${STM32MP_USERFS_LABEL},${STM32MP_USERFS_MOUNTPOINT_IM
 
 # Define image partition size (supposed to be set as max size in image recipe)
 # Proposed value for bootfs is 64MB
-BOOTFS_PARTITION_SIZE = "65536"
+BOOTFS_PARTITION_SIZE ?= "65536"
 # Proposed value for rootfs should fit our highest constraint: NAND size (128MiB)
 # For optee bootscheme we have the maximum partitions:
 #   FSBL1 + SSBL + SSBL2 + TEEH + TEED + TEEX + Multivolume UBI = NAND size

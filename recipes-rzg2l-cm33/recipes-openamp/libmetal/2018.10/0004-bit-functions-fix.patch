@@ -1,0 +1,33 @@
+diff --git a/lib/utilities.h b/lib/utilities.h
+index eb540d2..500227b 100755
+--- a/lib/utilities.h
++++ b/lib/utilities.h
+@@ -83,8 +83,8 @@ static inline void metal_bitmap_set_bit(unsigned long *bitmap, int bit)
+ 
+ static inline int metal_bitmap_is_bit_set(unsigned long *bitmap, int bit)
+ {
+-	return bitmap[bit / METAL_BITS_PER_ULONG] &
+-		metal_bit(bit & (METAL_BITS_PER_ULONG - 1));
++	return ((bitmap[bit / METAL_BITS_PER_ULONG] &
++		metal_bit(bit & (METAL_BITS_PER_ULONG - 1))) == 0) ? 0 : 1;
+ }
+ 
+ static inline void metal_bitmap_clear_bit(unsigned long *bitmap, int bit)
+@@ -113,7 +113,7 @@ metal_bitmap_next_set_bit(unsigned long *bitmap, unsigned int start,
+ #define metal_bitmap_for_each_set_bit(bitmap, bit, max)			\
+ 	for ((bit) = metal_bitmap_next_set_bit((bitmap), 0, (max));	\
+ 	     (bit) < (max);						\
+-	     (bit) = metal_bitmap_next_set_bit((bitmap), (bit), (max)))
++	     (bit) = metal_bitmap_next_set_bit((bitmap), (bit + 1), (max)))
+ 
+ static inline unsigned int
+ metal_bitmap_next_clear_bit(unsigned long *bitmap, unsigned int start,
+@@ -130,7 +130,7 @@ metal_bitmap_next_clear_bit(unsigned long *bitmap, unsigned int start,
+ #define metal_bitmap_for_each_clear_bit(bitmap, bit, max)		\
+ 	for ((bit) = metal_bitmap_next_clear_bit((bitmap), 0, (max));	\
+ 	     (bit) < (max);						\
+-	     (bit) = metal_bitmap_next_clear_bit((bitmap), (bit), (max)))
++	     (bit) = metal_bitmap_next_clear_bit((bitmap), (bit + 1), (max)))
+ 
+ static inline unsigned long metal_log2(unsigned long in)
+ {

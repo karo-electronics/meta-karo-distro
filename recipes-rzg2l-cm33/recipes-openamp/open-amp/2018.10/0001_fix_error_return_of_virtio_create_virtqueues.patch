@@ -1,0 +1,25 @@
+From 35910d6e3397eb32320b4508039478730ab303d7 Mon Sep 17 00:00:00 2001
+From: Khanh Tran <khanh.tran.te@renesas.com>
+Date: Tue, 20 Apr 2021 16:27:20 +0700
+Subject: [PATCH] fix error return of virtio_create_virtqueues
+ virtio_create_virtqueue shouldn't negative ERROR_VQUEUE_INVLD_PARAM
+
+---
+ lib/virtio/virtio.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/lib/virtio/virtio.c b/lib/virtio/virtio.c
+index 5cf8722..d1c9376 100644
+--- a/lib/virtio/virtio.c
++++ b/lib/virtio/virtio.c
+@@ -92,7 +92,7 @@ int virtio_create_virtqueues(struct virtio_device *vdev, unsigned int flags,
+
+ 	num_vrings = vdev->vrings_num;
+ 	if (nvqs > num_vrings)
+-		return -ERROR_VQUEUE_INVLD_PARAM;
++		return ERROR_VQUEUE_INVLD_PARAM;
+ 	/* Initialize virtqueue for each vring */
+ 	for (i = 0; i < nvqs; i++) {
+ 		vring_info = &vdev->vrings_info[i];
+--
+2.7.4
