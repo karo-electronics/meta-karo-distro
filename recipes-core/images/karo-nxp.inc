@@ -18,10 +18,6 @@ python do_create_uuu_auto_script() {
     from string import Template
 
     machine = d.getVar('MACHINE')
-    imxboot_targets = d.getVar('IMXBOOT_TARGETS')
-    if imxboot_targets == None:
-        bb.fatal("IMXBOOT_TARGETS must be set!")
-    imxboot_target = imxboot_targets.strip()
     rootfs_image = d.getVar('BPN')
 
     uuu_template_path = os.path.join(d.getVar('DEPLOY_DIR_IMAGE'), "uuu.auto.template")
@@ -51,7 +47,7 @@ python do_create_uuu_auto_script() {
         with open(uuu_auto_path, 'w') as uuu_script:
             uuu_template = Template(uuu_template_string)
             uuu_auto = uuu_template.substitute(image=rootfs_image, machine=machine,
-                imxboot_target=imxboot_target, partitions=partitions, flash_cmds=flash_cmds,
+                partitions=partitions, flash_cmds=flash_cmds,
                 image_bootloader=d.getVar('IMAGE_BOOTLOADER'))
             uuu_script.write(uuu_auto)
             uuu_script.close()
@@ -59,9 +55,9 @@ python do_create_uuu_auto_script() {
         bb.fatal('Unable to open %s' % (uuu_auto_path))
 
     for type in d.getVar('UBOOT_CONFIG').split():
-        do_copyfile("%s/%s-%s.%s-%s-%s" % (d.getVar('DEPLOY_DIR_IMAGE'), \
-            d.getVar('IMAGE_BOOTLOADER'), machine, d.getVar('UBOOT_SUFFIX'), \
-            type, imxboot_target), img_dirname)
+        do_copyfile("%s/%s-%s-%s.%s" % (d.getVar('DEPLOY_DIR_IMAGE'), \
+            d.getVar('IMAGE_BOOTLOADER'), machine, type, d.getVar('UBOOT_SUFFIX')), \
+            img_dirname)
 
     do_copyfile("%s/%s-%s.ext4" % \
         (d.getVar('DEPLOY_DIR_IMAGE'), rootfs_image, machine), img_dirname)

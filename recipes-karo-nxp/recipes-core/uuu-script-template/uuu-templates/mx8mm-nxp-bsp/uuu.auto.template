@@ -8,16 +8,19 @@ uuu_version 1.4.77
 # This file flashes $image to $machine
 
 ### boot U-Boot with fastboot support
-SDP: boot -f $image_bootloader-$machine.bin-mfg-$imxboot_target
-SDPV: write -f $image_bootloader-$machine.bin-mfg-$imxboot_target -skipspl
+SDP: boot -f $image_bootloader-$machine-mfg.bin
+SDPV: write -f $image_bootloader-$machine-mfg.bin -skpispl
 SDPV: jump
 
 ### Writing default u-boot to emmc
-FB: flash bootloader $image_bootloader-$machine.bin-default-$imxboot_target
-# enable boot from eMMC
+FB: flash mmc0boot0 $image_bootloader-$machine-default.bin
+
+# enable boot from eMMC and switch to boot partition
 FB: ucmd mmc partconf $${emmc_dev} $${emmc_boot_ack} $${emmc_boot_part} $${emmc_boot_part}
+
 # erase environment in eMMC
 FB: ucmd mmc erase c00 400
+
 # switch to eMMC user partition
 FB: ucmd mmc partconf $${emmc_dev} $${emmc_boot_ack} $${emmc_boot_part} 0
 

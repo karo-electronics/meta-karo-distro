@@ -18,6 +18,7 @@ ROOTFS_POSTPROCESS_COMMAND:remove = "\
 "
 
 IMAGE_FEATURES:append = " tools-debug"
+
 DEBUG_TOOLS ?= " \
         gdbserver \
         i2c-tools \
@@ -71,8 +72,9 @@ IMAGE_INSTALL:append = " \
 DEPENDS:append = " cross-localedef-native qemuwrapper-cross"
 
 IMAGE_INSTALL:append = " kernel-modules"
-DEPENDS:append:use-mainline-bsp = " u-boot-karo"
-DEPENDS:append:use-nxp-bsp = " imx-boot-karo uuu-script-template"
+DEPENDS:append:mx8m-nxp-bsp = " u-boot-karo"
+DEPENDS:append:mx9-nxp-bsp = " imx-boot-karo"
+DEPENDS:append:use-nxp-bsp = " uuu-script-template"
 DEPENDS:append:rzg2 = " rzg2-install-scripts"
 DEPENDS:append:stm32mp1 = " stm32mp1-install-scripts"
 
