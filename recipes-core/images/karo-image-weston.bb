@@ -41,6 +41,12 @@ IMAGE_INSTALL:append:mx8mm-nxp-bsp = " \
         imx-vpu-hantro-daemon \
 "
 
+IMAGE_INSTALL:append:qsxp = " \
+        kernel-module-isp-vvcam \
+        isp-imx \
+        packagegroup-imx-isp \
+"
+
 # karo-image-weston won't fit in any of our nand modules!
 IMAGE_FSTYPES:remove = "ubi"
 

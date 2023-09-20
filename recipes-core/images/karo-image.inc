@@ -65,7 +65,7 @@ IMAGE_INSTALL:append = " \
         util-linux-mkfs \
         util-linux-mount \
         util-linux-setterm \
-        ${@bb.utils.contains('DISTRO_FEATURES','imx219','v4l-utils','',d)} \
+        ${@bb.utils.contains('DISTRO_FEATURES','csi-camera','v4l-utils','',d)} \
         ${@bb.utils.contains('DISTRO_FEATURES','wifi','wpa-supplicant','',d)} \
 "
 
