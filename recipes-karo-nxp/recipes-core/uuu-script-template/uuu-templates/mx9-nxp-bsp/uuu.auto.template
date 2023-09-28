@@ -11,7 +11,7 @@ uuu_version 1.5.11
 SDPS: boot -f $image_bootloader-$machine-mfg.bin
 
 ### Writing default u-boot to emmc
-FB: flash bootloader $image_bootloader-$machine-default.bin
+FB: flash mmc0boot0 $image_bootloader-$machine-default.bin
 # enable boot from eMMC
 FB: ucmd mmc partconf $${emmc_dev} $${emmc_boot_ack} $${emmc_boot_part} $${emmc_boot_part}
 # erase environment in eMMC
