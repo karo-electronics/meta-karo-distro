@@ -66,5 +66,9 @@ PARTITIONS_MOUNTPOINT_IMAGE ?= "/boot"
 
 IMAGE_FSTYPES = "ext4 tar.bz2"
 
+NETWORK_INTERFACES ?= "eth0"
+NETWORK_INTERFACES:mx9-nxp-bsp ?= "eth0 eth1"
+NETWORK_INTERFACES:mx8mp-nxp-bsp ?= "eth0 eth1"
+
 # mask out sysvinit recipes from meta-imx layer
 BBMASK:append:use-nxp-bsp = " .*/meta-imx/.*/sysvinit/.*"
