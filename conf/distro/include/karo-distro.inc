@@ -72,3 +72,5 @@ NETWORK_INTERFACES:mx8mp-nxp-bsp ?= "eth0 eth1"
 
 # mask out sysvinit recipes from meta-imx layer
 BBMASK:append:use-nxp-bsp = " .*/meta-imx/.*/sysvinit/.*"
+# mask out silly weston-init.bbappend from meta-imx layer
+BBMASK:append:use-nxp-bsp = " .*/meta-imx/.*/weston-init.bbappend"
