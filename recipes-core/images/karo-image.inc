@@ -54,7 +54,7 @@ IMAGE_INSTALL:append = " \
         net-tools \
         nfs-utils \
         ntp \
-        ntpdate \
+        ntp-utils \
         parted \
         ${@bb.utils.contains('DISTRO_FEATURES','pcie','pciutils','',d)} \
         rsync \
