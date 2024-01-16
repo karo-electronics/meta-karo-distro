@@ -19,7 +19,7 @@ FB: oem ucmd:setenv erase_atf 'mmc erase 0 800;mmc erase 1000 1000'
 FB: oem ucmd:setenv erase_env mmc erase c00 400
 FB: oem ucmd:setenv prog_atf 'setexpr fs $${filesize} + 1ff; setexpr fs $${fs} / 200; mmc write $${fastboot_buffer} 0 $${fs}'
 FB: oem ucmd:mmc partconf 0 $${emmc_boot_ack} $${emmc_boot_part} $${emmc_boot_part}
-FB: download -f tf-a-$soc_family-$machine-trusted.stm32
+FB: download -f tf-a-$soc_family-$machine-$bootscheme.stm32
 FB: oem ucmd:run erase_atf
 FB: oem ucmd:run erase_env
 FB: oem ucmd:run prog_atf

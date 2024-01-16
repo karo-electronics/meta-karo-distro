@@ -18,6 +18,8 @@ python do_create_install_scripts() {
     from string import Template
 
     soc_family = d.getVar('SOC_FAMILY')
+    bootscheme = d.getVar('FLASHLAYOUT_BOOTSCHEME_LABELS')
+
     machine = d.getVar('MACHINE')
     rootfs_image = d.getVar('BPN')
     rfs_size = d.getVar('ROOTFS_PARTITION_SIZE')
@@ -36,7 +38,7 @@ python do_create_install_scripts() {
         rootfs_partition_index = 1
 
     partitions = "start=1MiB,name=fip,size=2MiB;"
-    flash_cmds = "FB: flash fip fip-%s-%s-trusted.bin\n" % (soc_family, machine)
+    flash_cmds = "FB: flash fip fip-%s-%s-%s.bin\n" % (soc_family, bootscheme, machine)
     dlm = ""
     for index in range(0, len(partlist) + 1):
         (partname, img, size) = get_part_info(d, partlist, index)
@@ -55,7 +57,8 @@ python do_create_install_scripts() {
         with open(uuu_auto_path, 'w') as uuu_script:
             uuu_template = Template(uuu_template_string)
             uuu_auto = uuu_template.substitute(image=rootfs_image, machine=machine, \
-                soc_family=soc_family, partitions=partitions, flash_cmds=flash_cmds)
+                soc_family=soc_family, bootscheme=bootscheme, partitions=partitions, \
+                flash_cmds=flash_cmds)
             uuu_script.write(uuu_auto)
             uuu_script.close()
     except OSError:
