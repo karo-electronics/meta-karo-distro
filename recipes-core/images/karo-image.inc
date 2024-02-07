@@ -47,6 +47,8 @@ IMAGE_INSTALL:append = " \
         less \
         libstdc++ \
         ${@bb.utils.contains('DISTRO_FEATURES','wifi','linux-firmware-pcie8997','',d)} \
+        ${@bb.utils.contains('MACHINE_FEATURES','nxp-wifi','kernel-module-nxp89xx','',d)} \
+        ${@bb.utils.contains('MACHINE_FEATURES','nxp-wifi','firmware-nxp-wifi-nxp8987-sdio','',d)} \
         lsof \
         mmc-utils \
         ${@bb.utils.contains('MACHINE_FEATURES',"nand"," mtd-utils","",d)} \
