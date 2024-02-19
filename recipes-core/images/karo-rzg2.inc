@@ -81,7 +81,7 @@ python do_create_install_scripts() {
 
     do_copyfile("%s/Flash_Writer_SCIF_%s.mot" % (d.getVar('DEPLOY_DIR_IMAGE'), \
         machine), img_dirname)
-    do_copyfile("%s/bl2_bp-%s.bin" % (d.getVar('DEPLOY_DIR_IMAGE'), \
+    do_copyfile("%s/%s/bl2_bp-%s.bin" % (d.getVar('DEPLOY_DIR_IMAGE'), d.getVar('FIPTOOL_DIR'), \
         machine), img_dirname)
     do_copyfile("%s/fip-%s.bin" % (d.getVar('DEPLOY_DIR_IMAGE'), \
         machine), img_dirname)
