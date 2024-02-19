@@ -72,9 +72,9 @@ FLASHLAYOUT_TYPE_LABELS = "${TF_A_DEVICETREE}"
 #           5) Default 'list' to 'none' when not defined
 # -----------------------------------------------------------------------------
 
-FLASHLAYOUT_PARTITION_LABELS_trusted_emmc    = "fsbl1-boot ssbl-boot fsbl1 fip boot rootfs userfs"
-FLASHLAYOUT_PARTITION_LABELS_trusted_spinand = "fsbl1-boot ssbl-boot fsbl1 fip ubi"
-FLASHLAYOUT_PARTITION_LABELS_optee_emmc      = "fsbl1-boot fip-boot fsbl1 fip boot rootfs userfs"
+FLASHLAYOUT_PARTITION_LABELS_trusted_emmc    = "fsbl-boot ssbl-boot fsbl1 fip boot rootfs userfs"
+FLASHLAYOUT_PARTITION_LABELS_trusted_spinand = "fsbl-boot ssbl-boot fsbl1 fip ubi"
+FLASHLAYOUT_PARTITION_LABELS_optee_emmc      = "fsbl-boot fip-boot fsbl1 fip boot rootfs userfs"
 
 # -----------------------------------------------------------------------------
 # Partition configuration for each partition label
@@ -90,7 +90,7 @@ FLASHLAYOUT_PARTITION_LABELS_optee_emmc      = "fsbl1-boot fip-boot fsbl1 fip bo
 #           9) Default 'item' to 'none' when not defined
 # -----------------------------------------------------------------------------
 FLASHLAYOUT_PARTITION_ENABLE                = "PD"
-FLASHLAYOUT_PARTITION_ENABLE_fsbl1-boot     = "-"
+FLASHLAYOUT_PARTITION_ENABLE_fsbl-boot      = "-"
 FLASHLAYOUT_PARTITION_ENABLE_ssbl-boot      = "-"
 FLASHLAYOUT_PARTITION_ENABLE_fip-boot       = "-"
 FLASHLAYOUT_PARTITION_ENABLE_empty          = "PE"
@@ -113,7 +113,7 @@ FLASHLAYOUT_PARTITION_ENABLE_env            = "PED"
 # there are two reserved IDs
 #   0x01 for FSBL
 #   0x03 for SSBL
-FLASHLAYOUT_PARTITION_ID_fsbl1-boot     = "0x01"
+FLASHLAYOUT_PARTITION_ID_fsbl-boot      = "0x01"
 FLASHLAYOUT_PARTITION_ID_ssbl-boot      = "0x03"
 FLASHLAYOUT_PARTITION_ID_fip-boot       = "0x03"
 FLASHLAYOUT_PARTITION_ID_fsbl1          = "0x04"
@@ -146,11 +146,11 @@ FLASHLAYOUT_PARTITION_TYPE_fip2         = "FIP"
 
 FLASHLAYOUT_PARTITION_DEVICE_emmc       = "${DEVICE_EMMC}"
 FLASHLAYOUT_PARTITION_DEVICE_spinand    = "${DEVICE_SPINAND}"
-FLASHLAYOUT_PARTITION_DEVICE_fsbl1-boot = "none"
+FLASHLAYOUT_PARTITION_DEVICE_fsbl-boot  = "none"
 FLASHLAYOUT_PARTITION_DEVICE_ssbl-boot  = "none"
 FLASHLAYOUT_PARTITION_DEVICE_fip-boot   = "none"
 
-FLASHLAYOUT_PARTITION_OFFSET_fsbl1-boot = "0x0"
+FLASHLAYOUT_PARTITION_OFFSET_fsbl-boot  = "0x0"
 FLASHLAYOUT_PARTITION_OFFSET_ssbl-boot  = "0x0"
 FLASHLAYOUT_PARTITION_OFFSET_fip-boot   = "0x0"
 FLASHLAYOUT_PARTITION_OFFSET_emmc_fsbl1 = "boot1"
@@ -183,7 +183,7 @@ FLASHLAYOUT_PARTITION_SIZE_userfs       = "${USERFS_PARTITION_SIZE}"
 FLASHLAYOUT_PARTITION_SIZE_ubi          = "${UBI_PARTITION_SIZE}"
 
 # Set binaries to use for each partition
-FLASHLAYOUT_PARTITION_BIN2LOAD_fsbl1-boot   = "tf-a.stm32"
+FLASHLAYOUT_PARTITION_BIN2LOAD_fsbl-boot    = "tf-a.stm32"
 FLASHLAYOUT_PARTITION_BIN2LOAD_ssbl-boot    = "fip.bin"
 FLASHLAYOUT_PARTITION_BIN2LOAD_fip-boot     = "fip.bin"
 FLASHLAYOUT_PARTITION_BIN2LOAD_fsbl1        = "tf-a.stm32"
@@ -200,7 +200,7 @@ FLASHLAYOUT_PARTITION_BIN2LOAD_ubi          = "${IMAGE_LINK_NAME}.ubi"
 # =========================================================================
 ENABLE_FLASHLAYOUT_CONFIG = "1"
 
-BIN2BOOT_REPLACE_PATTERNS_fsbl1-boot:stm32mp15 = "trusted;usb"
-BIN2BOOT_REPLACE_PATTERNS_ssbl-boot:stm32mp15 = "trusted;usb"
-BIN2BOOT_REPLACE_PATTERNS_fsbl1-boot:stm32mp13 = "optee;usb"
-BIN2BOOT_REPLACE_PATTERNS_fip-boot:stm32mp13 = "optee;usb"
+BIN2BOOT_REPLACE_PATTERNS_fsbl-boot:stm32mp15 = "trusted;usb"
+BIN2BOOT_REPLACE_PATTERNS_ssbl-boot:stm32mp15 = "trusted;mfg"
+BIN2BOOT_REPLACE_PATTERNS_fsbl-boot:stm32mp13 = "optee;usb"
+BIN2BOOT_REPLACE_PATTERNS_fip-boot:stm32mp13 = "optee;mfg"
