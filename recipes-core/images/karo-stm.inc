@@ -38,7 +38,7 @@ python do_create_install_scripts() {
         rootfs_partition_index = 1
 
     partitions = "start=1MiB,name=fip,size=2MiB;"
-    flash_cmds = "FB: flash fip fip-%s-%s-%s.bin\n" % (soc_family, bootscheme, machine)
+    flash_cmds = "FB: flash fip fip-%s-%s-%s.bin\n" % (soc_family, machine, bootscheme)
     dlm = ""
     for index in range(0, len(partlist) + 1):
         (partname, img, size) = get_part_info(d, partlist, index)
