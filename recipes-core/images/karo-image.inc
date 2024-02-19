@@ -74,7 +74,6 @@ IMAGE_INSTALL:append = " \
 DEPENDS:append = " cross-localedef-native qemuwrapper-cross"
 
 IMAGE_INSTALL:append = " kernel-modules"
-DEPENDS:append = " u-boot-karo"
 DEPENDS:append:use-nxp-bsp = " uuu-script-template"
 DEPENDS:append:rzg2 = " rzg2-install-scripts"
 DEPENDS:append:stm32mp1 = " stm32mp1-install-scripts"
