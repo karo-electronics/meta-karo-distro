@@ -1,5 +1,3 @@
-IMAGE_FSTYPES:append = "${@bb.utils.contains('MACHINE_FEATURES',"nand"," ubi","",d)}"
-
 IMAGE_LINGUAS = ""
 
 IMAGE_FEATURES:remove = "tools-debug"
