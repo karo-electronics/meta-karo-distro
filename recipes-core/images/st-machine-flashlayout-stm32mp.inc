@@ -29,8 +29,7 @@ DEVICE_ALIGNMENT_SIZE_${DEVICE_SPINAND} = "0x00020000"
 # -----------------------------------------------------------------------------
 # Define bootscheme labels
 # -----------------------------------------------------------------------------
-FLASHLAYOUT_BOOTSCHEME_LABELS:stm32mp15 ?= "trusted"
-FLASHLAYOUT_BOOTSCHEME_LABELS:stm32mp13 ?= "optee"
+FLASHLAYOUT_BOOTSCHEME_LABELS = "${BOOTSCHEME_LABELS}"
 
 # -----------------------------------------------------------------------------
 # Define config labels
