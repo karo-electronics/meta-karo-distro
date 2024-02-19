@@ -4,6 +4,13 @@
 # Define default boot partition size
 BOOTFS_PARTITION_SIZE ?= "32MiB"
 
+DEPENDS += "flashwriter-rzg2"
+do_create_install_scripts[depends] += "\
+    flashwriter-rzg2:do_deploy \
+    virtual/trusted-firmware-a:do_deploy \
+    virtual/bootloader:do_deploy \
+"
+
 # create shell scripts for image flashing
 addtask do_create_install_scripts after do_image_complete before do_build
 
