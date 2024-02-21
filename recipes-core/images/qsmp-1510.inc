@@ -1,9 +1,9 @@
 ROOTFS_PARTITION_SIZE ??= "32*1024"
 
-IMAGE_FSTYPES:remove = "ubi"
+IMAGE_FSTYPES:remove = "ext4 ubi"
 IMAGE_FSTYPES:append = " multivol_ubi"
 
-# UBI partition size in KiB
+do_image_complete[depends] += "virtual/bootloader:do_deploy virtual/kernel:do_deploy"
 
 MULTIUBI_VOLUMES ?= " \
         rootfs \
