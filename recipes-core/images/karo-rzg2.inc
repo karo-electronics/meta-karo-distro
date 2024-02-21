@@ -4,8 +4,8 @@
 # Define default boot partition size
 BOOTFS_PARTITION_SIZE ?= "32MiB"
 
-DEPENDS += "flashwriter-rzg2"
 do_create_install_scripts[depends] += "\
+    uuu-script-template:do_deploy \
     flashwriter-rzg2:do_deploy \
     virtual/trusted-firmware-a:do_deploy \
     virtual/bootloader:do_deploy \

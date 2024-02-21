@@ -6,6 +6,7 @@
 addtask do_create_install_scripts after do_image_complete before do_build
 
 do_create_install_scripts[depends] += "\
+    uuu-script-template:do_deploy \
     virtual/trusted-firmware-a:do_deploy \
     virtual/bootloader:do_deploy \
 "

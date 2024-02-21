@@ -2,6 +2,8 @@ inherit deploy
 
 COMPATIBLE_MACHINE = "(stm32mp1)"
 
+PROVIDES += "uuu-script-template"
+
 FILESEXTRAPATHS:prepend := "${THISDIR}/templates:"
 SRC_URI = " \
     file://uuu.auto.template \

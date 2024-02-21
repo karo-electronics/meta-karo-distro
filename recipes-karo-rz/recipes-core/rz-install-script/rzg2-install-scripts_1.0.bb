@@ -2,6 +2,8 @@ inherit deploy
 
 COMPATIBLE_MACHINE = "(rzg2)"
 
+PROVIDES += "uuu-script-template"
+
 FILESEXTRAPATHS:prepend := "${THISDIR}/templates:"
 SRC_URI = " \
     file://install-bootloader.template \
