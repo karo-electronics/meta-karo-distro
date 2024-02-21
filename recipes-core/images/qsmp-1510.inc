@@ -1,4 +1,4 @@
-ROOTFS_PARTITION_SIZE ??= "32*1024"
+ROOTFS_PARTITION_SIZE ??= "64*1024"
 
 IMAGE_FSTYPES:remove = "ext4 ubi"
 IMAGE_FSTYPES:append = " multivol_ubi"
@@ -13,7 +13,7 @@ MULTIUBI_VOLUMES ?= " \
         userfs \
 "
 
-export UBIVOL_SIZE_rootfs ?= "32MiB"
+export UBIVOL_SIZE_rootfs ?= "${@ "%uKiB" % int(eval(d.getVar('ROOTFS_PARTITION_SIZE')))}"
 
 export UBIVOL_SIZE_env ?= "128KiB"
 
@@ -24,5 +24,6 @@ export UBIVOL_IMAGE_dtb ?= "${@ "%s%s.dtb" % (d.getVar('DTB_BASENAME'), ("-" + d
 export UBIVOL_TYPE_kernel = "static"
 export UBIVOL_SIZE_kernel ?= "16MiB"
 export UBIVOL_IMAGE_kernel ?= "uImage"
-export UBIVOL_SIZE_userfs ?= "128KiB"
+
+export UBIVOL_SIZE_userfs ?= "${@ "%uKiB" % int(eval(d.getVar('USERFS_PARTITION_SIZE')))}"
 export UBIVOL_FLAGS_userfs = "autoresize"
