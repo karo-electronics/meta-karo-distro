@@ -144,27 +144,38 @@ python __anonymous () {
 def expand_var(var, bootscheme, config, partition, d):
     """
     Compute and return 'var':
-        1) Look for any 'bootscheme_config[_partition]' expansion for 'var': 'var_bootscheme_config[_partition]'
-        2) Look for any 'bootscheme[_partition]' expansion for 'var': 'var_bootscheme[_partition]'
-        3) Look for any 'config[_partition]' expansion for 'var': 'var_config[_partition]'
-        4) Then look for any 'var[_partition]' override
-        5) Default 'var' to 'none' if not defined
+        1) Look for any 'bootscheme_config[_partition]' expansion for 'var': 'var_bootscheme_config_partition'
+        2) Look for any 'config_partition' expansion for 'var': 'var_config_partition'
+        3) Look for any 'bootscheme_partition' expansion for 'var': 'var_bootscheme_partition'
+        4) Look for any 'bootscheme_config' expansion for 'var': 'var_bootscheme_config'
+        5) Look for any 'var_partition' override
+        6) Look for any 'config' expansion for 'var': '${var}_config'
+        7) Look for any 'bootscheme' expansion for 'var': 'var_bootscheme'
+        8) Then look for any assignment of 'var'
+        9) Default 'var' to 'none' if not defined
     This is the priority order assignment for 'var'
     """
     # Compute var according to priority assignment order defined above
-    expanded_var = d.getVar('%s_%s_%s_%s' % (var, bootscheme, config, partition)) or \
-        d.getVar('%s_%s_%s' % (var, bootscheme, config))
+    expanded_var = d.getVar('%s_%s_%s_%s' % (var, bootscheme, config, partition))
     if not expanded_var:
-        expanded_var = d.getVar('%s_%s_%s' % (var, bootscheme, partition)) or \
-            d.getVar('%s_%s' % (var, bootscheme))
+        expanded_var = d.getVar('%s_%s_%s' % (var, bootscheme, partition))
     if not expanded_var:
-        expanded_var = d.getVar('%s_%s_%s' % (var, config, partition)) or \
-            d.getVar('%s_%s' % (var, config))
+        expanded_var = d.getVar('%s_%s_%s' % (var, config, partition))
     if not expanded_var:
-        expanded_var = d.getVar('%s_%s' % (var, partition)) or \
-            d.getVar(var)
+        expanded_var = d.getVar('%s_%s' % (var, partition))
+
+    if not expanded_var:
+        expanded_var = d.getVar('%s_%s_%s' % (var, bootscheme, config))
+    if not expanded_var:
+        expanded_var = d.getVar('%s_%s' % (var, bootscheme))
+    if not expanded_var:
+        expanded_var = d.getVar('%s_%s' % (var, config))
+    if not expanded_var:
+        expanded_var = d.getVar(var)
+
     if not expanded_var:
         expanded_var = "none"
+
     # Return expanded and/or overriden var value
     return expanded_var
 
