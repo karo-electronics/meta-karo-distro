@@ -2,7 +2,7 @@
 # RZ/G2L specific processing
 #
 # Define default boot partition size
-BOOTFS_PARTITION_SIZE ?= "32MiB"
+BOOTFS_PARTITION_SIZE ?= "64MiB"
 
 do_create_install_scripts[depends] += "\
     uuu-script-template:do_deploy \
