@@ -6,12 +6,6 @@
 addtask do_create_uuu_auto_script after do_image_complete before do_build
 
 python do_create_uuu_auto_script() {
-    def do_copyfile (src, destdir):
-        import shutil
-
-        bb.note("Copying %s to %s" % (src, destdir))
-        shutil.copyfile(src, os.path.join(destdir, os.path.basename(src)))
-
     bb.note("DEPLOY_DIR_IMAGE='%s'" % d.expand("${DEPLOY_DIR_IMAGE}"))
     bb.note("BPN='%s'" % d.expand("${BPN}"))
 

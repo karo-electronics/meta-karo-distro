@@ -15,12 +15,6 @@ do_create_install_scripts[depends] += "\
 addtask do_create_install_scripts after do_image_complete before do_build
 
 python do_create_install_scripts() {
-    def do_copyfile (src, destdir):
-        import shutil
-
-        bb.note("Copying %s to %s" % (src, destdir))
-        shutil.copyfile(src, os.path.join(destdir, os.path.basename(src)))
-
     from string import Template
 
     machine = d.getVar('MACHINE')

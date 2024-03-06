@@ -1,5 +1,10 @@
 LICENSE = "MIT"
 
+def do_copyfile (src, destdir):
+    bb.note("Copying %s to %s" % (src, destdir))
+    if os.system("cp %s %s" % (src, destdir)):
+        bb.fatal("Failed to copy %s to %s" % (src, destdir))
+
 inherit core-image features_check rootfs-postprocess
 inherit ${@ "flashlayout-stm32mp" if 'stm32mp1' in d.getVar('MACHINEOVERRIDES').split(":") else ""}
 require ${@ "st-machine-common-stm32mp.inc" if 'stm32mp1' in d.getVar('MACHINEOVERRIDES').split(":") else ""}

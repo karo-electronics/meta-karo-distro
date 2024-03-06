@@ -12,12 +12,6 @@ do_create_install_scripts[depends] += "\
 "
 
 python do_create_install_scripts() {
-    def do_copyfile (src, destdir):
-        import shutil
-
-        bb.note("Copying %s to %s" % (src, destdir))
-        shutil.copyfile(src, os.path.join(destdir, os.path.basename(src)))
-
     bb.note("DEPLOY_DIR_IMAGE='%s'" % d.expand("${DEPLOY_DIR_IMAGE}"))
     bb.note("BPN='%s'" % d.expand("${BPN}"))
 
