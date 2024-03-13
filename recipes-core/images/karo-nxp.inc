@@ -5,6 +5,8 @@
 # create uuu.auto file for image
 addtask do_create_uuu_auto_script after do_image_complete before do_build
 
+do_create_uuu_auto_script[depends] += "virtual/bootloader:do_deploy"
+
 python do_create_uuu_auto_script() {
     bb.note("DEPLOY_DIR_IMAGE='%s'" % d.expand("${DEPLOY_DIR_IMAGE}"))
     bb.note("BPN='%s'" % d.expand("${BPN}"))
