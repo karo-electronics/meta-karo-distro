@@ -65,18 +65,15 @@ python do_create_install_scripts() {
         bb.fatal('Unable to open %s' % (uuu_auto_path))
 
     # copy trusted firmware and bootloader to uuu install dir
-    for type in d.getVar('FLASHLAYOUT_BOOTSCHEME_LABELS').split():
-        do_copyfile("%s/tf-a-%s-%s-%s.stm32" % (d.getVar('DEPLOY_DIR_IMAGE'), \
-            soc_family, machine, type), img_dirname)
-    for type in d.getVar('FLASHLAYOUT_BOOTSCHEME_LABELS').split():
-        do_copyfile("%s/fip-%s-%s-%s.bin" % (d.getVar('DEPLOY_DIR_IMAGE'), \
-            soc_family, machine, type), img_dirname)
+    for type in d.getVar('FLASHLAYOUT_TYPE_LABELS').split():
+        for config in d.getVar('FLASHLAYOUT_CONFIG_LABELS').split():
+            for bootscheme in d.getVar('FLASHLAYOUT_BOOTSCHEME_LABELS').split():
+                partitions = expand_var('FLASHLAYOUT_PARTITION_LABELS', bootscheme, config, '', d)
+                for partition in partitions.split():
+                    if partition == "none":
+                        continue
+                    fn = get_binaryname(type, bootscheme, config, partition, d);
+                    if fn != "none":
+                        do_copyfile("%s/%s" % (d.getVar('DEPLOY_DIR_IMAGE'), fn), img_dirname)
 
-    # copy rootfs image file
-    do_copyfile("%s/%s-%s.ext4" % (d.getVar('DEPLOY_DIR_IMAGE'), rootfs_image, machine), img_dirname)
-
-    # copy other partition images
-    for partname in partlist:
-        do_copyfile("%s/karo-image-%s-%s.ext4" % (d.getVar('DEPLOY_DIR_IMAGE'), \
-            partname, machine), img_dirname)
 }
