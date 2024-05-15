@@ -1,4 +1,5 @@
 LICENSE = "MIT"
+EXTRA_IMAGE_FEATURES:remove = "read-only-rootfs"
 
 def do_copyfile (src, destdir):
     bb.note("Copying %s to %s" % (src, destdir))
@@ -73,6 +74,7 @@ IMAGE_INSTALL:append = " \
         util-linux-mount \
         util-linux-setterm \
         ${@bb.utils.contains('DISTRO_FEATURES','csi-camera','v4l-utils','',d)} \
+        ${@bb.utils.contains('DISTRO_FEATURES','u-boot-fw-utils','u-boot-fw-utils u-boot-default-env','',d)} \
         ${@bb.utils.contains('DISTRO_FEATURES','wifi','wpa-supplicant','',d)} \
 "
 
