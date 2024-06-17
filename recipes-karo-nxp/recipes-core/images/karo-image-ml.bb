@@ -24,5 +24,6 @@ IMAGE_INSTALL:append = " \
 "
 
 TOOLCHAIN_TARGET_TASK:append = " \
-        tensorflow-lite-staticdev \
+        tensorflow-lite-dev \
+        onnxruntime-dev \
 "
