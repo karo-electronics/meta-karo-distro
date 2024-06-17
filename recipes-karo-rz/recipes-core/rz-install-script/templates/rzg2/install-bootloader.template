@@ -16,6 +16,8 @@ if [ $$# = 0 ];then
     exit 1
 fi
 
+cd "$$(cd "`dirname "$$0"`";pwd -P)"
+
 boot_file() {
     local fsize=`stat -c %s "$$1"`
     printf "%u KiB\n" $$(($$fsize / 1024))
