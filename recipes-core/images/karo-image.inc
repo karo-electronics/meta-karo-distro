@@ -53,6 +53,8 @@ IMAGE_INSTALL:append = " \
         less \
         libstdc++ \
         ${@bb.utils.contains('DISTRO_FEATURES','wifi','linux-firmware-pcie8997','',d)} \
+        ${@bb.utils.contains('DISTRO_FEATURES', 'rauc', 'rauc', '', d)} \
+        ${@bb.utils.contains('DISTRO_FEATURES', 'rauc', 'libdevmapper', '', d)} \
         ${@bb.utils.contains('MACHINE_FEATURES','nxp-wifi','kernel-module-nxp89xx','',d)} \
         ${@bb.utils.contains('MACHINE_FEATURES','nxp-wifi','firmware-nxp-wifi-nxp8987-sdio','',d)} \
         lsof \
@@ -114,6 +116,12 @@ def get_part_info(d, partlist, index):
     else:
         rootfs_partition_index = 1
 
+    if 'rauc' in d.getVar('DISTRO_FEATURES').split():
+        rauc = True
+    else:
+        rauc = False
+
+    
     lastpart = index == len(partlist)
 
     if index == rootfs_partition_index:
@@ -133,10 +141,14 @@ def get_part_info(d, partlist, index):
     elif not lastpart:
         bb.fatal("Cannot determine size for partition '%s'" % partname)
 
-    if lastpart:
-        size = "MAX"
-    elif size.isnumeric():
-        size = size + "KiB"
+    if rauc:
+        if size.isnumeric():
+            size = size + "KiB"
+    else:
+        if lastpart:
+            size = "MAX"
+        elif size.isnumeric():
+            size = size + "KiB"
 
     if d.getVarFlags('PARTITION_NAMES') and partname in d.getVarFlags('PARTITION_NAMES'):
         partname = d.getVarFlag('PARTITION_NAMES', partname, True)

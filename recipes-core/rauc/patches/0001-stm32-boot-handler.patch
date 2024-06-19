@@ -1,0 +1,21 @@
+diff --git a/src/update_handler.c b/src/update_handler.c
+index f800cf2..c783b0f 100644
+--- a/src/update_handler.c
++++ b/src/update_handler.c
+@@ -2778,7 +2778,7 @@ RaucUpdatePair updatepairs[] = {
+ #if ENABLE_EMMC_BOOT_SUPPORT == 1
+ 	{"*.img", "boot-emmc", img_to_boot_emmc_handler},
+ #endif
+-	{"*", "boot-emmc", NULL},
++	{"*", "boot-emmc", img_to_boot_emmc_handler},
+ 	{"*.vfat", "boot-mbr-switch", img_to_boot_mbr_switch_handler},
+ 	{"*.img", "boot-mbr-switch", img_to_boot_mbr_switch_handler},
+ 	{"*", "boot-mbr-switch", NULL},
+@@ -2792,6 +2792,7 @@ RaucUpdatePair updatepairs[] = {
+ 	{"*", "boot-raw-fallback", NULL},
+ 	{"*.img.caibx", "*", img_to_raw_handler}, /* fallback */
+ 	{"*.img", "*", img_to_raw_handler}, /* fallback */
++	{"*.bin", "*", img_to_raw_handler}, /* fallback */
+ 	{0}
+ };
+ 

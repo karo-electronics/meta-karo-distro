@@ -29,6 +29,11 @@ python do_create_install_scripts() {
     fastboot_template_path = os.path.join(d.getVar('DEPLOY_DIR_IMAGE'), "start-fastboot.template")
     script_path = os.path.join(img_dirname, "start-fastboot.sh")
 
+    if 'rauc' in d.getVar('DISTRO_FEATURES').split():
+        rauc = True
+    else:
+        rauc = False
+
     partlist = (d.getVar('PARTITIONS_IMAGE') or "").replace("karo-image-", "").split()
     mntpoints = (d.getVar('PARTITIONS_MOUNTPOINT_IMAGE') or "").split()
 
@@ -45,6 +50,16 @@ python do_create_install_scripts() {
         partitions += "name=%s,size=%s;" % (partname, size)
         flash_cmds += dlm + "FB: flash -raw2sparse %s %s-%s.ext4" % (partname, img, machine)
         dlm = "\n"
+
+    if rauc:
+        partitions += "name=fipB,type=19D5DF83-11B0-457b-BE2C-7559C13142A5,size=2MiB;"
+        flash_cmds += "\nFB: flash fipB fip-%s-%s-%s.bin\n" % (soc_family, machine, bootscheme)
+        dlm = ""
+        for index in range(0, len(partlist) + 1):
+            (partname, img, size) = get_part_info(d, partlist, index)
+            partitions += "name=%sB,size=%s;" % (partname, size)
+            flash_cmds += dlm + "FB: flash -raw2sparse %sB %s-%s.ext4" % (partname, img, machine)
+            dlm = "\n"
 
     bb.utils.mkdirhier(img_dirname)
 
