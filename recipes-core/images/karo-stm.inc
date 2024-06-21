@@ -30,7 +30,10 @@ python do_create_install_scripts() {
     script_path = os.path.join(img_dirname, "start-fastboot.sh")
 
     if 'rauc' in d.getVar('DISTRO_FEATURES').split():
-        rauc = True
+        if d.getVar('DISTRO') == 'karo-minimal':
+            rauc = True
+        else:
+            rauc = False
     else:
         rauc = False
 

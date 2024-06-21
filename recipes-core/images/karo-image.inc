@@ -117,7 +117,10 @@ def get_part_info(d, partlist, index):
         rootfs_partition_index = 1
 
     if 'rauc' in d.getVar('DISTRO_FEATURES').split():
-        rauc = True
+        if d.getVar('DISTRO') == 'karo-minimal':
+            rauc = True
+        else:
+            rauc = False
     else:
         rauc = False
 
