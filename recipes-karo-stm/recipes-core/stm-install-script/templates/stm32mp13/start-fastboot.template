@@ -7,12 +7,12 @@ usbdev=0483:df11
 wait_for_usbdev() {
     first=true
     while true;do
+	sleep 1
 	lsusb | grep -q "$$usbdev" && break
 	if $$first;then
 	    echo Waiting for USB device $$usbdev
 	    first=false
 	fi
-	sleep 1
     done
 }
 
