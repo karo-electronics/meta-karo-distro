@@ -46,7 +46,7 @@ DISTRO_FEATURES_DEFAULT:append:tx8p = " lvds pcie"
 
 VIRTUAL-RUNTIME_base-utils-hwclock = "util-linux-hwclock"
 VIRTUAL-RUNTIME_dev_manager ??= "udev"
-INIT_MANAGER ?= "${@bb.utils.contains('DISTRO_FEATURES',"systemd","systemd","sysvinit",d)}"
+VIRTUAL-RUNTIME_init_manager ??= "${@bb.utils.contains('DISTRO_FEATURES',"systemd","systemd","sysvinit",d)}"
 
 PREFERRED_PROVIDER_opencl-headers = "imx-gpu-viv"
 PREFERRED_RPROVIDER_mfgtool-base ?= "linux-imx-mfgtool"
