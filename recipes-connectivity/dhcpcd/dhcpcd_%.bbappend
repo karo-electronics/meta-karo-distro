@@ -23,7 +23,7 @@ do_install:append () {
 quiet
 
 # disable zeroconf IPs (169.254.1.0-169.254.254.255) 
-noipv4ll
+noarp
 EOF
     fi
 
