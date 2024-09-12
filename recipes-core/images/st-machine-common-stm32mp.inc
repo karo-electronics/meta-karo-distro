@@ -8,19 +8,20 @@ require ${@ "qsmp-1510.inc" if 'qsmp-1510' in d.getVar('MACHINEOVERRIDES').split
 
 IMAGE_FSTYPES:append = "${@bb.utils.contains('MACHINE_FEATURES',"emmc"," ext4","",d)}"
 
-# Define image to use for extra partitions
+# Define images to use for extra partitions
 STM32MP_BOOTFS_IMAGE = "karo-image-bootfs"
 STM32MP_BOOTFS_LABEL ?= "boot"
 STM32MP_BOOTFS_MOUNTPOINT_IMAGE ?= "/boot"
+
 STM32MP_USERFS_IMAGE = "karo-image-userfs"
 STM32MP_USERFS_LABEL ?= "userfs"
 STM32MP_USERFS_MOUNTPOINT_IMAGE ?= "/usr/local"
 
-# Define extra partition to build
+# Define extra partitions to build
 PARTITIONS_MOUNTPOINT_IMAGE  = "${STM32MP_BOOTFS_MOUNTPOINT_IMAGE}"
 PARTITIONS_MOUNTPOINT_IMAGE += "${STM32MP_USERFS_MOUNTPOINT_IMAGE}"
 
-# Provide list of partition to mount
+# Provide list of partitions to mount
 MOUNT_PARTITIONS_LIST  = "${STM32MP_BOOTFS_LABEL},${STM32MP_BOOTFS_MOUNTPOINT_IMAGE}"
 MOUNT_PARTITIONS_LIST += "${STM32MP_USERFS_LABEL},${STM32MP_USERFS_MOUNTPOINT_IMAGE}"
 
@@ -40,8 +41,10 @@ BOOTFS_PARTITION_SIZE ?= "65536"
 # So:
 #   rootfs < Multivolume UBI - (rootfs + env + dtb + kernel + userfs + UBI Overhead + 4 * 9*eraseblocks)
 #   rootfs < 120.5MiB - (256KiB + 64MiB + 16MiB + 128MiB + 53360KiB + 4 * 9 * 256KiB)
+
 # Proposed value for rootfs is 2GiB
 ROOTFS_PARTITION_SIZE ??= "2097152"
+
 # Proposed value for userfs is 128MB (4*32MB)
 USERFS_PARTITION_SIZE ??= "131072"
 

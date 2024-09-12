@@ -2,14 +2,17 @@
 #
 # The format to specify it, in the machine, is:
 #
-# PARTITIONS_IMAGE ??= "partition_image_name_1 partition_image_name_2"
+# PARTITIONS_IMAGES ??= "partition_image_name_1 partition_image_name_2"
 #
 # The partition generation might be disabled by resetting ENABLE_PARTITIONS_IMAGE var
 # in an image recipe (for example)
 #
 
-ENABLE_PARTITIONS_IMAGE ?= "1"
-PARTITIONS_IMAGE ?= ""
+ENABLE_PARTITIONS_IMAGE ??= "1"
+
+ENABLE_MULTIVOLUME_UBI ??= "0"
+
+PARTITIONS_IMAGES ??= ""
 
 python __anonymous () {
     if d.getVar('ENABLE_PARTITIONS_IMAGE') != "1":
@@ -38,16 +41,13 @@ python __anonymous () {
 }
 
 image_rootfs_image_clean_task () {
-    for name in ${PARTITIONS_IMAGE};
-    do
-        if `echo ${IMAGE_NAME} | grep -q $name` ;
-        then
+    for name in ${PARTITIONS_IMAGE};do
+        if echo ${IMAGE_NAME} | grep -q $name;then
             return;
         fi
     done
     bbnote "Clean mount points on ${IMAGE_NAME}:"
-    for dir in ${PARTITIONS_MOUNTPOINT_IMAGE};
-    do
+    for dir in ${PARTITIONS_MOUNTPOINT_IMAGE};do
         bbnote "$dir on ${IMAGE_NAME} is cleaned because it's a mount point."
         rm -rvf ${IMAGE_ROOTFS}/$dir/*
     done

@@ -1,6 +1,6 @@
 inherit core-image
 
-require ${@ "recipes-core/images/st-machine-common-stm32mp.inc" if 'stm32mp1' in d.getVar('MACHINEOVERRIDES').split(":") else ""}
+require ${@ "recipes-core/images/st-machine-common-stm32mp.inc" if 'stm32mpcommon' in d.getVar('MACHINEOVERRIDES').split(":") else ""}
 
 IMAGE_FSTYPES:append = " ext4"
 

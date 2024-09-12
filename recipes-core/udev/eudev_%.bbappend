@@ -6,6 +6,10 @@ SRC_URI:append = "\
         file://rtcsymlink.rule \
         ${@ bb.utils.contains('DISTRO_FEATURES', 'wayland', " file://weston.rule", "", d)} \
 "
+SRC_URI:append:stm32mp2 = " \
+        ${@ bb.utils.contains('MACHINE_FEATURES', 'gpu', " file://galcore.rules", "", d)} \
+"
+
 INITSCRIPT_PARAMS = "start 02 S ."
 
 do_install:append() {
@@ -15,5 +19,11 @@ do_install:append() {
 
     if ${@ bb.utils.contains('DISTRO_FEATURES', 'wayland', 'true', 'false', d)};then
         install -v -m 0755 ${WORKDIR}/weston.rule ${D}${nonarch_base_libdir}/udev/rules.d/50-weston.rules
+    fi
+}
+
+do_install:append:stm32mp2() {
+    if ${@ bb.utils.contains('MACHINE_FEATURES', 'gpu', 'true', 'false', d)};then
+        install -v -m 0755 ${WORKDIR}/galcore.rules ${D}${nonarch_base_libdir}/udev/rules.d/72-galcore.rules
     fi
 }

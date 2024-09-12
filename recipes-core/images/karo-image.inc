@@ -7,11 +7,11 @@ def do_copyfile (src, destdir):
         bb.fatal("Failed to copy %s to %s" % (src, destdir))
 
 inherit core-image features_check rootfs-postprocess
-inherit ${@ "flashlayout-stm32mp" if 'stm32mp1' in d.getVar('MACHINEOVERRIDES').split(":") else ""}
-require ${@ "st-machine-common-stm32mp.inc" if 'stm32mp1' in d.getVar('MACHINEOVERRIDES').split(":") else ""}
+inherit ${@ "flashlayout-stm32mp" if 'stm32mpcommon' in d.getVar('MACHINEOVERRIDES').split(":") else ""}
+require ${@ "st-machine-common-stm32mp.inc" if 'stm32mpcommon' in d.getVar('MACHINEOVERRIDES').split(":") else ""}
 require ${@ "karo-nxp.inc" if 'use-nxp-bsp' in d.getVar('MACHINEOVERRIDES').split(':') else "karo-mainline.inc"}
 require ${@ "karo-rzg2.inc" if 'rzg2' in d.getVar('MACHINEOVERRIDES').split(':') else ""}
-require ${@ "karo-stm.inc" if ('stm32mp1' in d.getVar('MACHINEOVERRIDES').split(':') and 'qsmp-1510' not in d.getVar('MACHINEOVERRIDES').split(':')) else ""}
+require ${@ "karo-stm.inc" if ('stm32mpcommon' in d.getVar('MACHINEOVERRIDES').split(':') and 'qsmp-1510' not in d.getVar('MACHINEOVERRIDES').split(':')) else ""}
 
 inherit extrausers
 EXTRA_USERS_PARAMS ?= "usermod -p '' root"
@@ -29,7 +29,7 @@ python () {
 
 FILESEXTRAPATHS:prepend := "${THISDIR}/uuu-script-templates:"
 SRC_URI:append = " file://uuu.auto.template"
-SRC_URI:append:stm32mp1 = " file://start-fastboot.template"
+SRC_URI:append:stm32mpcommon = " file://start-fastboot.template"
 SRC_URI:append:rzg2 = " file://install-bootloader.template"
 
 IMAGE_FEATURES:append = " tools-debug"
@@ -57,6 +57,7 @@ IMAGE_INSTALL:append = " \
         e2fsprogs-resize2fs \
         ethtool \
         file \
+        ${@bb.utils.contains('MACHINE_FEATURES', 'gpu', d.getVar('GPU_USERLAND_LIBRARIES_INSTALL') or '', '', d)} \
         kmod \
         ldd \
         less \
@@ -88,6 +89,9 @@ IMAGE_INSTALL:append = " \
         ${@bb.utils.contains('DISTRO_FEATURES','u-boot-fw-utils','u-boot-fw-utils u-boot-default-env','',d)} \
         ${@bb.utils.contains('DISTRO_FEATURES','wifi','wpa-supplicant','',d)} \
 "
+
+IMAGE_INSTALL:append:use-nxp-bsp = "${@ bb.utils.contains('DISTRO_FEATURES', 'wifi', \
+        bb.utils.contains('DISTRO_FEATURES', 'systemd', " firmwared", "", d), "", d)}"
 
 DEPENDS:append = " cross-localedef-native qemuwrapper-cross"
 
@@ -129,7 +133,6 @@ def get_part_info(d, partlist, index):
             rauc = False
     else:
         rauc = False
-
     
     lastpart = index == len(partlist)
 
@@ -164,3 +167,12 @@ def get_part_info(d, partlist, index):
 
     bb.note("partition[%s]='%s'" % (partname, size))
     return (partname, image, size)
+
+fakeroot do_image_cleanup() {
+    if [ -e "${IMAGE_ROOTFS}/log_lock.pid" ];then
+        bbwarn "############## REMOVING BOGUS log_lock.pid ##############"
+        set -x
+        rm -vf "${IMAGE_ROOTFS}/log_lock.pid"
+    fi
+}
+addtask do_image_cleanup after do_rootfs before do_image_qa

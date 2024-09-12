@@ -29,10 +29,6 @@ IMAGE_INSTALL:append:mx6 = " \
         libdrm-etnaviv \
 "
 
-IMAGE_INSTALL:append:stm32mp1 = " \
-        libdrm-etnaviv \
-"
-
 IMAGE_INSTALL:append:mx8-nxp-bsp = " \
         packagegroup-fsl-gstreamer1.0 \
 "

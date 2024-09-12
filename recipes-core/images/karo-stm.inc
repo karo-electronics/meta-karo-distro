@@ -43,8 +43,7 @@ python do_create_install_scripts() {
         rootfs_partition_index = 1
 
     partitions = "start=1MiB,name=fip,type=19d5df83-11b0-457b-be2c-7559c13142a5,size=2MiB;"
-    flash_cmds = "FB: flash mmc0boot0 tf-a-%s-%s-%s.bin\n" % (soc_family, machine, bootscheme)
-    flash_cmds += "FB: flash fip fip-%s-%s-%s.bin\n" % (soc_family, machine, bootscheme)
+    flash_cmds = "FB: flash fip fip-%s-%s-%s.bin\n" % (soc_family, machine, bootscheme)
     dlm = ""
     for index in range(0, len(partlist) + 1):
         (partname, img, size) = get_part_info(d, partlist, index)
@@ -85,6 +84,9 @@ python do_create_install_scripts() {
         bb.fatal('Unable to open %s' % (uuu_auto_path))
 
     # copy trusted firmware and bootloader to uuu install dir
+    tfa_name = ""
+    ddrfw_name = ""
+    fip_name = ""
     for type in d.getVar('FLASHLAYOUT_TYPE_LABELS').split():
         for config in d.getVar('FLASHLAYOUT_CONFIG_LABELS').split():
             for bootscheme in d.getVar('FLASHLAYOUT_BOOTSCHEME_LABELS').split():
@@ -94,12 +96,15 @@ python do_create_install_scripts() {
                         continue
                     if partition == "none":
                         continue
-                    if partition == "fsbl-boot":
-                        tfa_name = get_binaryname(type, bootscheme, config, partition, d);
-                    if partition == "fip-boot":
-                        fip_name = get_binaryname(type, bootscheme, config, partition, d);
 
                     fn = get_binaryname(type, bootscheme, config, partition, d);
+                    if partition == "fsbl-boot":
+                        tfa_name = fn
+                    if partition == "fip-ddr":
+                        ddrfw_name = fn
+                    if partition == "fip-boot":
+                        fip_name = fn
+
                     if fn != "none":
                         do_copyfile("%s" % os.path.join(d.getVar('DEPLOY_DIR_IMAGE'), fn), img_dirname)
     do_copyfile("%s" % os.path.join(d.getVar('DEPLOY_DIR_IMAGE'), "fastboot.img"), img_dirname)
@@ -109,7 +114,8 @@ python do_create_install_scripts() {
         with open(script_path, 'w') as script:
             template = Template(fastboot_template_string)
             s = template.substitute(machine=machine, soc_family=soc_family, \
-                bootscheme=bootscheme, tfa_name=tfa_name, fip_name=fip_name)
+                bootscheme=bootscheme, tfa_name=tfa_name, fip_name=fip_name,
+                ddrfw_name=ddrfw_name)
             script.write(s)
             script.close()
     except OSError:

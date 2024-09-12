@@ -1,0 +1,38 @@
+#!/bin/bash
+# Start fastboot via 'dfu-util' on an stm32mp25 target
+set -e
+here=$$(dirname "$$0")
+
+usbdev=0483:df11
+wait_for_usbdev() {
+    first=true
+    while true;do
+	sleep 1
+	lsusb | grep -q "$$usbdev" && break
+	if $$first;then
+	    echo Waiting for USB device $$usbdev
+	    first=false
+	fi
+    done
+}
+
+wait_for_usbdev
+
+dfu-util -a 0 -D "$$here/$tfa_name"
+dfu-util -a 0 -e
+
+wait_for_usbdev
+
+dfu-util -a 0 -D "$$here/$ddrfw_name"
+dfu-util -a 0 -e
+
+wait_for_usbdev
+
+dfu-util -a 1 -D "$$here/$fip_name"
+dfu-util -a 1 -e
+
+wait_for_usbdev
+
+# download U-Boot script 'fastboot 0'
+dfu-util -a 0 -D "$$here/fastboot.img"
+dfu-util -a 0 -e
