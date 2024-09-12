@@ -23,6 +23,15 @@ ROOTFS_POSTPROCESS_COMMAND:remove = "\
         ${@bb.utils.contains('DISTRO_FEATURES','read-only-rootfs','empty_var_volatile;','',d)} \
 "
 
+python () {
+    d.delVarFlag('do_unpack', 'noexec')
+}
+
+FILESEXTRAPATHS:prepend := "${THISDIR}/uuu-script-templates:"
+SRC_URI:append = " file://uuu.auto.template"
+SRC_URI:append:stm32mp1 = " file://start-fastboot.template"
+SRC_URI:append:rzg2 = " file://install-bootloader.template"
+
 IMAGE_FEATURES:append = " tools-debug"
 
 DEBUG_TOOLS ?= " \
@@ -83,9 +92,6 @@ IMAGE_INSTALL:append = " \
 DEPENDS:append = " cross-localedef-native qemuwrapper-cross"
 
 IMAGE_INSTALL:append = " kernel-modules"
-DEPENDS:append:use-nxp-bsp = " uuu-script-template"
-DEPENDS:append:rzg2 = " rzg2-install-scripts"
-DEPENDS:append:stm32mp1 = " stm32mp1-install-scripts"
 
 PREFERRED_PROVIDER_fdisk = "util-linux"
 

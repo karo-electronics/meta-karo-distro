@@ -3,13 +3,10 @@
 #
 
 # create shell scripts for image flashing
+addtask do_unpack after do_image_complete before do_create_install_scripts
 addtask do_create_install_scripts after do_image_complete before do_build
 
-do_create_install_scripts[depends] += "\
-    uuu-script-template:do_deploy \
-    virtual/trusted-firmware-a:do_deploy \
-    virtual/bootloader:do_deploy \
-"
+do_create_install_scripts[depends] += "virtual/bootloader:do_deploy"
 
 python do_create_install_scripts() {
     from string import Template
@@ -23,10 +20,10 @@ python do_create_install_scripts() {
 
     img_dirname = os.path.join(d.getVar('DEPLOY_DIR_IMAGE'), d.getVar('BPN'))
 
-    uuu_template_path = os.path.join(d.getVar('DEPLOY_DIR_IMAGE'), "uuu.auto.template")
+    uuu_template_path = os.path.join(d.getVar('WORKDIR'), "uuu.auto.template")
     uuu_auto_path = os.path.join(img_dirname, "uuu.auto")
 
-    fastboot_template_path = os.path.join(d.getVar('DEPLOY_DIR_IMAGE'), "start-fastboot.template")
+    fastboot_template_path = os.path.join(d.getVar('WORKDIR'), "start-fastboot.template")
     script_path = os.path.join(img_dirname, "start-fastboot.sh")
 
     if 'rauc' in d.getVar('DISTRO_FEATURES').split():
@@ -46,7 +43,8 @@ python do_create_install_scripts() {
         rootfs_partition_index = 1
 
     partitions = "start=1MiB,name=fip,type=19d5df83-11b0-457b-be2c-7559c13142a5,size=2MiB;"
-    flash_cmds = "FB: flash fip fip-%s-%s-%s.bin\n" % (soc_family, machine, bootscheme)
+    flash_cmds = "FB: flash mmc0boot0 tf-a-%s-%s-%s.bin\n" % (soc_family, machine, bootscheme)
+    flash_cmds += "FB: flash fip fip-%s-%s-%s.bin\n" % (soc_family, machine, bootscheme)
     dlm = ""
     for index in range(0, len(partlist) + 1):
         (partname, img, size) = get_part_info(d, partlist, index)
@@ -56,7 +54,7 @@ python do_create_install_scripts() {
 
     if rauc:
         partitions += "name=fipB,type=19D5DF83-11B0-457b-BE2C-7559C13142A5,size=2MiB;"
-        flash_cmds += "\nFB: flash fipB fip-%s-%s-%s.bin\n" % (soc_family, machine, bootscheme)
+        flash_cmds += dlm + "FB: flash fipB fip-%s-%s-%s.bin\n" % (soc_family, machine, bootscheme)
         dlm = ""
         for index in range(0, len(partlist) + 1):
             (partname, img, size) = get_part_info(d, partlist, index)

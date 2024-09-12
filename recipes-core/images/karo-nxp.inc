@@ -4,6 +4,7 @@
 
 # create uuu.auto file for image
 addtask do_create_uuu_auto_script after do_image_complete before do_build
+addtask do_fetch before do_create_uuu_auto_script
 
 do_create_uuu_auto_script[depends] += "virtual/bootloader:do_deploy"
 
@@ -16,12 +17,13 @@ python do_create_uuu_auto_script() {
     machine = d.getVar('MACHINE')
     rootfs_image = d.getVar('BPN')
 
-    uuu_template_path = os.path.join(d.getVar('DEPLOY_DIR_IMAGE'), "uuu.auto.template")
+    uuu_template_path = os.path.join(d.getVar('WORKDIR'), "uuu.auto.template")
     img_dirname = os.path.join(d.getVar('DEPLOY_DIR_IMAGE'), d.getVar('BPN'))
     uuu_auto_path = os.path.join(img_dirname, "uuu.auto")
 
     partlist = (d.getVar('PARTITIONS_IMAGE') or "").replace("karo-image-", "").split()
     mntpoints = (d.getVar('PARTITIONS_MOUNTPOINT_IMAGE') or "").split()
+    image_bootloader=d.getVar('IMAGE_BOOTLOADER')
 
     partitions = "start=1MiB,"
     flash_cmds = ""
@@ -44,7 +46,7 @@ python do_create_uuu_auto_script() {
             uuu_template = Template(uuu_template_string)
             uuu_auto = uuu_template.substitute(image=rootfs_image, machine=machine,
                 partitions=partitions, flash_cmds=flash_cmds,
-                image_bootloader=d.getVar('IMAGE_BOOTLOADER'))
+                image_bootloader=image_bootloader)
             uuu_script.write(uuu_auto)
             uuu_script.close()
     except OSError:

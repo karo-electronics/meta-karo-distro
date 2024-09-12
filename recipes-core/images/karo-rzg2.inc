@@ -5,13 +5,12 @@
 BOOTFS_PARTITION_SIZE ?= "64MiB"
 
 do_create_install_scripts[depends] += "\
-    uuu-script-template:do_deploy \
     flashwriter-rzg2:do_deploy \
-    virtual/trusted-firmware-a:do_deploy \
     virtual/bootloader:do_deploy \
 "
 
 # create shell scripts for image flashing
+addtask do_unpack after do_image_complete before do_create_install_scripts
 addtask do_create_install_scripts after do_image_complete before do_build
 
 python do_create_install_scripts() {
@@ -20,8 +19,8 @@ python do_create_install_scripts() {
     machine = d.getVar('MACHINE')
     rootfs_image = d.getVar('BPN')
 
-    template_path = os.path.join(d.getVar('DEPLOY_DIR_IMAGE'), "install-bootloader.template")
-    uuu_template_path = os.path.join(d.getVar('DEPLOY_DIR_IMAGE'), "uuu.auto.template")
+    template_path = os.path.join(d.getVar('WORKDIR'), "install-bootloader.template")
+    uuu_template_path = os.path.join(d.getVar('WORKDIR'), "uuu.auto.template")
     img_dirname = os.path.join(d.getVar('DEPLOY_DIR_IMAGE'), d.getVar('BPN'))
     script_path = os.path.join(img_dirname, "install-bootloader.sh")
     uuu_auto_path = os.path.join(img_dirname, "uuu.auto")
