@@ -13,11 +13,12 @@ uuu_version 1.4.77
 ### Setup VID PID
 CFG: FB: -vid 0x0483 -pid 0x0afb
 
+### Program Trusted Firmware image
+FB: flash mmc0boot0 tf-a-$soc_family-$machine-$bootscheme.stm32
+
 # enable boot from eMMC and switch to eMMC boot partition
 FB: oem ucmd:mmc partconf 0 $${emmc_boot_ack} $${emmc_boot_part} $${emmc_boot_part}
 
-# erase atf in eMMC boot partition
-FB: oem ucmd: mmc erase 0 c00;mmc erase 1000 1000
 # erase environment in eMMC boot partition
 FB: oem ucmd:mmc erase c00 400
 
