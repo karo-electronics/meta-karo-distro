@@ -22,13 +22,14 @@ DISTRO_FEATURES_DEFAULT ?= "\
         largefile \
         ldconfig \
         pam \
+        nfs \
+        seccomp \
+        telnet-login \
+	u-boot-fw-utils \
         usbgadget \
         usbhost \
-        xattr \
-        nfs \
-        telnet-login \
         vfat \
-        seccomp \
+        xattr \
 "
 
 IMAGE_CLASSES += "st-partitions-image"
@@ -67,7 +68,7 @@ PARTITIONS_MOUNTPOINT_IMAGE ?= "/boot"
 
 IMAGE_FSTYPES = "ext4 tar.bz2"
 
-NETWORK_INTERFACES ?= "eth0"
+NETWORK_INTERFACES ??= "eth0"
 NETWORK_INTERFACES:mx9-nxp-bsp ?= "eth0 eth1"
 NETWORK_INTERFACES:mx8mp-nxp-bsp ?= "eth0 eth1"
 
