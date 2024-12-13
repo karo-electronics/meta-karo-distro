@@ -120,6 +120,12 @@ UBINIZE_ARGS ?= "-m 2048 -s 2048 -p 128KiB"
 
 PARTITION_NAMES[bootfs] ?= "boot"
 
+PARTITION_TYPE_GUIDS = "boot:bc13c2ff-59e6-4262-a352-b275fd6f7172;"
+PARTITION_TYPE_GUIDS:append:arm = "rootfs:69dad710-2ce4-4e3c-b16c-21a1d49abed3;"
+PARTITION_TYPE_GUIDS:append:arm = "userfs:7d0359a3-02b3-4f0a-865c-654403e70625;"
+PARTITION_TYPE_GUIDS:append:aarch64 = "rootfs:b921b045-1df0-41c3-af44-4c6f280d3fae;"
+PARTITION_TYPE_GUIDS:append:aarch64 = "userfs:b0e01050-ee5f-4390-949a-9101b17104e9;"
+
 def get_part_info(d, partlist, index):
     if d.getVar('ROOTFS_PARTITION_INDEX') != None:
         rootfs_partition_index = d.getVar('ROOTFS_PARTITION_INDEX')
@@ -165,8 +171,15 @@ def get_part_info(d, partlist, index):
     if d.getVarFlags('PARTITION_NAMES') and partname in d.getVarFlags('PARTITION_NAMES'):
         partname = d.getVarFlag('PARTITION_NAMES', partname, True)
 
+    type = None
+    for p in d.getVar('PARTITION_TYPE_GUIDS').split(';'):
+        (n, t) = p.split(':')
+        if n == partname:
+            type = t
+            break
+
     bb.note("partition[%s]='%s'" % (partname, size))
-    return (partname, image, size)
+    return (partname, image, size, type)
 
 fakeroot do_image_cleanup() {
     if [ -e "${IMAGE_ROOTFS}/log_lock.pid" ];then

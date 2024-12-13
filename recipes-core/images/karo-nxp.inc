@@ -29,8 +29,11 @@ python do_create_uuu_auto_script() {
     flash_cmds = ""
     dlm = ""
     for index in range(0, len(partlist) + 1):
-        (partname, img, size) = get_part_info(d, partlist, index)
-        partitions += "name=%s,size=%s;" % (partname, size)
+        (partname, img, size, type) = get_part_info(d, partlist, index)
+        if type != None:
+            partitions += "name=%s,type=%s,size=%s;" % (partname, type, size)
+        else:
+            partitions += "name=%s,size=%s;" % (partname, size)
         flash_cmds += dlm + "FB: flash -raw2sparse %s %s-%s.ext4" % (partname, img, machine)
         dlm = "\n"
 
