@@ -15,12 +15,15 @@ OPENCV_PKGS:imxgpu = " \
 
 IMAGE_INSTALL:append = " \
         ${GOOGLE_CORAL_PKGS} \
-        ${OPENCV_PKGS} \
         packagegroup-fsl-tools-gpu \
         packagegroup-fsl-tools-gpu-external \
         packagegroup-imx-ml \
         python3-pip \
         tzdata \
+"
+
+IMAGE_INSTALL:append:imxgpu = " \
+        ${OPENCV_PKGS} \
 "
 
 TOOLCHAIN_TARGET_TASK:append = " \

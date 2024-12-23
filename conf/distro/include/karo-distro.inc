@@ -1,6 +1,6 @@
 POKY_DISTRO ??= "poky"
 require conf/distro/${POKY_DISTRO}.conf
-require gpu_vivante.inc
+require ${@ "gpu_vivante.inc" if 'stm32mpcommon' in d.getVar('MACHINEOVERRIDES').split(":") else ""}
 
 DISTRO_VERSION = "${PREFERRED_VERSION_linux-karo}-${DISTRO_CODENAME}"
 

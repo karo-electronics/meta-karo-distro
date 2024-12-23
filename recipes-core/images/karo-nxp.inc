@@ -4,7 +4,7 @@
 
 # create uuu.auto file for image
 addtask do_create_uuu_auto_script after do_image_complete before do_build
-addtask do_fetch before do_create_uuu_auto_script
+addtask do_unpack before do_create_uuu_auto_script
 
 do_create_uuu_auto_script[depends] += "virtual/bootloader:do_deploy"
 
