@@ -55,7 +55,7 @@ python do_unpack() {
     if eula == None:
         bb.fatal("To use '%s' you need to accept the STMicroelectronics EULA at '%s'. "
                  "Please read it and in case you accept it, write: "
-                 "ACCEPT_EULA = \"1\" in your local.conf." % (pkg, eula_file, machine))
+                 "ACCEPT_EULA = \"1\" in your local.conf." % (pkg, eula_file))
     elif eula == '0':
         bb.fatal("To use '%s' you need to accept the STMicroelectronics EULA." % pkg)
     else:
