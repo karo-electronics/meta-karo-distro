@@ -8,7 +8,7 @@ SUBIMAGE_NAME ?= "${@ "${IMAGE_BASENAME}".split("-")[-1]}"
 
 IMAGE_ROOTFS_SIZE ?= "32768"
 
-IMAGE_PREPROCESS_COMMAND:append = "reformat_rootfs;"
+IMAGE_PREPROCESS_COMMAND:append = " reformat_rootfs"
 
 # Cleanup rootfs newly created
 reformat_rootfs() {

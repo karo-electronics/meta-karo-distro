@@ -19,8 +19,8 @@ EXTRA_USERS_PARAMS ?= "usermod -p '' root"
 REQUIRED_DISTRO_FEATURES ??= ""
 
 ROOTFS_POSTPROCESS_COMMAND:remove = "\
-        rootfs_update_timestamp; \
-        ${@bb.utils.contains('DISTRO_FEATURES','read-only-rootfs','empty_var_volatile;','',d)} \
+        rootfs_update_timestamp \
+        ${@bb.utils.contains('DISTRO_FEATURES','read-only-rootfs','empty_var_volatile','',d)} \
 "
 
 python () {
