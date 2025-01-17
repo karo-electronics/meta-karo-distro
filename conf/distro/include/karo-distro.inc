@@ -33,6 +33,7 @@ DISTRO_FEATURES_DEFAULT ?= "\
 "
 
 IMAGE_CLASSES += "st-partitions-image"
+IMAGE_NAME_SUFFIX = ""
 
 ENABLE_PARTITIONS_IMAGE ?= "${@ bb.utils.contains('MACHINE_FEATURES', 'emmc', "1", "0", d)}"
 PARTITIONS_IMAGE ?= "${@ "karo-image-bootfs karo-image-userfs" if ${ENABLE_PARTITIONS_IMAGE} == 1 else ""}"

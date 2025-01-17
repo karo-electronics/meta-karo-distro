@@ -5,7 +5,6 @@ require karo-subimage.inc
 
 IMAGE_PARTITION_MOUNTPOINT = "/boot"
 IMAGE_PARTITION_MOUNTPOINT:stm32mpcommon = "${STM32MP_BOOTFS_MOUNTPOINT_IMAGE}"
-IMAGE_NAME_SUFFIX = ".bootfs"
 
 IMAGE_ROOTFS_MAXSIZE ?= "${@ d.getVar('BOOTFS_PARTITION_SIZE') if d.getVar('BOOTFS_PARTITION_SIZE') != None else ""}"
 
