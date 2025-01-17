@@ -18,9 +18,10 @@ do_install () {
 # Serial consoles on the standard serial ports
 EOF
 	fi
-	j=`echo ${c} | sed 's/;/ /g'`
-	l=`echo ${c} | sed 's/tty//;s/^.*;//;s/;.*//'`
-	echo "s$i:123:respawn:${base_sbindir}/getty -L ${j} linux" >> ${D}${sysconfdir}/inittab
+	speed=$(echo ${c} | cut -d\; -f 1)
+	device=$(echo ${c} | cut -d\; -f 2)
+	label=$(echo ${device} | sed s/tty// | tail -n 5)
+	echo "${label}:123:respawn:${sbindir}/ttyrun ${device} ${base_sbindir}/getty -L ${speed} ${device} linux" >> ${D}${sysconfdir}/inittab
 	i=`expr $i + 1`
     done
 
@@ -38,6 +39,7 @@ EOF
         for n in ${SYSVINIT_ENABLED_GETTYS};do
             echo "$n:345:respawn:${base_sbindir}/getty 38400 tty$n" >> ${D}${sysconfdir}/inittab
         done
+        echo "" >> ${D}${sysconfdir}/inittab
     fi
 
     if ${@ bb.utils.contains('DISTRO_FEATURES','telnet-login','true','false',d)};then
