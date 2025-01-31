@@ -10,7 +10,7 @@ do_create_install_scripts[depends] += "\
 "
 
 # create shell scripts for image flashing
-addtask do_unpack after do_image_complete before do_create_install_scripts
+addtask do_unpack before do_create_install_scripts
 addtask do_create_install_scripts after do_image_complete before do_build
 
 python do_create_install_scripts() {
