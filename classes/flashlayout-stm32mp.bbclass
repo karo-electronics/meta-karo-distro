@@ -273,7 +273,11 @@ def get_binaryname(labeltype, bootscheme, config, partition, d):
         # Append binary_type to binary name
         if re.match('^u-boot-spl.*$', binary_name):
             binary_name = file_name + file_ext + '-' + binary_type
-        else:
+        elif re.match('^fip.*$', binary_name) and d.getVar("SIGN_ENABLE") == "1":
+            binary_name = file_name + '-' + binary_type + '_' + "Signed" + file_ext
+        elif re.match('^tf-a.*$', binary_name) and d.getVar("SIGN_ENABLE") == "1":
+            binary_name = file_name + '-' + binary_type + '_' + "Signed" + file_ext
+        else :
             binary_name = file_name + '-' + binary_type + file_ext
 
     # Make sure binary is available in DEPLOY_DIR_IMAGE folder

@@ -13,6 +13,10 @@ python do_create_install_scripts() {
 
     soc_family = d.getVar('SOC_FAMILY')
     bootscheme = d.getVar('FLASHLAYOUT_BOOTSCHEME_LABELS')
+    sign_enable = d.getVar('SIGN_ENABLE')
+
+    if sign_enable == "1":
+        bootscheme = bootscheme + '_Signed'
 
     machine = d.getVar('MACHINE')
     rootfs_image = d.getVar('BPN')
