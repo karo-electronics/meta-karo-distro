@@ -2,6 +2,11 @@
 # i.MX specific processing
 #
 
+# Proposed value for userfs is 128MB (4*32MB)
+USERFS_PARTITION_SIZE ??= "131072"
+
+
+
 # create uuu.auto file for image
 addtask do_create_uuu_auto_script after do_image_complete before do_build
 addtask do_unpack before do_create_uuu_auto_script
@@ -21,6 +26,15 @@ python do_create_uuu_auto_script() {
     img_dirname = os.path.join(d.getVar('DEPLOY_DIR_IMAGE'), d.getVar('BPN'))
     uuu_auto_path = os.path.join(img_dirname, "uuu.auto")
 
+    if 'rauc' in d.getVar('DISTRO_FEATURES').split():
+        if d.getVar('DISTRO') == 'karo-minimal':
+            rauc = True
+        else:
+            rauc = False
+    else:
+        rauc = False
+
+
     partlist = (d.getVar('PARTITIONS_IMAGE') or "").replace("karo-image-", "").split()
     mntpoints = (d.getVar('PARTITIONS_MOUNTPOINT_IMAGE') or "").split()
     image_bootloader=d.getVar('IMAGE_BOOTLOADER')
@@ -36,6 +50,19 @@ python do_create_uuu_auto_script() {
             partitions += "name=%s,size=%s;" % (partname, size)
         flash_cmds += dlm + "FB: flash -raw2sparse %s %s-%s.ext4" % (partname, img, machine)
         dlm = "\n"
+
+
+    if rauc:
+        dlm = "\n"
+        for index in range(0, len(partlist) + 1):
+            (partname, img, size, type) = get_part_info(d, partlist, index)
+            if type != None:
+                partitions += "name=%sB,type=%s,size=%s;" % (partname, type, size)
+            else:
+                partitions += "name=%sB,size=%s;" % (partname, size)
+            flash_cmds += dlm + "FB: flash -raw2sparse %sB %s-%s.ext4" % (partname, img, machine)
+            dlm = "\n"
+
 
     bb.utils.mkdirhier(img_dirname)
 
