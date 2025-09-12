@@ -10,7 +10,7 @@
 ### END INIT INFO
 
 PATH=/sbin:/bin
-. /lib/init/vars.sh
+. @@LIBDIR@@/init/vars.sh
 
 do_stop () {
 	[ "$VERBOSE" = no ] || echo -n "Mounting root filesystem read-only..."
