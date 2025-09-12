@@ -1,6 +1,7 @@
 POKY_DISTRO ??= "poky"
 require conf/distro/${POKY_DISTRO}.conf
 require ${@ "gpu_vivante.inc" if 'stm32mpcommon' in d.getVar('MACHINEOVERRIDES').split(":") else ""}
+require ${@bb.utils.contains('DISTRO_FEATURES', 'systemd', "systemd.inc", "", d)}
 
 DISTRO_VERSION = "${PREFERRED_VERSION_linux-karo}-${DISTRO_CODENAME}"
 
@@ -52,7 +53,6 @@ DISTRO_FEATURES_DEFAULT:append:qsmp-1530w = " wifi bluetooth bcm4373"
 
 VIRTUAL-RUNTIME_base-utils-hwclock = "util-linux-hwclock"
 VIRTUAL-RUNTIME_dev_manager ??= "udev"
-VIRTUAL-RUNTIME_init_manager ??= "${@bb.utils.contains('DISTRO_FEATURES',"systemd","systemd","sysvinit",d)}"
 
 PREFERRED_PROVIDER_opencl-headers = "imx-gpu-viv"
 PREFERRED_RPROVIDER_mfgtool-base ?= "linux-imx-mfgtool"
