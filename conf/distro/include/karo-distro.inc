@@ -33,6 +33,9 @@ DISTRO_FEATURES_DEFAULT ?= "\
         xattr \
 "
 
+# for fw_printenv/fw_setenv
+UBOOT_INITIAL_ENV ?= "u-boot-initial-env"
+
 IMAGE_CLASSES += "st-partitions-image"
 IMAGE_CLASSES:remove = "image_populate_mfgtool"
 IMAGE_NAME_SUFFIX = ""
