@@ -34,6 +34,7 @@ DISTRO_FEATURES_DEFAULT ?= "\
 "
 
 IMAGE_CLASSES += "st-partitions-image"
+IMAGE_CLASSES:remove = "image_populate_mfgtool"
 IMAGE_NAME_SUFFIX = ""
 
 ENABLE_PARTITIONS_IMAGE ?= "${@ bb.utils.contains('MACHINE_FEATURES', 'emmc', "1", "0", d)}"
@@ -55,9 +56,6 @@ VIRTUAL-RUNTIME_base-utils-hwclock = "util-linux-hwclock"
 VIRTUAL-RUNTIME_dev_manager ??= "udev"
 
 PREFERRED_PROVIDER_opencl-headers = "imx-gpu-viv"
-PREFERRED_RPROVIDER_mfgtool-base ?= "linux-imx-mfgtool"
-PREFERRED_RPROVIDER_mfgtool-image ?= "${PREFERRED_RPROVIDER_mfgtool-base}"
-PREFERRED_RPROVIDER_mfgtool-image-image ?= "${PREFERRED_RPROVIDER_mfgtool-base}"
 
 VOLATILE_LOG_DIR ?= "no"
 
