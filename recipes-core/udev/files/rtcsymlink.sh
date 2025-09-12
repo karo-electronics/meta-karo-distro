@@ -21,4 +21,6 @@ if [ -h /dev/rtc ];then
 	    fi
 	fi
     fi
+else
+    ln -snvf "$rtc" /dev/rtc
 fi
