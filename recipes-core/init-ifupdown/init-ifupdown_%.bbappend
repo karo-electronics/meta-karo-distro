@@ -8,7 +8,7 @@ SRC_URI:append = " file://iface"
 do_compile[noexec] := "1"
 
 do_install:append () {
-    rm -v ${D}${sysconfdir}/network/if-pre-up.d/nfsroot
+    rm -vf ${D}${sysconfdir}/network/if-pre-up.d/nfsroot
     install -v -d "${D}${sysconfdir}/network/interfaces.d"
 
     bbdebug 2 "interfaces='${NETWORK_INTERFACES}'"
@@ -23,6 +23,11 @@ do_install:append () {
         else
             sed "s/@@IFACE@@/${ifname}/g" "${B}/iface" > "${D}${sysconfdir}/network/interfaces.d/${ifname}"
         fi
+        auto=false
+        for a in ${NETWORK_INTERFACES_AUTO};do
+            [ "$iface" = "$a" ] || [ "$ifname" = "$a" ] && auto=true && break
+        done
+        $auto || sed -i 's/^auto/#auto/' "${D}${sysconfdir}/network/interfaces.d/${ifname}"
     done
 }
-do_install[vardeps] += "NETWORK_INTERFACES"
+do_install[vardeps] += "NETWORK_INTERFACES NETWORK_INTERFACES_AUTO"
