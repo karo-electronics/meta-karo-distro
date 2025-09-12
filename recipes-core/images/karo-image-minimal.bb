@@ -7,5 +7,5 @@ IMAGE_ROOTFS_MAXSIZE ?= "${@bb.utils.contains('MACHINE_FEATURES',"nand","65536",
 
 python extend_recipe_sysroot:append() {
     if d.getVar('DISTRO') != 'karo-minimal':
-        raise_sanity_error("cannot build karo-image-minimal with '%s' DISTRO" % d.getVar('DISTRO'), d)
+        raise_sanity_error("cannot build '%s' with DISTRO '%s'" % (d.getVar('BPN'), d.getVar('DISTRO')), d)
 }
