@@ -1,8 +1,8 @@
 SUMMARY = "An image with full multimedia and Machine Learning support"
 
-require recipes-core/images/karo-image-weston.bb
-
 ROOTFS_PARTITION_SIZE ?= "3145728"
+
+require recipes-core/images/karo-image-weston.bb
 
 GOOGLE_CORAL_PKGS = " \
         libedgetpu \
