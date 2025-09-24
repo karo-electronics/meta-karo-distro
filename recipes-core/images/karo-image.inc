@@ -11,7 +11,7 @@ inherit ${@ "flashlayout-stm32mp" if 'stm32mpcommon' in d.getVar('MACHINEOVERRID
 require ${@ "st-machine-common-stm32mp.inc" if 'stm32mpcommon' in d.getVar('MACHINEOVERRIDES').split(":") else ""}
 require ${@ "karo-nxp.inc" if 'use-nxp-bsp' in d.getVar('MACHINEOVERRIDES').split(':') else "karo-mainline.inc"}
 require ${@ "karo-rzg2.inc" if 'rzg2' in d.getVar('MACHINEOVERRIDES').split(':') else ""}
-require ${@ "karo-stm.inc" if ('stm32mpcommon' in d.getVar('MACHINEOVERRIDES').split(':') and 'qsmp-1510' not in d.getVar('MACHINEOVERRIDES').split(':')) else ""}
+require ${@ "karo-stm.inc" if 'stm32mpcommon' in d.getVar('MACHINEOVERRIDES').split(':') else ""}
 
 inherit extrausers
 EXTRA_USERS_PARAMS ?= "usermod -p '' root"

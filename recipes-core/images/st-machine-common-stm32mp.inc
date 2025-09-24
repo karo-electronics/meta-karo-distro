@@ -1,7 +1,6 @@
 #@DESCRIPTION: Common Machine configuration for STM32 systems
 
 require st-machine-flashlayout-stm32mp.inc
-require ${@ "qsmp-1510.inc" if 'qsmp-1510' in d.getVar('MACHINEOVERRIDES').split(":") else ""}
 
 # Don't include kernels in standard images
 #RDEPENDS_${KERNEL_PACKAGE_NAME}-base = ""
