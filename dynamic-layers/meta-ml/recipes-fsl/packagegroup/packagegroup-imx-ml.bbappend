@@ -1,3 +1,3 @@
-ML_PKGS:remove:mx9-nxp-bsp = " \
+ML_PKGS:remove:mx8-nxp-bsp = " \
     onnxruntime-tests \
 "
