@@ -12,9 +12,6 @@ SDPS: boot -f $image_bootloader-$machine-mfg.bin
 SDPV: write -f $image_bootloader-$machine-mfg.bin -skipspl
 SDPV: jump
 
-### Writing default u-boot to emmc
-FB: flash mmc0boot0 $image_bootloader-$machine-default.bin
-
 # enable boot from eMMC and switch to boot partition
 FB: ucmd mmc partconf $${emmc_dev} $${emmc_boot_ack} $${emmc_boot_part} $${emmc_boot_part}
 
@@ -26,10 +23,6 @@ FB: ucmd mmc partconf $${emmc_dev} $${emmc_boot_ack} $${emmc_boot_part} 0
 
 ### GPT partition layout
 FB: ucmd gpt write mmc 0 '$partitions'
-
-### force re-read partition table
-FB: ucmd setenv fastboot_dev sata
-FB: ucmd setenv fastboot_dev mmc
 
 ### Flashing partitions
 $flash_cmds

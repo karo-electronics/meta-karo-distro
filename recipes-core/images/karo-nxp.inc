@@ -40,29 +40,23 @@ python do_create_uuu_auto_script() {
     image_bootloader=d.getVar('IMAGE_BOOTLOADER')
 
     partitions = "start=1MiB,"
-    flash_cmds = ""
-    dlm = ""
+    flash_cmds = "FB: flash mmc0boot0 %s-%s-default.bin" % (image_bootloader, machine)
     for index in range(0, len(partlist) + 1):
         (partname, img, size, type) = get_part_info(d, partlist, index)
         if type != None:
             partitions += "name=%s,type=%s,size=%s;" % (partname, type, size)
         else:
             partitions += "name=%s,size=%s;" % (partname, size)
-        flash_cmds += dlm + "FB: flash -raw2sparse %s %s-%s.ext4" % (partname, img, machine)
-        dlm = "\n"
-
+        flash_cmds += "\nFB: flash -raw2sparse %s %s-%s.ext4" % (partname, img, machine)
 
     if rauc:
-        dlm = "\n"
         for index in range(0, len(partlist) + 1):
             (partname, img, size, type) = get_part_info(d, partlist, index)
             if type != None:
                 partitions += "name=%sB,type=%s,size=%s;" % (partname, type, size)
             else:
                 partitions += "name=%sB,size=%s;" % (partname, size)
-            flash_cmds += dlm + "FB: flash -raw2sparse %sB %s-%s.ext4" % (partname, img, machine)
-            dlm = "\n"
-
+            flash_cmds += "\nFB: flash -raw2sparse %sB %s-%s.ext4" % (partname, img, machine)
 
     bb.utils.mkdirhier(img_dirname)
 
@@ -76,7 +70,7 @@ python do_create_uuu_auto_script() {
             uuu_template = Template(uuu_template_string)
             uuu_auto = uuu_template.substitute(image=rootfs_image, machine=machine,
                 partitions=partitions, flash_cmds=flash_cmds,
-                image_bootloader=image_bootloader)
+		image_bootloader=image_bootloader)
             uuu_script.write(uuu_auto)
             uuu_script.close()
     except OSError:
