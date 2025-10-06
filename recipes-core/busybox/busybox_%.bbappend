@@ -1,16 +1,16 @@
 FILESEXTRAPATHS:prepend := "${THISDIR}/${PN}:${THISDIR}/files:${THISDIR}/patches:"
 
 SRC_URI:remove = " \
-                 file://ftpget.cfg \
-                 file://login-utilities.cfg \
-                 file://resize.cfg \
-                 file://sha1sum.cfg \
+    file://ftpget.cfg \
+    file://login-utilities.cfg \
+    file://resize.cfg \
+    file://sha1sum.cfg \
 "
 SRC_URI:append = " \
-                 ${@ bb.utils.contains('DISTRO_FEATURES','pam','file://pam.cfg','',d)} \
-                 ${@ bb.utils.contains('DISTRO_FEATURES','busybox-crond','','file://no-crond.cfg',d)} \
+    ${@ bb.utils.contains('DISTRO_FEATURES', 'pam', 'file://pam.cfg', '', d)} \
+    ${@ bb.utils.contains('DISTRO_FEATURES', 'busybox-crond', '', 'file://no-crond.cfg', d)} \
+    ${@ bb.utils.contains('DISTRO_FEATURES', 'systemd', 'file://sysrq.conf', '', d)} \
 "
-FILES:${PN} += "${sysconfdir}/network/run"
 
 # overrule prio 200 of sysvinit and shadow
 # if enabled, /bin/sh will be linked to /bin/busybox.nosuid
@@ -38,28 +38,35 @@ GROUPADD_PARAM:${PN} = "--system utmp"
 # need /etc/group in the staging directory
 DEPENDS += "base-passwd"
 
-FILES:${PN} += "/run/utmp ${localstatedir}/log/wtmp"
+FILES:${PN} += "${@ bb.utils.contains('DISTRO_FEATURES', 'systemd', \
+                    "${sysconfdir}/sysctl.d/sysrq.conf", \
+                    "${sysconfdir}/network/run /run/utmp ${localstatedir}/log/wtmp", d)}"
 
 do_install:append () {
-    if [ -e ${D}${sysconfdir}/init.d/inetd.${BPN} ];then
-        mv -vi ${D}${sysconfdir}/init.d/inetd.${BPN} ${D}${sysconfdir}/init.d/${PN}-inetd
-    fi
-
-    install -d -m 0755 ${D}${sysconfdir}/network
-    ln -snvf /run/network ${D}${sysconfdir}/network/run
-
-    install -v -d -m 0755 ${D}/run
-    install -v -m 0664 -g utmp /dev/null ${D}/run/utmp
-
-    install -v -d -m 0755 ${D}${localstatedir}/log
-    install -v -m 0664 -g utmp /dev/null ${D}${localstatedir}/log/wtmp
-
-    if ${@ bb.utils.contains('MACHINE_FEATURES', 'emmc', 'true', 'false', d)};then
-        if grep -q "CONFIG_INIT=y" ${B}/.config && \
-                ${@bb.utils.contains('VIRTUAL-RUNTIME_init_manager','mdev-busybox','true','false',d)}; then
-            # Change the value of ENABLE_ROOTFS_FSCK in ${sysconfdir}/default/rcS to yes
-            sed -i '/^ENABLE_ROOTFS_FSCK=/s/no/yes/' ${D}${sysconfdir}/default/rcS
+    if ${@ bb.utils.contains('DISTRO_FEATURES', 'systemd', 'false', 'true', d)};then
+        if [ -e ${D}${sysconfdir}/init.d/inetd.${BPN} ];then
+            mv -vi ${D}${sysconfdir}/init.d/inetd.${BPN} ${D}${sysconfdir}/init.d/${PN}-inetd
         fi
+
+        install -d -m 0755 ${D}${sysconfdir}/network
+        ln -snvf /run/network ${D}${sysconfdir}/network/run
+
+        install -v -d -m 0755 ${D}/run
+        install -v -m 0664 -g utmp /dev/null ${D}/run/utmp
+        
+        install -v -d -m 0755 ${D}${localstatedir}/log
+        install -v -m 0664 -g utmp /dev/null ${D}${localstatedir}/log/wtmp
+        
+        if ${@ bb.utils.contains('MACHINE_FEATURES', 'emmc', 'true', 'false', d)};then
+            if grep -q "CONFIG_INIT=y" ${B}/.config && \
+                    ${@bb.utils.contains('VIRTUAL-RUNTIME_init_manager','mdev-busybox','true','false',d)}; then
+                # Change the value of ENABLE_ROOTFS_FSCK in ${sysconfdir}/default/rcS to yes
+                sed -i '/^ENABLE_ROOTFS_FSCK=/s/no/yes/' ${D}${sysconfdir}/default/rcS
+            fi
+        fi
+    else
+        install -v -d 0755 ${D}${sysconfdir}/sysctl.d
+        install -v -m 0664 ${WORKDIR}/sysrq.conf ${D}${sysconfdir}/sysctl.d/
     fi
 }
 

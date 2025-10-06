@@ -8,11 +8,6 @@ dirs1777 = " \
     ${localstatedir}/tmp \
 "
 
-dirs755:remove = " \
-    ${localstatedir}/volatile \
-    ${localstatedir}/volatile/log \
-"
-
 dirs755:append = " \
     ${localstatedir}/log \
     ${localstatedir}/lib/hwclock \
@@ -22,9 +17,7 @@ dirs755:append = " \
     ${prefix}/local \
 "
 
-volatiles = ""
-
-inherit relative_symlinks
+require ${@ bb.utils.contains('DISTRO_FEATURES', 'systemd', '', 'no-systemd.inc', d)}
 
 do_install:append () {
     if ${@ bb.utils.contains('MACHINE_FEATURES', 'emmc', 'true', 'false', d)};then

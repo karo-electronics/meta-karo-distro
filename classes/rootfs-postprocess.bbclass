@@ -1,18 +1,14 @@
 ROOTFS_POSTPROCESS_COMMAND:append = " rootfs_postinst_cleanup"
 
 rootfs_postinst_cleanup () {
-    set -x
-
-    if [ -d ${IMAGE_ROOTFS}$sysconfdir/default/volatiles ];then
-        echo "${sysconfdir}/default/volatiles still exists" >&2
-    fi
+set -vx
     # It's meaningless to rotate a log file, that is created once
     # upon boot in tmpfs
-    rm -vf ${IMAGE_ROOTFS}${sysconfdir}/logrotate-dmesg.conf
+    rm -vf "${IMAGE_ROOTFS}${sysconfdir}/logrotate-dmesg.conf"
 
     # copy local timezone file from host, if none is installed
-    if [ ! -s ${IMAGE_ROOTFS}${sysconfdir}/localtime -a -s /etc/localtime ];then
-        install -v /etc/localtime ${IMAGE_ROOTFS}${sysconfdir}
+    if [ ! -s "${IMAGE_ROOTFS}${sysconfdir}/localtime" -a -s /etc/localtime ];then
+        install -v /etc/localtime "${IMAGE_ROOTFS}${sysconfdir}"
     fi
 
     if ${@ bb.utils.contains('IMAGE_INSTALL','bash','true','false',d)};then
@@ -22,7 +18,17 @@ rootfs_postinst_cleanup () {
     # remove unused file to prevent confusion
     rm -vf ${IMAGE_ROOTFS}${sysconfdir}/timezone
 
-    rm -vrf ${IMAGE_ROOTFS}/usr/share/man
+    if [ "${DISTRO}" = "karo-minimal" ];then
+        rm -vrf ${IMAGE_ROOTFS}/usr/share/man
+    fi
 
-    date -u > ${IMAGE_ROOTFS}/.timestamp
+    if ${@ bb.utils.contains('DISTRO_FEATURES', 'reproducible-timestamps', "false", "true", d)};then
+        date -u > ${IMAGE_ROOTFS}/.timestamp
+    fi
+
+    if ${@ bb.utils.contains('DISTRO_FEATURES', 'systemd', "false", "true", d)};then
+        if [ -d "${IMAGE_ROOTFS}${sysconfdir}/default/volatiles" ];then
+            bbwarn "${sysconfdir}/default/volatiles still exists"
+        fi
+    fi
 }
