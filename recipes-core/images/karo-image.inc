@@ -23,6 +23,8 @@ ROOTFS_POSTPROCESS_COMMAND:remove = "\
         ${@bb.utils.contains('DISTRO_FEATURES','read-only-rootfs','empty_var_volatile','',d)} \
 "
 
+IMAGE_ROOTFS_MAXSIZE ?= "${ROOTFS_PARTITION_SIZE}"
+
 python () {
     d.delVarFlag('do_unpack', 'noexec')
 }
