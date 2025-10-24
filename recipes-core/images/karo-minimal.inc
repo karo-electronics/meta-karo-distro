@@ -6,7 +6,8 @@ IMAGE_FEATURES:remove = "tools-debug"
 IMAGE_INSTALL:remove = "curl git"
 
 ROOTFS_PARTITION_SIZE ?= "${@bb.utils.contains('MACHINE_FEATURES',"nand", \
-                          64*1024,128*1024,d)}"
+                          64*1024,bb.utils.contains('DISTRO_FEATURES', "rauc", \
+			  256*1024, 128*1024, d), d)}"
 
 UBI_VOLNAME = "rootfs"
 
