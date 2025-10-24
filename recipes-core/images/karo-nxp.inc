@@ -70,7 +70,7 @@ python do_create_uuu_auto_script() {
             uuu_template = Template(uuu_template_string)
             uuu_auto = uuu_template.substitute(image=rootfs_image, machine=machine,
                 partitions=partitions, flash_cmds=flash_cmds,
-		image_bootloader=image_bootloader)
+                image_bootloader=image_bootloader)
             uuu_script.write(uuu_auto)
             uuu_script.close()
     except OSError:
