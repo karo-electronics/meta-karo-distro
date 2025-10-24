@@ -1,0 +1,8 @@
+auto @@IFACE@@
+iface @@IFACE@@ inet dhcp
+pre-up /etc/init.d/ttt-ip-common.sh start
+pre-up ip link add name br0 type bridge
+pre-up ip link set dev br0 up
+pre-up ifup br0
+
+pre-down ifdown br0

@@ -2,8 +2,11 @@ FILESEXTRAPATHS:prepend := "${THISDIR}/${PN}:"
 
 # default template file for /etc/interfaces.d/${iface}
 SRC_URI:append = " file://iface"
+
 # alternatively there may be individual template files for each listed NETWORK_INTERFACE
 # with the same name as the network interface.
+SRC_URI:append = " ${@ bb.utils.contains('MACHINE_FEATURES', 'stm-tsn-swch', \
+        " file://br0 file://eth0 file://sw0ep", "", d)}"
 
 do_compile[noexec] := "1"
 

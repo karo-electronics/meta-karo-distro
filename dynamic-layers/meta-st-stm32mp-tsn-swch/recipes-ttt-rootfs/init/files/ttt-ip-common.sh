@@ -1,0 +1,57 @@
+#!/bin/sh
+
+REF_ETH_INTERFACE=to_be_adapted_to_the_board
+IP_REF_NAME=4c000000.deip-sw
+
+# read mac address
+get_mac() {
+    read MAC </sys/class/net/$REF_ETH_INTERFACE/address
+    echo "[INFO]: Mac Address of $REF_ETH_INTERFACE: $MAC"
+}
+
+get_soc_path() {
+    devicetree_path=/sys/bus/platform/devices
+    if [ -d "$devicetree_path" ]; then
+	SOC_PATH=$devicetree_path
+    else
+	echo "[ERROR]: /sys/bus/platform/devices is not available"
+	echo ""
+	exit 1
+    fi
+}
+
+wait_sysfs() {
+    path=$1
+    for i in $(seq 0 5); do
+	[ -e "$path" ] && break
+	sleep 0.5s &> /dev/null || sleep 1
+    done
+}
+
+st_configure() {
+    get_soc_path
+    wait_sysfs $SOC_PATH/$IP_REF_NAME/net/sw0p3/phy/mdiobus
+    fgrep -q '(none)' $SOC_PATH/$IP_REF_NAME/net/sw0p3/phy/mdiobus || return
+    if [ -e $SOC_PATH/$IP_REF_NAME/net/sw0p3/phy/mdiobus ]; then
+	echo -n stmmac-0:00 > $SOC_PATH/$IP_REF_NAME/net/sw0p3/phy/mdiobus
+    else
+	echo "[ERROR]: $SOC_PATH/$IP_REF_NAME/net/sw0p3/phy/mdiobus not available"
+	echo ""
+	exit 1
+    fi
+}
+
+set_interfaces_mac() {
+    get_mac
+    ip link set dev sw0ep address $MAC
+}
+
+case "$1" in
+    start)
+	st_configure
+	set_interfaces_mac
+	;;
+    stop)
+	;;
+esac
+exit 0

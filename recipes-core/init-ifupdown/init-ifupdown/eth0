@@ -1,0 +1,4 @@
+auto @@IFACE@@
+iface @@IFACE@@ inet manual
+up ifup sw0ep
+down ifdown sw0ep

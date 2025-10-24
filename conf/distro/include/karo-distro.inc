@@ -64,5 +64,6 @@ PARTITIONS_MOUNTPOINT_IMAGE ?= "/boot"
 
 IMAGE_FSTYPES = "ext4 tar.bz2"
 
-NETWORK_INTERFACES ??= "eth0"
-NETWORK_INTERFACES_AUTO ??= "${NETWORK_INTERFACES}"
+NETWORK_INTERFACES ??= "${@bb.utils.contains('MACHINE_FEATURES', 'stm-tsn-swch', "eth0 br0 sw0ep", "eth0", d)}"
+NETWORK_INTERFACES_AUTO ??= "${@bb.utils.contains('MACHINE_FEATURES', 'stm-tsn-swch', "eth0", \
+                             d.getVar('NETWORK_INTERFACES'), d)}"

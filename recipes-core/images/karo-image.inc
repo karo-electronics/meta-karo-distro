@@ -91,6 +91,19 @@ IMAGE_INSTALL:append = " \
         ${@bb.utils.contains('DISTRO_FEATURES','bcm4373','linux-firmware-bcm4373','',d)} \
 "
 
+CORE_IMAGE_EXTRA_INSTALL:append:stm32mp2 = "${@ bb.utils.contains('MACHINE_FEATURES', 'stm-tsn-swch', \
+        " kernel-module-edge kernel-module-st-stm32-deip bridge-utils ttt-ip-init", "", d)}"
+
+IMAGE_INSTALL:append:stm32mp2:not = " \
+    de-ptp-bin \
+    ebtables \
+    iproute2-devlink \
+    iproute2-tc \
+    lldpd \
+    mstpd \
+    ttt-ip-switch-sysvinit \
+"
+
 IMAGE_INSTALL:append:use-nxp-bsp = "${@ bb.utils.contains('DISTRO_FEATURES', 'wifi', \
         bb.utils.contains('DISTRO_FEATURES', 'systemd', " firmwared", "", d), "", d)}"
 

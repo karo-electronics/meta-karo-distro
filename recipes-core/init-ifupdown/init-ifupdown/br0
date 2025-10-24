@@ -1,0 +1,11 @@
+auto @@IFACE@@
+iface @@IFACE@@ inet manual
+pre-up ip link set dev sw0p1 master @@IFACE@@ up
+pre-up ip link set dev sw0p2 master @@IFACE@@ up
+pre-up ip link set dev sw0p3 master @@IFACE@@ up
+
+pre-down ip link set dev sw0p1 down
+pre-down ip link set dev sw0p2 down
+pre-down ip link set dev sw0p3 down
+
+post-down ip link del dev @@IFACE@@
