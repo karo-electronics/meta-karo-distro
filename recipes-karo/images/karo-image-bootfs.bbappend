@@ -1,1 +1,1 @@
-PACKAGE_INSTALL += "${@ "u-boot-script" if 'rauc' in d.getVar('DISTRO_FEATURES').split() else ""}"
+PACKAGE_INSTALL += "${@ bb.utils.contains('DISTRO_FEATURES', 'rauc', "u-boot-script", "", d)}"
