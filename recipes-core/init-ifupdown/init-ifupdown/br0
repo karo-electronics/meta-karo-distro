@@ -1,4 +1,3 @@
-auto @@IFACE@@
 iface @@IFACE@@ inet manual
 pre-up ip link set dev sw0p1 master @@IFACE@@ up
 pre-up ip link set dev sw0p2 master @@IFACE@@ up

@@ -1,0 +1,8 @@
+#!/bin/sh
+
+case $IFACE in
+    eth0)
+	/sbin/ip link set dev ${IFACE} down
+	/sbin/ifdown sw0ep
+esac
+exit 0

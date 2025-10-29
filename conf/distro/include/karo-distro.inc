@@ -67,3 +67,4 @@ IMAGE_FSTYPES = "ext4 tar.bz2"
 NETWORK_INTERFACES ??= "${@bb.utils.contains('MACHINE_FEATURES', 'stm-tsn-swch', "eth0 br0 sw0ep", "eth0", d)}"
 NETWORK_INTERFACES_AUTO ??= "${@bb.utils.contains('MACHINE_FEATURES', 'stm-tsn-swch', "eth0", \
                              d.getVar('NETWORK_INTERFACES'), d)}"
+DEFAULT_ETHERNET_MAIN_TSN_BRIDGE_INTERFACE ??= "${@bb.utils.contains('DISTRO_FEATURES', 'systemd', 'end0', 'eth0', d)}"

@@ -1,0 +1,8 @@
+[Match]
+Name=sw0ep
+
+[Network]
+DHCP=yes
+UseTimezone=false
+# DNS can be adapted following your configurarion
+UseDNS=true
