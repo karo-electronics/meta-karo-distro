@@ -66,8 +66,12 @@ EOF
     install -D -m 0644 ${WORKDIR}/ntp.conf ${D}/run/dhcpcd/hook-state/ntp.conf/${ifname}.dhcp
     ln -snvf /run/dhcpcd/hook-state/ntp.conf/${ifname}.dhcp ${D}${sysconfdir}/ntp.conf
 
-    install -D -m 0644 ${WORKDIR}/resolv.conf ${D}/run/dhcpcd/hook-state/resolv.conf/${ifname}.dhcp
-    ln -snvf /run/dhcpcd/hook-state/resolv.conf/${ifname}.dhcp ${D}${sysconfdir}/resolv.conf
+    if ${@ bb.utils.contains('DISTRO_FEATURES', 'systemd', 'false', 'true', d)};then
+        install -D -m 0644 ${WORKDIR}/resolv.conf ${D}/run/dhcpcd/hook-state/resolv.conf/${ifname}.dhcp
+        ln -snvf /run/dhcpcd/hook-state/resolv.conf/${ifname}.dhcp ${D}${sysconfdir}/resolv.conf
+    else
+        ln -snvf resolv-conf.systemd ${D}${sysconfdir}/resolv.conf
+    fi
 
     install -v -m 0755 -d ${D}${localstatedir}/lib/dhcpcd
     install -v -m 0755 /dev/null ${D}${localstatedir}/lib/dhcpcd/dhcpcd.duid
