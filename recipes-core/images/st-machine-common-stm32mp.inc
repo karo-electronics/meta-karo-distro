@@ -42,7 +42,7 @@ BOOTFS_PARTITION_SIZE ?= "65536"
 #   rootfs < 120.5MiB - (256KiB + 64MiB + 16MiB + 128MiB + 53360KiB + 4 * 9 * 256KiB)
 
 # Proposed value for rootfs is 2GiB
-ROOTFS_PARTITION_SIZE ?= "2097152"
+ROOTFS_PARTITION_SIZE ??= "2097152"
 
 # Proposed value for userfs is 128MB (4*32MB)
 USERFS_PARTITION_SIZE ??= "131072"
