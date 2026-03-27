@@ -57,6 +57,7 @@ IMAGE_INSTALL:append = " \
         dosfstools \
         e2fsprogs \
         e2fsprogs-resize2fs \
+        ${@bb.utils.contains('DISTRO_FEATURES','edac','edac-utils','',d)} \
         ethtool \
         file \
         ${@bb.utils.contains('MACHINE_FEATURES', 'gpu', d.getVar('GPU_USERLAND_LIBRARIES_INSTALL') or '', '', d)} \
