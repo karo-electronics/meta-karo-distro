@@ -29,38 +29,33 @@ EOF
 
     install -v -d -m 0755 ${D}/run/dhcpcd/hook-state
 
-    IFNAME=""
-
     for iface in ${NETWORK_INTERFACES};do
         found=false
-        if ${@bb.utils.contains('DISTRO_FEATURES', 'systemd', "true", "false", d)}; then
-            ifname=$(echo $iface | sed 's/eth/end/')
-        else
-            ifname=$iface
-        fi
-        if [ -n "$IFNAME"];then
-            IFNAME=$ifname
-        fi
+        ifname=$(ethifname "$iface")
         if [ -n "${PRIMARY_NETWORK_INTERFACE}" ];then
             if [ "$iface" = "${PRIMARY_NETWORK_INTERFACE}" -o \
                  "$ifname" = "${PRIMARY_NETWORK_INTERFACE}" ];then
-                IFNAME=$ifname
                 found=true
                 break
             fi
         fi
+        $found && break
+    done
+    if ! $found && [ -n "${PRIMARY_NETWORK_INTERFACE}" ];then
+        bbwarn "'${PRIMARY_NETWORK_INTERFACE}' is not listed in 'NETWORK_INTERFACES'"
+    fi
+    for iface in ${NETWORK_INTERFACES};do
+        found=false
         for a in ${NETWORK_INTERFACES_AUTO};do
             if [ "$iface" = "$a" -o "$ifname" = "$a" ];then
-                IFNAME=$ifname
                 found=true
                 break
             fi
         done
         $found && break
     done
-
-    if ! $found && [ -n "${PRIMARY_NETWORK_INTERFACE}" ];then
-        bbwarn "'${PRIMARY_NETWORK_INTERFACE}' is not listed in '\${NETWORK_INTERFACES}'"
+    if ! $found && [ -n "${NETWORK_INTERFACES_AUTO}" ];then
+        bbwarn "'${NETWORK_INTERFACES_AUTO}' is not listed in 'NETWORK_INTERFACES'"
     fi
 
     install -D -m 0644 ${WORKDIR}/ntp.conf ${D}/run/dhcpcd/hook-state/ntp.conf/${ifname}.dhcp

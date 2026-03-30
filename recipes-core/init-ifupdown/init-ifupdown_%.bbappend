@@ -23,21 +23,16 @@ do_install:append () {
 
     bbdebug 2 "interfaces='${NETWORK_INTERFACES}'"
     for iface in ${NETWORK_INTERFACES};do
-        if ${@bb.utils.contains('DISTRO_FEATURES', 'systemd', "true", "false", d)}; then
-            ifname=$(echo $iface | sed 's/eth/end/')
-        else
-            ifname=$iface
-        fi
         if [ -s "${B}/${iface}" ];then
-            sed "s/@@IFACE@@/${ifname}/g" "${B}/${iface}" > "${D}${sysconfdir}/network/interfaces.d/${ifname}"
+            sed "s/@@IFACE@@/${iface}/g" "${B}/${iface}" > "${D}${sysconfdir}/network/interfaces.d/${iface}"
         else
-            sed "s/@@IFACE@@/${ifname}/g" "${B}/iface" > "${D}${sysconfdir}/network/interfaces.d/${ifname}"
+            sed "s/@@IFACE@@/${iface}/g" "${B}/iface" > "${D}${sysconfdir}/network/interfaces.d/${iface}"
         fi
         auto=false
         for a in ${NETWORK_INTERFACES_AUTO};do
-            [ "$iface" = "$a" ] || [ "$ifname" = "$a" ] && auto=true && break
+            [ "$iface" = "$a" ] || [ "$iface" = "$a" ] && auto=true && break
         done
-        $auto || sed -i 's/^auto/#auto/' "${D}${sysconfdir}/network/interfaces.d/${ifname}"
+        $auto || sed -i 's/^auto/#auto/' "${D}${sysconfdir}/network/interfaces.d/${iface}"
     done
     if ${@bb.utils.contains('MACHINE_FEATURES', 'stm-tsn-swch', 'true', 'false', d)};then
         install -v -m 0755 ${B}/if-pre-up ${D}${sysconfdir}/network/if-pre-up.d/tsn-switch.sh

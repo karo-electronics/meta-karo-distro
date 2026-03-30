@@ -34,6 +34,17 @@ DISTRO_FEATURES_DEFAULT ?= "\
         xattr \
 "
 
+ethifname() {
+    iface="$1"
+    if ${@ "false" if 'use-mainline-bsp' in d.getVar('MACHINEOVERRIDES').split(':') else "true"};then
+        echo "$iface"
+    elif ${@ bb.utils.contains('DISTRO_FEATURES', 'systemd', "true", "false", d)};then
+        echo "$iface" | sed s/eth/end/
+    else
+        echo "$iface"
+    fi
+}
+
 # for fw_printenv/fw_setenv
 UBOOT_INITIAL_ENV ?= "u-boot-initial-env"
 
