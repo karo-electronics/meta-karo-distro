@@ -1,0 +1,36 @@
+From c24ac1661ecc5cf7279372e9501729a46b981afb Mon Sep 17 00:00:00 2001
+From: Robin Lintermann <rl@karo-electronics.de>
+Date: Thu, 16 Apr 2026 14:19:11 +0000
+Subject: [PATCH] gallium: Add rzg2l driver entrypoint
+
+Upstream-Status: Pending
+
+---
+ src/gallium/targets/dri/meson.build | 1 +
+ src/gallium/targets/dri/target.c    | 1 +
+ 2 files changed, 2 insertions(+)
+
+diff --git a/src/gallium/targets/dri/meson.build b/src/gallium/targets/dri/meson.build
+index 8392524..f4b7b25 100644
+--- a/src/gallium/targets/dri/meson.build
++++ b/src/gallium/targets/dri/meson.build
+@@ -95,6 +95,7 @@ foreach d : [[with_gallium_kmsro, [
+                'rcar-du_dri.so',
+                'repaper_dri.so',
+                'rockchip_dri.so',
++               'rzg2l-du_dri.so',
+                'st7586_dri.so',
+                'st7735r_dri.so',
+                'sti_dri.so',
+diff --git a/src/gallium/targets/dri/target.c b/src/gallium/targets/dri/target.c
+index 415e494..cbce095 100644
+--- a/src/gallium/targets/dri/target.c
++++ b/src/gallium/targets/dri/target.c
+@@ -123,6 +123,7 @@ DEFINE_LOADER_DRM_ENTRYPOINT(pl111)
+ DEFINE_LOADER_DRM_ENTRYPOINT(rcar_du)
+ DEFINE_LOADER_DRM_ENTRYPOINT(repaper)
+ DEFINE_LOADER_DRM_ENTRYPOINT(rockchip)
++DEFINE_LOADER_DRM_ENTRYPOINT(rzg2l_du)
+ DEFINE_LOADER_DRM_ENTRYPOINT(st7586)
+ DEFINE_LOADER_DRM_ENTRYPOINT(st7735r)
+ DEFINE_LOADER_DRM_ENTRYPOINT(sti)

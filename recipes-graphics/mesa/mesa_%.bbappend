@@ -1,14 +1,14 @@
 PACKAGECONFIG:append:tx6 = " etnaviv kmsro opengl egl gles gbm dri gallium"
 #PACKAGECONFIG:append:stm32mp1common = " etnaviv kmsro opengl egl gles gbm dri gallium"
-PACKAGECONFIG:append:rzg2 = " egl kmsro panfrost"
+PACKAGECONFIG:append:rzg2 = " panfrost kmsro"
 
-PACKAGECONFIG:stm32mp1common = "${@bb.utils.filter('DISTRO_FEATURES', 'wayland ', d)} \
-                 ${@bb.utils.contains('DISTRO_FEATURES', 'opengl', 'opengl egl gles gbm', '', d)} \
-                 ${@bb.utils.contains('DISTRO_FEATURES', 'x11 opengl', 'x11', '', d)} \
-                 ${@bb.utils.contains('DISTRO_FEATURES', 'x11 vulkan', 'dri3', '', d)} \
-                \
-                gallium \
-        "
+PACKAGECONFIG:stm32mp1common = " \
+    gallium \
+    ${@bb.utils.filter('DISTRO_FEATURES', 'wayland ', d)} \
+    ${@bb.utils.contains('DISTRO_FEATURES', 'opengl', 'opengl egl gles gbm', '', d)} \
+    ${@bb.utils.contains('DISTRO_FEATURES', 'x11 opengl', 'x11', '', d)} \
+    ${@bb.utils.contains('DISTRO_FEATURES', 'x11 vulkan', 'dri3', '', d)} \
+"
 
 PACKAGECONFIG:stm32mp2common = " \
     gallium \
@@ -16,7 +16,7 @@ PACKAGECONFIG:stm32mp2common = " \
     ${@bb.utils.contains('DISTRO_FEATURES', 'opengl', 'opengl egl gles gbm', '', d)} \
     ${@bb.utils.contains('DISTRO_FEATURES', 'x11 opengl', 'x11 dri3', '', d)} \
     ${@bb.utils.contains('DISTRO_FEATURES', 'x11 vulkan', 'x11 dri3', '', d)} \
-    "
+"
 
 PACKAGECONFIG = " \
 	gallium \
