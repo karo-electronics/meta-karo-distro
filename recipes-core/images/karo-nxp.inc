@@ -5,8 +5,6 @@
 # Proposed value for userfs is 128MB (4*32MB)
 USERFS_PARTITION_SIZE ??= "131072"
 
-
-
 # create uuu.auto file for image
 addtask do_create_uuu_auto_script after do_image_complete before do_build
 addtask do_unpack before do_create_uuu_auto_script

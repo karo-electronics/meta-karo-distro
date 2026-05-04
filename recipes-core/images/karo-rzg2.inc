@@ -1,8 +1,9 @@
 #
 # RZ/G2L specific processing
 #
-# Define default boot partition size
-BOOTFS_PARTITION_SIZE ?= "64MiB"
+
+# Proposed value for userfs is 128MB (4*32MB)
+USERFS_PARTITION_SIZE ??= "131072"
 
 do_create_install_scripts[depends] += "\
     flashwriter-rzg2:do_deploy \

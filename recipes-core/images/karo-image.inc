@@ -167,7 +167,7 @@ def get_part_info(d, partlist, index):
         size = d.getVar(partname.upper() + "_PARTITION_SIZE")
     elif index == rootfs_partition_index:
         size = d.getVar('IMAGE_ROOTFS_SIZE')
-    elif not lastpart:
+    elif (not lastpart or rauc):
         bb.fatal("Cannot determine size for partition '%s'" % partname)
 
     if rauc:
