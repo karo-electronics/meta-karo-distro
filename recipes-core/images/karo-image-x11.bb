@@ -40,8 +40,6 @@ IMAGE_INSTALL:append:qsxp = " \
     ${@bb.utils.contains('DISTRO_FEATURES', 'csi-camera', 'kernel-module-isp-vvcam isp-imx packagegroup-imx-isp', '', d)} \
 "
 
-DEPENDS:append:use-nxp-bsp = " xf86-video-imx-vivante"
-
 # karo-image-x11 won't fit in any of our nand modules!
 IMAGE_FSTYPES:remove = "ubi"
 
