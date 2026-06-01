@@ -33,6 +33,7 @@ DISTRO_FEATURES_DEFAULT ?= "\
         vfat \
         xattr \
 "
+DISTRO_FEATURES_DEFAULT:append:mx9-nxp-bsp = " edac"
 
 ethifname() {
     iface="$1"
