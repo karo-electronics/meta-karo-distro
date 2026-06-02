@@ -38,6 +38,10 @@ GROUPADD_PARAM:${PN} = "--system utmp"
 # need /etc/group in the staging directory
 DEPENDS += "base-passwd"
 
+# when pam is selected in the DISTRO_FEATURES the target-libpam must be installed
+# for the busybox build to work
+DEPENDS += "${@ bb.utils.contains('DISTRO_FEATURES','pam','libpam','',d)}"
+
 FILES:${PN} += "${@ bb.utils.contains('DISTRO_FEATURES', 'systemd', \
                     "${sysconfdir}/sysctl.d/sysrq.conf", \
                     "${sysconfdir}/network/run /run/utmp ${localstatedir}/log/wtmp", d)}"

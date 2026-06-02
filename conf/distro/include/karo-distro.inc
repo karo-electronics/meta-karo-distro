@@ -80,3 +80,6 @@ NETWORK_INTERFACES ??= "${@bb.utils.contains('MACHINE_FEATURES', 'stm-tsn-swch',
 NETWORK_INTERFACES_AUTO ??= "${@bb.utils.contains('MACHINE_FEATURES', 'stm-tsn-swch', "eth0", \
                              d.getVar('NETWORK_INTERFACES'), d)}"
 DEFAULT_ETHERNET_MAIN_TSN_BRIDGE_INTERFACE ??= "${@bb.utils.contains('DISTRO_FEATURES', 'systemd', 'end0', 'eth0', d)}"
+
+# convert update alternatives to relative symlinks
+INHERIT += "${@bb.utils.contains('DISTRO_FEATURES', 'alternatives-symlinks-relative', 'update-alternatives-relative', '', d)}"
