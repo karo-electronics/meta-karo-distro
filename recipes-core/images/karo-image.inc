@@ -1,5 +1,4 @@
 LICENSE = "MIT"
-EXTRA_IMAGE_FEATURES:remove = "read-only-rootfs"
 
 def do_copyfile (src, destdir):
     bb.note("Copying %s to %s" % (src, destdir))
