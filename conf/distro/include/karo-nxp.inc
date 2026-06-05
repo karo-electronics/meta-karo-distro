@@ -39,3 +39,4 @@ DISTRO_FEATURES_DEFAULT:append:tx8p = " lvds pcie"
 BBMASK:append = " .*/meta-imx/.*/sysvinit/.*"
 # mask out silly weston-init.bbappend from meta-imx layer
 BBMASK:append = " .*/meta-imx/.*/weston-init.bbappend"
+BBMASK:append = " .*/meta-imx/.*/xserver-xorg_%.bbappend"
