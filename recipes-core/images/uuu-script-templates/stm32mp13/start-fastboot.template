@@ -2,17 +2,38 @@
 # Start fastboot via 'dfu-util' on an stm32mp13 target
 set -e
 here=$$(dirname "$$0")
+options=":t:"
+timeout=
+
+while getopts "$options" opt; do
+	case $opt in
+		t)
+			timeout=${OPTARG}
+			;;
+		*)
+            echo "unsupported option -- $opt"
+            ;;
+	esac
+done
 
 usbdev=0483:df11
+start_ts=$(date +%s)
 wait_for_usbdev() {
     first=true
     while true;do
-	sleep 1
-	lsusb | grep -q "$$usbdev" && break
-	if $$first;then
-	    echo Waiting for USB device $$usbdev
-	    first=false
-	fi
+		if [[ ! -z ${timeout} ]]; then
+            now_ts=$(date +%s)
+            if [[ $(( $now_ts - $start_ts )) -gt $timeout ]]; then
+                echo "Timeout after ${timeout} seconds."
+                exit 1
+            fi
+        fi
+		sleep 1
+		lsusb | grep -q "$$usbdev" && break
+		if $$first;then
+			echo Waiting for USB device $$usbdev
+			first=false
+		fi
     done
 }
 
