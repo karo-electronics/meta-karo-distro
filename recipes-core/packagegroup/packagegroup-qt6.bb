@@ -1,5 +1,7 @@
 DESCRIPTION = "Package group for Qt6"
 
+PACKAGE_ARCH = "${MACHINE_ARCH}"
+
 inherit packagegroup
 
 # Install fonts
