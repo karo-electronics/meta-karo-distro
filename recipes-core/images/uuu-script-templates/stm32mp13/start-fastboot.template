@@ -5,26 +5,26 @@ here=$$(dirname "$$0")
 options=":t:"
 timeout=
 
-while getopts "$options" opt; do
-	case $opt in
+while getopts "$$options" opt; do
+	case $$opt in
 		t)
-			timeout=${OPTARG}
+			timeout=$${OPTARG}
 			;;
 		*)
-            echo "unsupported option -- $opt"
+            echo "unsupported option -- $$opt"
             ;;
 	esac
 done
 
 usbdev=0483:df11
-start_ts=$(date +%s)
+start_ts=$$(date +%s)
 wait_for_usbdev() {
     first=true
     while true;do
-		if [[ ! -z ${timeout} ]]; then
-            now_ts=$(date +%s)
-            if [[ $(( $now_ts - $start_ts )) -gt $timeout ]]; then
-                echo "Timeout after ${timeout} seconds."
+		if [[ ! -z $${timeout} ]]; then
+            now_ts=$$(date +%s)
+            if [[ $$(( $$now_ts - $$start_ts )) -gt $$timeout ]]; then
+                echo "Timeout after $${timeout} seconds."
                 exit 1
             fi
         fi
