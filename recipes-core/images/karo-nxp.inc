@@ -79,10 +79,11 @@ python do_create_uuu_auto_script() {
             d.getVar('IMAGE_BOOTLOADER'), machine, type, d.getVar('UBOOT_SUFFIX')), \
             img_dirname)
 
-    do_copyfile("%s/%s-%s.ext4" % \
-        (d.getVar('DEPLOY_DIR_IMAGE'), rootfs_image, machine), img_dirname)
+    partlist.append(rootfs_image.replace("karo-image-", ""))
 
     for partname in partlist:
-        do_copyfile("%s/karo-image-%s-%s.ext4" % (d.getVar('DEPLOY_DIR_IMAGE'), \
-            partname, machine), img_dirname)
+        do_copyfile("%s/karo-image-%s-%s.ext4" % \
+            (d.getVar('DEPLOY_DIR_IMAGE'), partname, machine), img_dirname)
+        do_copyfile("%s/karo-image-%s-%s.spdx.tar.zst" % \
+            (d.getVar('DEPLOY_DIR_IMAGE'), partname, machine), img_dirname)
 }

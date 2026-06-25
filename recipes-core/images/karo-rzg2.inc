@@ -83,10 +83,11 @@ python do_create_install_scripts() {
     do_copyfile("%s/fip-%s.bin" % (d.getVar('DEPLOY_DIR_IMAGE'), \
         machine), img_dirname)
 
+    partlist.append(rootfs_image.replace("karo-image-", ""))
+
     for partname in partlist:
         do_copyfile("%s/karo-image-%s-%s.ext4" % \
             (d.getVar('DEPLOY_DIR_IMAGE'), partname, machine), img_dirname)
-
-    do_copyfile("%s/%s-%s.ext4" % \
-        (d.getVar('DEPLOY_DIR_IMAGE'), rootfs_image, machine), img_dirname)
+        do_copyfile("%s/karo-image-%s-%s.spdx.tar.zst" % \
+            (d.getVar('DEPLOY_DIR_IMAGE'), partname, machine), img_dirname)
 }
