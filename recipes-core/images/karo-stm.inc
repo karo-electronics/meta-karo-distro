@@ -119,10 +119,6 @@ python do_create_install_scripts() {
                     if fn != "none":
                         do_copyfile("%s" % os.path.join(d.getVar('DEPLOY_DIR_IMAGE'), fn), img_dirname)
 
-                    if fn.startswith("karo-image"):
-                        spdx_fn = fn.replace("ext4", "spdx.tar.zst")
-                        do_copyfile("%s" % os.path.join(d.getVar('DEPLOY_DIR_IMAGE'), spdx_fn), img_dirname)
-    
     do_copyfile("%s" % os.path.join(d.getVar('DEPLOY_DIR_IMAGE'), "fastboot.img"), img_dirname)
 
     bb.note("Creating '%s' from '%s'" % (script_path, fastboot_template_path))

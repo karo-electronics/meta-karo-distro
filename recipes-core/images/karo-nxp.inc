@@ -84,6 +84,4 @@ python do_create_uuu_auto_script() {
     for partname in partlist:
         do_copyfile("%s/karo-image-%s-%s.ext4" % \
             (d.getVar('DEPLOY_DIR_IMAGE'), partname, machine), img_dirname)
-        do_copyfile("%s/karo-image-%s-%s.spdx.tar.zst" % \
-            (d.getVar('DEPLOY_DIR_IMAGE'), partname, machine), img_dirname)
 }

@@ -83,3 +83,10 @@ DEFAULT_ETHERNET_MAIN_TSN_BRIDGE_INTERFACE ??= "${@bb.utils.contains('DISTRO_FEA
 
 # convert update alternatives to relative symlinks
 INHERIT += "${@bb.utils.contains('DISTRO_FEATURES', 'alternatives-symlinks-relative', 'update-alternatives-relative', '', d)}"
+
+# CRA compliance support
+# Create SPDX 3.0 SBOM and embed vulnerability metadata
+INHERIT:remove = "create-spdx"
+INHERIT += "create-spdx-3.0"
+SPDX_INCLUDE_VEX = "current"
+INHERIT += "vex"

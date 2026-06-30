@@ -199,3 +199,16 @@ fakeroot do_image_cleanup() {
     fi
 }
 addtask do_image_cleanup after do_rootfs before do_image_qa
+
+python do_add_sbom() {
+    machine = d.getVar('MACHINE')
+    rootfs_image = d.getVar('BPN')
+
+    img_dirname = os.path.join(d.getVar('DEPLOY_DIR_IMAGE'), d.getVar('BPN'))
+
+    bb.utils.mkdirhier(img_dirname)
+
+    do_copyfile("%s/%s-%s.spdx.json" % \
+        (d.getVar('SPDXIMAGEDEPLOYDIR'), rootfs_image, machine), img_dirname)
+}
+do_create_image_sbom_spdx[postfuncs] += "do_add_sbom"
