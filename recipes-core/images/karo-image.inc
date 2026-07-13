@@ -19,7 +19,7 @@ REQUIRED_DISTRO_FEATURES ??= ""
 
 ROOTFS_POSTPROCESS_COMMAND:remove = "\
         rootfs_update_timestamp \
-        ${@bb.utils.contains('DISTRO_FEATURES','read-only-rootfs','empty_var_volatile','',d)} \
+        ${@bb.utils.contains('IMAGE_FEATURES','read-only-rootfs','empty_var_volatile','',d)} \
 "
 
 IMAGE_ROOTFS_MAXSIZE ?= "${ROOTFS_PARTITION_SIZE}"

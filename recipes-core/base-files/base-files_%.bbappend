@@ -11,7 +11,7 @@ dirs1777 = " \
 dirs755:append = " \
     ${localstatedir}/log \
     ${localstatedir}/lib/hwclock \
-    ${@ 'run/dbus' if d.getVar('IMAGE_TYPE') != 'core-image-minimal' else ''} \
+    ${@ '/run/dbus' if d.getVar('IMAGE_TYPE') != 'core-image-minimal' else ''} \
     /run/lock \
     /run/network \
     ${prefix}/local \
