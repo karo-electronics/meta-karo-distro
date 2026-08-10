@@ -95,7 +95,7 @@ IMAGE_INSTALL:append = " \
 
 TTT_IP_INIT_PKGS = "kernel-module-edge kernel-module-st-stm32-deip bridge-utils"
 TTT_IP_INIT_PKGS:append = "${@ bb.utils.contains('DISTRO_FEATURES', 'systemd', \
-    "  ttt-ip-init", "", d)}"
+    "  ttt-ip-switch", "", d)}"
 
 CORE_IMAGE_EXTRA_INSTALL:append:stm32mp2 = "${@ bb.utils.contains('MACHINE_FEATURES', \
                                             'stm-tsn-swch', d.getVar('TTT_IP_INIT_PKGS'), "", d)}"
