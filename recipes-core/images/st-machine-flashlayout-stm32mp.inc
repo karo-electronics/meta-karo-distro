@@ -1,7 +1,7 @@
 #@DESCRIPTION: STM32MP machine flashlayout configuration
 
-INHERIT += "flashlayout-stm32mp"
-#
+# INHERIT += "flashlayout-stm32mp"
+
 # Add specific dependencies to get all binaries generated before flashlayout files
 FLASHLAYOUT_DEPEND_TASKS += "${@bb.utils.contains('EXTRA_IMAGEDEPENDS', 'tf-a-stm32mp', 'tf-a-stm32mp:do_deploy', '', d)}"
 FLASHLAYOUT_DEPEND_TASKS += "${@bb.utils.contains('EXTRA_IMAGEDEPENDS', 'u-boot-karo', 'u-boot-karo:do_deploy', '', d)}"
@@ -10,7 +10,6 @@ FLASHLAYOUT_DEPEND_TASKS += "${@bb.utils.contains('EXTRA_IMAGEDEPENDS', 'u-boot-
 # Define flashlayout devices
 # -----------------------------------------------------------------------------
 DEVICE_EMMC    ?= "mmc0"
-DEVICE_SPINAND ?= "spi-nand0"
 
 # -----------------------------------------------------------------------------
 # EMMC
@@ -19,12 +18,6 @@ DEVICE_SPINAND ?= "spi-nand0"
 # We need to align this size to get the first offset to use
 DEVICE_START_OFFSET_${DEVICE_EMMC}    = "0x00100000"
 DEVICE_ALIGNMENT_SIZE_${DEVICE_EMMC}  = "0x00080000"
-
-# -----------------------------------------------------------------------------
-# SPINAND
-#
-DEVICE_START_OFFSET_${DEVICE_SPINAND} = "0x00000000"
-DEVICE_ALIGNMENT_SIZE_${DEVICE_SPINAND} = "0x00020000"
 
 # -----------------------------------------------------------------------------
 # Define bootscheme labels
@@ -72,7 +65,6 @@ FLASHLAYOUT_TYPE_LABELS = "${TF_A_DEVICETREE}"
 # -----------------------------------------------------------------------------
 
 FLASHLAYOUT_PARTITION_LABELS_trusted_emmc        = "fsbl-boot ssbl-boot fsbl1 fip boot rootfs userfs"
-FLASHLAYOUT_PARTITION_LABELS_trusted_spinand     = "fsbl-boot ssbl-boot fsbl1 fip ubi"
 FLASHLAYOUT_PARTITION_LABELS_optee_emmc          = "fsbl-boot fip-boot fsbl1 fip boot rootfs userfs"
 FLASHLAYOUT_PARTITION_LABELS_optee_emmc:stm32mp2 = "fsbl-boot fip-ddr fip-boot fsbl1 fip boot rootfs userfs"
 
@@ -135,21 +127,18 @@ FLASHLAYOUT_PARTITION_ID_vendorfs       = "0x22"
 FLASHLAYOUT_PARTITION_ID_rootfs         = "0x23"
 FLASHLAYOUT_PARTITION_ID_userfs         = "0x24"
 FLASHLAYOUT_PARTITION_ID_fsbl           = "0x04"
-FLASHLAYOUT_PARTITION_ID_ubi            = "0x21"
 
 FLASHLAYOUT_PARTITION_TYPE              = "Binary"
 FLASHLAYOUT_PARTITION_TYPE_boot         = "System"
 FLASHLAYOUT_PARTITION_TYPE_vendorfs     = "FileSystem"
 FLASHLAYOUT_PARTITION_TYPE_rootfs       = "FileSystem"
 FLASHLAYOUT_PARTITION_TYPE_userfs       = "FileSystem"
-FLASHLAYOUT_PARTITION_TYPE_ubi          = "Binary"
 FLASHLAYOUT_PARTITION_TYPE_fip          = "FIP"
 FLASHLAYOUT_PARTITION_TYPE_fip2         = "FIP"
 FLASHLAYOUT_PARTITION_TYPE_fip-boot     = "FIP"
 FLASHLAYOUT_PARTITION_TYPE_fip-ddr      = "FIP"
 
 FLASHLAYOUT_PARTITION_DEVICE_emmc       = "${DEVICE_EMMC}"
-FLASHLAYOUT_PARTITION_DEVICE_spinand    = "${DEVICE_SPINAND}"
 FLASHLAYOUT_PARTITION_DEVICE_fsbl-boot  = "none"
 FLASHLAYOUT_PARTITION_DEVICE_ssbl-boot  = "none"
 FLASHLAYOUT_PARTITION_DEVICE_fip-boot   = "none"
@@ -163,8 +152,6 @@ FLASHLAYOUT_PARTITION_OFFSET_emmc_fsbl1 = "boot1"
 FLASHLAYOUT_PARTITION_OFFSET_emmc_fsbl2 = "boot2"
 FLASHLAYOUT_PARTITION_OFFSET_emmc_fip   = "${DEVICE_START_OFFSET_mmc0}"
 FLASHLAYOUT_PARTITION_OFFSET_emmc_fip2  = "${DEVICE_START_OFFSET_mmc0}"
-FLASHLAYOUT_PARTITION_OFFSET_spinand_fsbl1 = "0x0"
-FLASHLAYOUT_PARTITION_OFFSET_spinand_fip = "0x00080000"
 
 # Size defined in Kbytes
 FLASHLAYOUT_PARTITION_SIZE_fsbl1        = "256"
@@ -172,7 +159,6 @@ FLASHLAYOUT_PARTITION_SIZE_fsbl2        = "256"
 FLASHLAYOUT_PARTITION_SIZE_fip          = "2048"
 FLASHLAYOUT_PARTITION_SIZE_fip2         = "2048"
 FLASHLAYOUT_PARTITION_SIZE_env          = "256"
-FLASHLAYOUT_PARTITION_SIZE_spinand_fsbl = "512"
 
 # Specific override for partition size as the configuration should follow
 # the U-Boot source code where these partition sizes are hard coded
@@ -184,9 +170,7 @@ FLASHLAYOUT_PARTITION_SIZE_emptyfip     = "${FLASHLAYOUT_PARTITION_SIZE_fip}"
 FLASHLAYOUT_PARTITION_SIZE_emptyfip2    = "${FLASHLAYOUT_PARTITION_SIZE_fip2}"
 FLASHLAYOUT_PARTITION_SIZE_boot         = "${BOOTFS_PARTITION_SIZE}"
 FLASHLAYOUT_PARTITION_SIZE_emmc_rootfs  = "${ROOTFS_PARTITION_SIZE}"
-FLASHLAYOUT_PARTITION_SIZE_spinand_rootfs = "${SPINAND_ROOTFS_PARTITION_SIZE}"
 FLASHLAYOUT_PARTITION_SIZE_userfs       = "${USERFS_PARTITION_SIZE}"
-FLASHLAYOUT_PARTITION_SIZE_ubi          = "${UBI_PARTITION_SIZE}"
 
 # Set binaries to use for each partition
 FLASHLAYOUT_PARTITION_BIN2LOAD_fsbl-boot    = "tf-a.stm32"
@@ -197,10 +181,9 @@ FLASHLAYOUT_PARTITION_BIN2LOAD_fsbl1        = "tf-a.stm32"
 FLASHLAYOUT_PARTITION_BIN2LOAD_fsbl         = "tf-a.stm32"
 FLASHLAYOUT_PARTITION_BIN2LOAD_fip          = "fip.bin"
 FLASHLAYOUT_PARTITION_BIN2LOAD_fip2         = "fip.bin"
-FLASHLAYOUT_PARTITION_BIN2LOAD_boot         = "${STM32MP_BOOTFS_IMAGE}-${MACHINE}.ext4"
-FLASHLAYOUT_PARTITION_BIN2LOAD_rootfs       = "${IMAGE_LINK_NAME}.ext4"
-FLASHLAYOUT_PARTITION_BIN2LOAD_userfs       = "${STM32MP_USERFS_IMAGE}-${MACHINE}.ext4"
-FLASHLAYOUT_PARTITION_BIN2LOAD_ubi          = "${IMAGE_LINK_NAME}.ubi"
+FLASHLAYOUT_PARTITION_BIN2LOAD_boot         = "${STM32MP_BOOTFS_IMAGE}.${STM32MP_BOOTFS_FSTYPE}"
+FLASHLAYOUT_PARTITION_BIN2LOAD_rootfs       = "${STM32MP_ROOTFS_IMAGE}.${STM32MP_ROOTFS_FSTYPE}"
+FLASHLAYOUT_PARTITION_BIN2LOAD_userfs       = "${STM32MP_USERFS_IMAGE}.${STM32MP_USERFS_FSTYPE}"
 
 # =========================================================================
 # Flashlayouts

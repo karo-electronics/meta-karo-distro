@@ -40,9 +40,6 @@ IMAGE_INSTALL:append:qsxp = " \
     ${@bb.utils.contains('DISTRO_FEATURES', 'csi-camera', 'kernel-module-isp-vvcam isp-imx packagegroup-imx-isp', '', d)} \
 "
 
-# karo-image-x11 won't fit in any of our nand modules!
-IMAGE_FSTYPES:remove = "ubi"
-
 python extend_recipe_sysroot:append() {
     if d.getVar('DISTRO') != 'karo-x11':
         raise_sanity_error("cannot build 'karo-image-x11' with DISTRO '%s'" % d.getVar('DISTRO'), d)

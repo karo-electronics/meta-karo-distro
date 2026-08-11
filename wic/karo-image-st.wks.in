@@ -1,0 +1,23 @@
+# short-description: Create disk image with partitions and bootloader for KARO boards
+# long-description:
+# Create a disk image that can be written onto storage (SD card, eMMC, etc.)
+# for use with KARO boards.
+#
+# The disk layout includes:
+#  - Boot filesystem partition
+#  - Root filesystem partition
+#  - User filesystem partition
+
+# FIP partition (STM specific)
+part --source rawcopy --sourceparams="file=fip-${BINARIES_TARGET_BASENAME}.bin" --ondisk mmcblk0 --part-name fip --align 1024 --fixed-size 2
+
+# Boot filesystem partition
+part /boot --source karo-rootfs --rootfs-dir=${IMAGE_ROOTFS}/boot --ondisk mmcblk0 --fstype=ext4 --label boot --use-label --fsoptions noauto --active --align 1024 --fixed-size ${BOOTFS_PARTITION_SIZE}k
+
+# Root filesystem partition
+part / --source karo-rootfs --ondisk mmcblk0 --fstype=ext4 --label rootfs --use-label --align 1024 --fixed-size ${ROOTFS_PARTITION_SIZE}k --exclude-path boot/ usr/local/
+
+# User filesystem partition
+part /usr/local --source karo-rootfs --rootfs-dir=${IMAGE_ROOTFS}/usr/local --ondisk mmcblk0 --fstype=ext4 --label userfs --use-label --fsoptions noauto --align 1024 --fixed-size ${USERFS_PARTITION_SIZE}k
+
+bootloader --ptable gpt

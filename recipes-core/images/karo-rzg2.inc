@@ -2,9 +2,6 @@
 # RZ/G2L specific processing
 #
 
-# Proposed value for userfs is 128MB (4*32MB)
-USERFS_PARTITION_SIZE ??= "131072"
-
 do_create_install_scripts[depends] += "\
     flashwriter-rzg2:do_deploy \
     virtual/bootloader:do_deploy \
@@ -26,20 +23,7 @@ python do_create_install_scripts() {
     script_path = os.path.join(img_dirname, "install-bootloader.sh")
     uuu_auto_path = os.path.join(img_dirname, "uuu.auto")
 
-    partlist = (d.getVar('PARTITIONS_IMAGE') or "").replace("karo-image-", "").split()
-    mntpoints = (d.getVar('PARTITIONS_MOUNTPOINT_IMAGE') or "").split()
-
-    partitions = "start=1MiB,"
-    flash_cmds = ""
-    dlm = ""
-    for index in range(0, len(partlist) + 1):
-        (partname, img, size, type) = get_part_info(d, partlist, index)
-        if type != None:
-            partitions += "name=%s,type=%s,size=%s;" % (partname, type, size)
-        else:
-            partitions += "name=%s,size=%s;" % (partname, size)
-        flash_cmds += dlm + "FB: flash -raw2sparse %s %s-%s.ext4" % (partname, img, machine)
-        dlm = "\n"
+    flash_cmds = "FB: flash -raw2sparse mmc0 %s-%s.wic.zst/*" % (rootfs_image, machine)
 
     bb.utils.mkdirhier(img_dirname)
 
@@ -68,9 +52,7 @@ python do_create_install_scripts() {
         with open(uuu_auto_path, 'w') as uuu_script:
             uuu_template = Template(uuu_template_string)
 
-            uuu_auto = uuu_template.substitute(image=rootfs_image, machine=machine, \
-                image_bootloader=d.getVar('IMAGE_BOOTLOADER'), \
-                partitions=partitions, flash_cmds=flash_cmds)
+            uuu_auto = uuu_template.substitute(image=rootfs_image, machine=machine, flash_cmds=flash_cmds)
             uuu_script.write(uuu_auto)
             uuu_script.close()
     except OSError:
@@ -83,9 +65,6 @@ python do_create_install_scripts() {
     do_copyfile("%s/fip-%s.bin" % (d.getVar('DEPLOY_DIR_IMAGE'), \
         machine), img_dirname)
 
-    partlist.append(rootfs_image.replace("karo-image-", ""))
-
-    for partname in partlist:
-        do_copyfile("%s/karo-image-%s-%s.ext4" % \
-            (d.getVar('DEPLOY_DIR_IMAGE'), partname, machine), img_dirname)
+    do_copyfile("%s/%s-%s.wic.zst" % \
+        (d.getVar('DEPLOY_DIR_IMAGE'), rootfs_image, machine), img_dirname)
 }

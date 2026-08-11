@@ -8,13 +8,13 @@ RAUC_BUNDLE_DESCRIPTION = "Ka-Ro RAUC Demo Bundle"
 
 RAUC_BUNDLE_FORMAT = "verity"
 
-RAUC_BUNDLE_SLOTS = "boot rootfs" 
+RAUC_BUNDLE_SLOTS = "boot rootfs"
 
 RAUC_SLOT_rootfs = "karo-image-minimal"
-RAUC_SLOT_rootfs[fstype] = "ext4"
+RAUC_SLOT_rootfs[fstype] = "rootfs.ext4"
 
-RAUC_SLOT_boot = "karo-image-bootfs"
-RAUC_SLOT_boot[fstype] = "ext4"
+RAUC_SLOT_boot = "karo-image-minimal"
+RAUC_SLOT_boot[fstype] = "boot.ext4"
 
 RAUC_KEY_FILE = "${THISDIR}/files/development-1.key.pem"
 RAUC_CERT_FILE = "${THISDIR}/files/development-1.cert.pem"
