@@ -1,6 +1,6 @@
 #@DESCRIPTION: STM32MP machine flashlayout configuration
 
-# INHERIT += "flashlayout-stm32mp"
+inherit flashlayout-stm32mp
 
 # Add specific dependencies to get all binaries generated before flashlayout files
 FLASHLAYOUT_DEPEND_TASKS += "${@bb.utils.contains('EXTRA_IMAGEDEPENDS', 'tf-a-stm32mp', 'tf-a-stm32mp:do_deploy', '', d)}"

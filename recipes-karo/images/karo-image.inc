@@ -11,7 +11,6 @@ require ${@ "karo-nxp.inc" if 'use-nxp-bsp' in d.getVar('MACHINEOVERRIDES').spli
 require ${@ "karo-rzg2.inc" if 'rzg2' in d.getVar('MACHINEOVERRIDES').split(':') else ""}
 require ${@ "karo-stm.inc" if 'stm32mpcommon' in d.getVar('MACHINEOVERRIDES').split(':') else ""}
 
-inherit ${@ "flashlayout-stm32mp" if 'stm32mpcommon' in d.getVar('MACHINEOVERRIDES').split(":") else ""}
 require ${@ "st-machine-common-stm32mp.inc" if 'stm32mpcommon' in d.getVar('MACHINEOVERRIDES').split(":") else ""}
 
 inherit extrausers
@@ -20,8 +19,8 @@ EXTRA_USERS_PARAMS ?= "usermod -p '' root"
 REQUIRED_DISTRO_FEATURES ??= ""
 
 ROOTFS_POSTPROCESS_COMMAND:remove = "\
-        rootfs_update_timestamp \
-        ${@bb.utils.contains('IMAGE_FEATURES','read-only-rootfs','empty_var_volatile','',d)} \
+    rootfs_update_timestamp \
+    ${@bb.utils.contains('IMAGE_FEATURES','read-only-rootfs','empty_var_volatile','',d)} \
 "
 
 python () {
@@ -138,10 +137,9 @@ WIC_ROOTFS_PARTITIONS_EXPORT = "boot rootfs userfs"
 python do_export_wic_partitions() {
     import subprocess
 
-    def detect_partition_meta(path):
+    def get_partition_meta(path):
         out = subprocess.run(
-            ["blkid", "-o", "export", path],
-            text=True, capture_output=True
+            ["blkid", "-o", "export", path], text=True, capture_output=True
         ).stdout.splitlines()
         data = dict(line.split("=", 1) for line in out)
         return data.get("LABEL", "img"), data.get("TYPE", "bin")
@@ -150,35 +148,28 @@ python do_export_wic_partitions() {
     deploy_dir = d.getVar("IMGDEPLOYDIR")
     image_basename = d.getVar("IMAGE_BASENAME")
     machine = d.getVar("MACHINE")
-    partitions = d.getVar("WIC_ROOTFS_PARTITIONS_EXPORT").split()
-    
-    images = [
-        name for name in os.listdir(build_wic)
-        if ".direct.p" in name
-    ]
+    export_partitions = d.getVar("WIC_ROOTFS_PARTITIONS_EXPORT").split()
 
-    for image in images:
-        pf = os.path.join(build_wic, image)
-        fsname, fstype = detect_partition_meta(pf)
-        if fsname not in partitions:
+    for fname in os.listdir(build_wic):
+        if ".direct.p" not in fname:
             continue
-        
+        path = os.path.join(build_wic, fname)
+        fsname, fstype = get_partition_meta(path)
+        if fsname not in export_partitions:
+            continue
         dest_basename = f"{image_basename}-{machine}.{fsname}"
-        bb.utils.copyfile(pf, os.path.join(deploy_dir, f"{dest_basename}.{fstype}"))
-        
-        pf = os.path.join(build_wic, f"{fsname}.tar.bz2")
-        bb.utils.copyfile(pf, os.path.join(deploy_dir, f"{dest_basename}.tar.bz2"))
+        bb.utils.copyfile(path, os.path.join(deploy_dir, f"{dest_basename}.{fstype}"))
+        path = os.path.join(build_wic, f"{fsname}.tar.bz2")
+        bb.utils.copyfile(path, os.path.join(deploy_dir, f"{dest_basename}.tar.bz2"))
 }
 addtask export_wic_partitions after do_image_wic before do_image_complete
 
 python do_add_sbom() {
     machine = d.getVar('MACHINE')
     rootfs_image = d.getVar('BPN')
-
     img_dirname = os.path.join(d.getVar('DEPLOY_DIR_IMAGE'), d.getVar('BPN'))
-
+    
     bb.utils.mkdirhier(img_dirname)
-
     do_copyfile("%s/%s-%s.spdx.json" % \
         (d.getVar('SPDXIMAGEDEPLOYDIR'), rootfs_image, machine), img_dirname)
 }
