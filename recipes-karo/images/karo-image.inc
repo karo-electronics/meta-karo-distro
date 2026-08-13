@@ -5,7 +5,7 @@ def do_copyfile (src, destdir):
     if os.system("cp %s %s" % (src, destdir)):
         bb.fatal("Failed to copy %s to %s" % (src, destdir))
 
-inherit core-image features_check rootfs-postprocess
+inherit core-image features_check rootfs-postprocess export-wic-partitions
 
 require ${@ "karo-nxp.inc" if 'use-nxp-bsp' in d.getVar('MACHINEOVERRIDES').split(':') else ""}
 require ${@ "karo-rzg2.inc" if 'rzg2' in d.getVar('MACHINEOVERRIDES').split(':') else ""}
@@ -132,46 +132,16 @@ WKS_FILE_BASE:append = "${@ bb.utils.contains('DISTRO_FEATURES', 'rauc', '-rauc'
 
 WKS_FILE = "${WKS_FILE_BASE}.wks.in"
 
-WIC_ROOTFS_PARTITIONS_EXPORT = "boot rootfs userfs"
+WIC_PARTITIONS_EXPORT = "boot rootfs userfs"
 
-python do_export_wic_partitions() {
-    import subprocess
-
-    def get_partition_meta(path):
-        out = subprocess.run(
-            ["blkid", "-o", "export", path], text=True, capture_output=True
-        ).stdout.splitlines()
-        data = dict(line.split("=", 1) for line in out)
-        return data.get("LABEL", "img"), data.get("TYPE", "bin")
-
-    build_wic = os.path.join(d.getVar("WORKDIR"), "build-wic")
-    deploy_dir = d.getVar("IMGDEPLOYDIR")
-    image_basename = d.getVar("IMAGE_BASENAME")
-    machine = d.getVar("MACHINE")
-    export_partitions = d.getVar("WIC_ROOTFS_PARTITIONS_EXPORT").split()
-
-    for fname in os.listdir(build_wic):
-        if ".direct.p" not in fname:
-            continue
-        path = os.path.join(build_wic, fname)
-        fsname, fstype = get_partition_meta(path)
-        if fsname not in export_partitions:
-            continue
-        dest_basename = f"{image_basename}-{machine}.{fsname}"
-        bb.utils.copyfile(path, os.path.join(deploy_dir, f"{dest_basename}.{fstype}"))
-        path = os.path.join(build_wic, f"{fsname}.tar.bz2")
-        bb.utils.copyfile(path, os.path.join(deploy_dir, f"{dest_basename}.tar.bz2"))
-}
-addtask export_wic_partitions after do_image_wic before do_image_complete
-
-python do_add_sbom() {
+python do_export_sbom() {
     machine = d.getVar('MACHINE')
     rootfs_image = d.getVar('BPN')
-    img_dirname = os.path.join(d.getVar('DEPLOY_DIR_IMAGE'), d.getVar('BPN'))
+    img_dirname = os.path.join(d.getVar('DEPLOY_DIR_IMAGE'), rootfs_image)
     
     bb.utils.mkdirhier(img_dirname)
     do_copyfile("%s/%s-%s.spdx.json" % \
         (d.getVar('SPDXIMAGEDEPLOYDIR'), rootfs_image, machine), img_dirname)
 }
-do_create_image_sbom_spdx[postfuncs] += "do_add_sbom"
-do_create_image_sbom_spdx_setscene[postfuncs] += "do_add_sbom"
+do_create_image_sbom_spdx[postfuncs] += "do_export_sbom"
+do_create_image_sbom_spdx_setscene[postfuncs] += "do_export_sbom"

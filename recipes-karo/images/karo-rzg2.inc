@@ -2,14 +2,14 @@
 # RZ/G2L specific processing
 #
 
+# create shell scripts for image flashing
+addtask do_unpack before do_create_install_scripts
+addtask do_create_install_scripts after do_image_complete before do_build
+
 do_create_install_scripts[depends] += "\
     flashwriter-rzg2:do_deploy \
     virtual/bootloader:do_deploy \
 "
-
-# create shell scripts for image flashing
-addtask do_unpack before do_create_install_scripts
-addtask do_create_install_scripts after do_image_complete before do_build
 
 python do_create_install_scripts() {
     from string import Template
