@@ -24,7 +24,7 @@ IMAGE_INSTALL:append = " \
     xterm \
 "
 
-IMAGE_INSTALL:append:mx6 = " \
+IMAGE_INSTALL:append:mx6-nxp-bsp = " \
     libdrm-etnaviv \
 "
 

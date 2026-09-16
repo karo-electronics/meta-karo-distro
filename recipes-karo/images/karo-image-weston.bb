@@ -25,7 +25,7 @@ IMAGE_INSTALL:append = " \
     ${@bb.utils.contains('DISTRO_FEATURES', 'x11 wayland', 'weston-xwayland xterm', '', d)} \
 "
 
-IMAGE_INSTALL:append:mx6 = " \
+IMAGE_INSTALL:append:mx6-nxp-bsp = " \
     libdrm-etnaviv \
 "
 
