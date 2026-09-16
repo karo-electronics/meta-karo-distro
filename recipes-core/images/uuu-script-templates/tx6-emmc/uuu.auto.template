@@ -1,0 +1,33 @@
+uuu_version 1.5.21
+
+# i.MX6 eMMC. Generated from template - do not edit.
+
+### boot U-Boot with fastboot support
+SDP: boot -f $image_bootloader-$machine-mfg.$uboot_suffix
+
+# Refuse a foreign board before writing anything.
+FB: ucmd karo_chksoc
+FB: ucmd env default -f -a
+FB: ucmd env exists mfg_$machine
+
+# Boot partition 0; keep the user area accessible.
+FB: ucmd mmc partconf 0 1 1 0
+
+# Zero the stored env; an erase would widen to 4MiB.
+FB: ucmd mmc dev 0 1
+FB: ucmd mw.b $fastboot_buf_addr 0 0x1000
+FB: ucmd mmc write $fastboot_buf_addr 0xff8 0x8
+FB: ucmd mmc dev 0 0
+
+### GPT partition layout
+FB: ucmd gpt write mmc 0 '$partitions'
+FB: ucmd mmc rescan
+FB: ucmd part list mmc 0
+
+### Flashing bootloader and partitions
+FB: download -f $image_bootloader-$machine-default.$uboot_suffix
+$flash_cmds
+
+### return to U-Boot prompt
+FB: continue
+FB: done

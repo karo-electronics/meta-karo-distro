@@ -22,6 +22,9 @@ python do_create_uuu_auto_script() {
     uuu_auto_path = os.path.join(img_dirname, "uuu.auto")
 
     image_bootloader=d.getVar('IMAGE_BOOTLOADER')
+    uboot_suffix = d.getVar('UBOOT_SUFFIX') or "bin"
+    dtb_name = "%s.dtb" % d.getVar('U_BOOT_DTB_NAME')
+    fb_buf_addr = d.getVar('UUU_FASTBOOT_BUF_ADDR') or "0x0"
 
     flash_cmds = "FB: flash mmc0boot0 %s-%s-default.bin" % (image_bootloader, machine)
     flash_cmds += "\nFB: flash -raw2sparse mmc0 %s-%s.wic.zst/*" % (rootfs_image, machine)
@@ -44,7 +47,10 @@ python do_create_uuu_auto_script() {
                 image=rootfs_image,
                 machine=machine,
                 flash_cmds=flash_cmds,
-                image_bootloader=image_bootloader
+                uboot_suffix=uboot_suffix,
+                dtb_name=dtb_name,
+                image_bootloader=image_bootloader,
+                fastboot_buf_addr=fb_buf_addr
             )
             uuu_script.write(uuu_auto)
             uuu_script.close()

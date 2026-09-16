@@ -19,6 +19,7 @@ CORE_IMAGE_BASE_INSTALL:append = " \
 "
 
 IMAGE_INSTALL:append = " \
+    adwaita-icon-theme-cursors \
     gst-examples \
     libdrm \
     libdrm-tests \

@@ -1,0 +1,43 @@
+From: CSouffargi <cs@karo-electronics.de>
+Subject: [PATCH] fb: never request double buffering
+
+DRM fbdev emulation cannot pan nor wait for vsync.
+
+Upstream-Status: Inappropriate [configuration]
+
+Signed-off-by: CSouffargi <cs@karo-electronics.de>
+---
+--- a/psplash-fb.c
++++ b/psplash-fb.c
+@@ -195,31 +195,6 @@
+       goto fail;
+     }
+ 
+-  /* Setup double virtual resolution for double buffering */
+-  if (ioctl(fb->fd, FBIOPAN_DISPLAY, &fb_var) == -1) {
+-    fprintf(stderr, "warning: FBIOPAN_DISPLAY not supported, "
+-                    "double buffering disabled\n");
+-  } else {
+-    if (fb_var.yres_virtual == fb_var.yres * 2) {
+-      DBG("Virtual resolution already double");
+-      fb->double_buffering = 1;
+-    } else {
+-      fb_var.yres_virtual = fb_var.yres * 2;
+-      if (ioctl(fb->fd, FBIOPUT_VSCREENINFO, &fb_var) == -1) {
+-        fprintf(stderr, "warning: FBIOPUT_VSCREENINFO failed, "
+-                        "double buffering disabled\n");
+-      } else {
+-        if (ioctl(fb->fd, FBIOGET_FSCREENINFO, &fb_fix) == -1) {
+-          perror(" Error getting the fixed framebuffer info");
+-          goto fail;
+-        } else {
+-          DBG("Virtual resolution set to double");
+-          fb->double_buffering = 1;
+-        }
+-      }
+-    }
+-  }
+-
+   fb->real_width  = fb->width  = fb_var.xres;
+   fb->real_height = fb->height = fb_var.yres;
+   fb->bpp    = fb_var.bits_per_pixel;

@@ -1,0 +1,34 @@
+uuu_version 1.5.21
+
+# i.MX6 NAND. Generated from template - do not edit.
+# Bootloader last: an interrupted run stays USB-recoverable.
+
+### boot U-Boot with fastboot support
+SDP: boot -f $image_bootloader-$machine-mfg.$uboot_suffix
+
+# Refuse a foreign board before writing anything.
+FB: ucmd karo_chksoc
+FB: ucmd env default -f -a
+FB: ucmd env exists mfg_$machine
+
+# nandbcb takes the buffer address from fileaddr.
+FB: ucmd setenv fileaddr $fastboot_buf_addr
+
+### kernel, dtb and rootfs live one directory above
+# fastboot flash never erases NAND first (fb_nand.c).
+# All Karo i.MX6 kernels deploy as uImage.
+FB: erase linux
+FB: flash linux ../uImage
+FB: erase dtb
+FB: flash dtb ../$dtb_name
+# TRIMFFS skips the trailing empty pages for UBI.
+FB: erase rootfs
+FB: flash rootfs ../$image-$machine.ubi
+
+### bootloader with FCB and DBBT, written last
+FB: download -f $image_bootloader-$machine-default.$uboot_suffix
+FB: ucmd nandbcb init $${fileaddr} nandboot $${filesize}
+
+### return to U-Boot prompt
+FB: continue
+FB: done

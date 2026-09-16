@@ -89,6 +89,7 @@ IMAGE_INSTALL:append = " \
     ${@bb.utils.contains('MACHINE_FEATURES','nxp-wifi','firmware-nxp-wifi-nxp8987-sdio','',d)} \
     lsof \
     mmc-utils \
+    ${@bb.utils.contains('MACHINE_FEATURES',"nand"," mtd-utils","",d)} \
     ncurses \
     net-tools \
     nfs-utils \
@@ -125,6 +126,21 @@ TTT_IP_INIT_PKGS:append = "${@ \
 CORE_IMAGE_EXTRA_INSTALL:append:stm32mp2 = "${@ \
     bb.utils.contains('MACHINE_FEATURES', 'stm-tsn-swch', d.getVar('TTT_IP_INIT_PKGS'), "", d) \
 }"
+
+# mkfs.ext4 parameters
+# set inode size to 256 to support timestamps beyond 2038-01-19
+EXTRA_IMAGECMD:ext4 += "-I 256"
+
+# mkubifs parameters
+MKUBIFS_LEB_SIZE = "126976"
+
+MKUBIFS_ARGS ?= "-F -x zlib -m 2048 -e ${MKUBIFS_LEB_SIZE}"
+
+# LEB count is a NAND concern; gate on the machine feature.
+MKUBIFS_LEB_CNT ?= "${@int(((${IMAGE_ROOTFS_SIZE} + ${IMAGE_ROOTFS_EXTRA_SPACE}) * 1024 + ${MKUBIFS_LEB_SIZE} - 1) / ${MKUBIFS_LEB_SIZE})}"
+MKUBIFS_ARGS:append = "${@bb.utils.contains('MACHINE_FEATURES',"nand"," -c ${MKUBIFS_LEB_CNT}","",d)}"
+
+UBINIZE_ARGS ?= "-m 2048 -s 2048 -p 128KiB"
 
 WKS_FILE_BASE = "karo-image"
 WKS_FILE_BASE:stm32mpcommon = "karo-image-st"

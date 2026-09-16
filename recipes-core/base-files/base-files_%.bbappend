@@ -18,6 +18,15 @@ dirs755:append = " \
 
 require ${@ bb.utils.contains('DISTRO_FEATURES', 'systemd', '', 'no-systemd.inc', d)}
 
+# Scoped to i.MX6 so the other modules keep their task signatures.
+do_install:append:mx6-nxp-bsp () {
+    # NAND boots from UBI; GPT partition labels do not exist.
+    if ${@ bb.utils.contains('MACHINE_FEATURES', 'nand', 'true', 'false', d)};then
+        sed -i -e 's|^PARTLABEL=rootfs[[:space:]].*|ubi0:rootfs\t/\t\tubifs\t\trw\t\t\t0\t0|' \
+               -e '/^PARTLABEL=boot[[:space:]]/d' ${D}${sysconfdir}/fstab
+    fi
+}
+
 do_install:append () {
     if ${@ bb.utils.contains('MACHINE_FEATURES', 'emmc', 'true', 'false', d)};then
         sed -i '/root/s/0$/1/' ${D}${sysconfdir}/fstab
