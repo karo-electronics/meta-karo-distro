@@ -28,6 +28,10 @@ python do_create_uuu_auto_script() {
 
     bb.utils.mkdirhier(img_dirname)
 
+    do_copyfile("%s/%s-%s.wic.zst" % \
+        (d.getVar('DEPLOY_DIR_IMAGE'), rootfs_image, machine), img_dirname)
+
+    # generate uuu auto script 
     f = open(uuu_template_path, 'r')
     uuu_template_string = f.read()
     f.close()
@@ -47,11 +51,9 @@ python do_create_uuu_auto_script() {
     except OSError:
         bb.fatal('Unable to open %s' % (uuu_auto_path))
 
+    # copy bootloader binaries to uuu install dir
     for type in d.getVar('UBOOT_CONFIG').split():
         do_copyfile("%s/%s-%s-%s.%s" % (d.getVar('DEPLOY_DIR_IMAGE'), \
             d.getVar('IMAGE_BOOTLOADER'), machine, type, d.getVar('UBOOT_SUFFIX')), \
             img_dirname)
-
-    do_copyfile("%s/%s-%s.wic.zst" % \
-        (d.getVar('DEPLOY_DIR_IMAGE'), rootfs_image, machine), img_dirname)
 }

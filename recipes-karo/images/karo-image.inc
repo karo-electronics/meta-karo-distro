@@ -1,5 +1,7 @@
 LICENSE = "MIT"
 
+KARO_STM32_CUBE_PROGRAMMER ?= "0"
+
 def do_copyfile (src, destdir):
     bb.note("Copying %s to %s" % (src, destdir))
     if os.system("cp %s %s" % (src, destdir)):
@@ -11,7 +13,8 @@ require ${@ "karo-nxp.inc" if 'use-nxp-bsp' in d.getVar('MACHINEOVERRIDES').spli
 require ${@ "karo-rzg2.inc" if 'rzg2' in d.getVar('MACHINEOVERRIDES').split(':') else ""}
 require ${@ "karo-stm.inc" if 'stm32mpcommon' in d.getVar('MACHINEOVERRIDES').split(':') else ""}
 
-require ${@ "st-machine-common-stm32mp.inc" if 'stm32mpcommon' in d.getVar('MACHINEOVERRIDES').split(":") else ""}
+# STM32CubeProgrammer flashlayout generation
+require ${@ "st-machine-common-stm32mp.inc" if 'stm32mpcommon' in d.getVar('MACHINEOVERRIDES').split(':') and d.getVar('KARO_STM32_CUBE_PROGRAMMER') == '1' else ""}
 
 inherit extrausers
 EXTRA_USERS_PARAMS ?= "usermod -p '' root"
@@ -37,6 +40,7 @@ ROOTFS_PARTITION_SIZE ??= "131072"
 USERFS_PARTITION_SIZE ??= "131072"
 
 FILESEXTRAPATHS:prepend := "${THISDIR}/uuu-script-templates:"
+
 SRC_URI:append = " file://uuu.auto.template"
 SRC_URI:append:stm32mpcommon = " file://start-fastboot.template"
 SRC_URI:append:rzg2 = " file://install-bootloader.template"
@@ -121,9 +125,6 @@ TTT_IP_INIT_PKGS:append = "${@ \
 CORE_IMAGE_EXTRA_INSTALL:append:stm32mp2 = "${@ \
     bb.utils.contains('MACHINE_FEATURES', 'stm-tsn-swch', d.getVar('TTT_IP_INIT_PKGS'), "", d) \
 }"
-
-BINARIES_TARGET_BASENAME:stm32mpcommon = "${SOC_FAMILY}-${MACHINE}-${FLASHLAYOUT_BOOTSCHEME_LABELS}"
-BINARIES_TARGET_BASENAME:stm32mpcommon:append = "${@ bb.utils.contains('SIGN_ENABLE', '1', "_Signed", "", d)}"
 
 WKS_FILE_BASE = "karo-image"
 WKS_FILE_BASE:stm32mpcommon = "karo-image-st"

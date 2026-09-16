@@ -9,7 +9,7 @@
 #  - User filesystem partition
 
 # FIP partition (STM specific)
-part --source rawcopy --sourceparams="file=fip-${BINARIES_TARGET_BASENAME}.bin" --ondisk mmcblk0 --part-name fip --align 1024 --fixed-size 2
+part --source rawcopy --sourceparams="file=fip-${BOOTLOADER_BASENAME}.bin" --ondisk mmcblk0 --part-name fip --align 1024 --fixed-size 2
 
 # Boot filesystem partition
 part /boot --source karo-rootfs --rootfs-dir=${IMAGE_ROOTFS}/boot --ondisk mmcblk0 --fstype=ext4 --label boot --use-label --fsoptions noauto --active --align 1024 --fixed-size ${BOOTFS_PARTITION_SIZE}k

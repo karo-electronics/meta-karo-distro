@@ -27,22 +27,10 @@ python do_create_install_scripts() {
 
     bb.utils.mkdirhier(img_dirname)
 
-    f = open(template_path, 'r')
-    template_string = f.read()
-    f.close()
+    do_copyfile("%s/%s-%s.wic.zst" % \
+        (d.getVar('DEPLOY_DIR_IMAGE'), rootfs_image, machine), img_dirname)
 
-    bb.note("Creating '%s' from '%s'" % (script_path, template_path))
-    try:
-        with open(script_path, 'w') as script:
-            template = Template(template_string)
-            s = template.substitute(machine=machine)
-            script.write(s)
-            script.close()
-    except OSError:
-        bb.fatal('Unable to open %s' % (script_path))
-
-    os.chmod(script_path, 0o755)
-
+    # generate uuu auto script 
     f = open(uuu_template_path, 'r')
     uuu_template_string = f.read()
     f.close()
@@ -58,6 +46,7 @@ python do_create_install_scripts() {
     except OSError:
         bb.fatal('Unable to open %s' % (uuu_auto_path))
 
+    # copy bootloader binaries to uuu install dir
     do_copyfile("%s/Flash_Writer_SCIF_%s.mot" % (d.getVar('DEPLOY_DIR_IMAGE'), \
         machine), img_dirname)
     do_copyfile("%s/%s/bl2_bp-%s.bin" % (d.getVar('DEPLOY_DIR_IMAGE'), d.getVar('FIPTOOL_DIR'), \
@@ -65,6 +54,20 @@ python do_create_install_scripts() {
     do_copyfile("%s/fip-%s.bin" % (d.getVar('DEPLOY_DIR_IMAGE'), \
         machine), img_dirname)
 
-    do_copyfile("%s/%s-%s.wic.zst" % \
-        (d.getVar('DEPLOY_DIR_IMAGE'), rootfs_image, machine), img_dirname)
+    # generate bootloader install script
+    f = open(template_path, 'r')
+    template_string = f.read()
+    f.close()
+
+    bb.note("Creating '%s' from '%s'" % (script_path, template_path))
+    try:
+        with open(script_path, 'w') as script:
+            template = Template(template_string)
+            s = template.substitute(machine=machine)
+            script.write(s)
+            script.close()
+    except OSError:
+        bb.fatal('Unable to open %s' % (script_path))
+
+    os.chmod(script_path, 0o755)
 }

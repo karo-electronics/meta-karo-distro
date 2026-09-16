@@ -7,31 +7,31 @@ require ${@bb.utils.contains('DISTRO_FEATURES', 'systemd', "systemd.inc", "", d)
 DISTRO_VERSION = "${PREFERRED_VERSION_linux-karo}-${DISTRO_CODENAME}"
 
 POKY_DEFAULT_DISTRO_FEATURES:remove = "\
-        largefile \
-        opengl \
-        ptest \
-        vulkan \
-        wayland \
+    largefile \
+    opengl \
+    ptest \
+    vulkan \
+    wayland \
 "
 
 DISTRO_FEATURES_DEFAULT ?= "\
-        acl \
-        alsa \
-        argp \
-        dhcpcd \
-        ext2 \
-        ipv4 \
-        largefile \
-        ldconfig \
-        pam \
-        nfs \
-        seccomp \
-        telnet-login \
-	    u-boot-fw-utils \
-        usbgadget \
-        usbhost \
-        vfat \
-        xattr \
+    acl \
+    alsa \
+    argp \
+    dhcpcd \
+    ext2 \
+    ipv4 \
+    largefile \
+    ldconfig \
+    pam \
+    nfs \
+    seccomp \
+    telnet-login \
+    u-boot-fw-utils \
+    usbgadget \
+    usbhost \
+    vfat \
+    xattr \
 "
 DISTRO_FEATURES_DEFAULT:append:mx9-nxp-bsp = " edac"
 
