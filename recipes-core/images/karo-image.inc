@@ -212,3 +212,4 @@ python do_add_sbom() {
         (d.getVar('SPDXIMAGEDEPLOYDIR'), rootfs_image, machine), img_dirname)
 }
 do_create_image_sbom_spdx[postfuncs] += "do_add_sbom"
+do_create_image_sbom_spdx_setscene[postfuncs] += "do_add_sbom"
