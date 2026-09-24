@@ -7,7 +7,7 @@ def do_copyfile (src, destdir):
     if os.system("cp %s %s" % (src, destdir)):
         bb.fatal("Failed to copy %s to %s" % (src, destdir))
 
-inherit core-image features_check rootfs-postprocess export-wic-partitions
+inherit core-image features_check rootfs-postprocess ${@ '' if 'tx6-nand' in d.getVar('MACHINEOVERRIDES').split(':') else 'export-wic-partitions'}
 
 require ${@ "karo-nxp.inc" if 'use-nxp-bsp' in d.getVar('MACHINEOVERRIDES').split(':') else ""}
 require ${@ "karo-rzg2.inc" if 'rzg2' in d.getVar('MACHINEOVERRIDES').split(':') else ""}
@@ -33,6 +33,8 @@ python () {
 
 # Partitioning using wic image format
 IMAGE_FSTYPES = "wic.zst"
+# NAND modules flash a UBI image, no WIC
+IMAGE_FSTYPES:tx6-nand = "ubi"
 
 # Default partition sizes
 BOOTFS_PARTITION_SIZE ??= "65536"
@@ -112,7 +114,12 @@ IMAGE_INSTALL:append = " \
     ${@bb.utils.contains('DISTRO_FEATURES','copro','packagegroup-copro','',d)} \
 "
 
-IMAGE_INSTALL:append = " kernel-modules kernel-devicetree kernel-image"
+# NAND boots kernel and DTB from their own partitions
+KARO_ROOTFS_KERNEL = "kernel-devicetree kernel-image"
+KARO_ROOTFS_KERNEL:tx6-nand = ""
+IMAGE_INSTALL:append = " kernel-modules ${KARO_ROOTFS_KERNEL}"
+# kernel-base recommends the versioned kernel-image-<ver> package
+BAD_RECOMMENDATIONS:append:tx6-nand = " kernel-image-*"
 
 IMAGE_INSTALL:append:use-nxp-bsp = " \
     ${@ bb.utils.contains('DISTRO_FEATURES', 'wifi', bb.utils.contains('DISTRO_FEATURES', 'systemd', " firmwared", "", d), "", d)} \
@@ -136,11 +143,15 @@ MKUBIFS_LEB_SIZE = "126976"
 
 MKUBIFS_ARGS ?= "-F -x zlib -m 2048 -e ${MKUBIFS_LEB_SIZE}"
 
-# LEB count is a NAND concern; gate on the machine feature.
 MKUBIFS_LEB_CNT ?= "${@int(((${IMAGE_ROOTFS_SIZE} + ${IMAGE_ROOTFS_EXTRA_SPACE}) * 1024 + ${MKUBIFS_LEB_SIZE} - 1) / ${MKUBIFS_LEB_SIZE})}"
-MKUBIFS_ARGS:append = "${@bb.utils.contains('MACHINE_FEATURES',"nand"," -c ${MKUBIFS_LEB_CNT}","",d)}"
+MKUBIFS_ARGS:append:tx6-nand = " -c ${MKUBIFS_LEB_CNT}"
+
+# UBI reserves 24 PEBs: 4 internal, 20 bad blocks
+MKUBIFS_LEB_CNT:tx6-nand = "${@ int(d.getVar('ROOTFS_PARTITION_SIZE')) // 128 - 24}"
+IMAGE_ROOTFS_SIZE:tx6-nand = "${@ ${MKUBIFS_LEB_CNT} * ${MKUBIFS_LEB_SIZE} // 1024 - (${IMAGE_ROOTFS_EXTRA_SPACE})}"
 
 UBINIZE_ARGS ?= "-m 2048 -s 2048 -p 128KiB"
+UBI_VOLNAME:tx6-nand = "rootfs"
 
 WKS_FILE_BASE = "karo-image"
 WKS_FILE_BASE:stm32mpcommon = "karo-image-st"
