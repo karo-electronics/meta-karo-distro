@@ -135,6 +135,25 @@ WKS_FILE = "${WKS_FILE_BASE}.wks.in"
 
 WIC_PARTITIONS_EXPORT = "boot rootfs userfs"
 
+# U-Boot overwrites files in /boot: no symlinks there
+IMAGE_PREPROCESS_COMMAND:append = " karo_bootfs_replace_symlinks"
+
+karo_bootfs_replace_symlinks() {
+    bootfs="${IMAGE_ROOTFS}/boot"
+    [ -d "$bootfs" ] || return 0
+    for f in "$bootfs"/*; do
+        if [ -h "$f" ]; then
+            target="$(readlink "$f")"
+            if [ -f "$bootfs/$target" ]; then
+                bbnote "Replacing symlink '$f' with actual file '$target'"
+                mv -v "$bootfs/$target" "$f"
+            else
+                rm -v "$f"
+            fi
+        fi
+    done
+}
+
 python do_export_sbom() {
     machine = d.getVar('MACHINE')
     rootfs_image = d.getVar('BPN')
