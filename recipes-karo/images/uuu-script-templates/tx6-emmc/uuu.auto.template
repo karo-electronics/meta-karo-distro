@@ -19,11 +19,6 @@ FB: ucmd mw.b $fastboot_buf_addr 0 0x1000
 FB: ucmd mmc write $fastboot_buf_addr 0xff8 0x8
 FB: ucmd mmc dev 0 0
 
-### GPT partition layout
-FB: ucmd gpt write mmc 0 '$partitions'
-FB: ucmd mmc rescan
-FB: ucmd part list mmc 0
-
 ### Flashing bootloader and partitions
 FB: download -f $image_bootloader-$machine-default.$uboot_suffix
 $flash_cmds

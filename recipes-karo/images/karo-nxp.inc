@@ -23,16 +23,25 @@ python do_create_uuu_auto_script() {
 
     image_bootloader=d.getVar('IMAGE_BOOTLOADER')
     uboot_suffix = d.getVar('UBOOT_SUFFIX') or "bin"
-    dtb_name = "%s.dtb" % d.getVar('U_BOOT_DTB_NAME')
+    dtb_name = "%s.dtb" % d.getVar('UBOOT_DTB_NAME')
     fb_buf_addr = d.getVar('UUU_FASTBOOT_BUF_ADDR') or "0x0"
 
-    flash_cmds = "FB: flash mmc0boot0 %s-%s-default.bin" % (image_bootloader, machine)
-    flash_cmds += "\nFB: flash -raw2sparse mmc0 %s-%s.wic.zst/*" % (rootfs_image, machine)
+    overrides = d.getVar('MACHINEOVERRIDES').split(':')
+    wic = 'tx6-nand' not in overrides
+
+    if 'mx6-nxp-bsp' in overrides:
+        # The template writes the .imx bootloader raw
+        flash_cmds = ""
+    else:
+        flash_cmds = "FB: flash mmc0boot0 %s-%s-default.bin\n" % (image_bootloader, machine)
+    if wic:
+        flash_cmds += "FB: flash -raw2sparse mmc0 %s-%s.wic.zst/*" % (rootfs_image, machine)
 
     bb.utils.mkdirhier(img_dirname)
 
-    do_copyfile("%s/%s-%s.wic.zst" % \
-        (d.getVar('DEPLOY_DIR_IMAGE'), rootfs_image, machine), img_dirname)
+    if wic:
+        do_copyfile("%s/%s-%s.wic.zst" % \
+            (d.getVar('DEPLOY_DIR_IMAGE'), rootfs_image, machine), img_dirname)
 
     # generate uuu auto script 
     f = open(uuu_template_path, 'r')
