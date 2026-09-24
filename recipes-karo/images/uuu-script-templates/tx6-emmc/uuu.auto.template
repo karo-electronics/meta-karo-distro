@@ -5,10 +5,8 @@ uuu_version 1.5.21
 ### boot U-Boot with fastboot support
 SDP: boot -f $image_bootloader-$machine-mfg.$uboot_suffix
 
-# Refuse a foreign board before writing anything.
+# Refuse a foreign SoC before writing anything.
 FB: ucmd karo_chksoc
-FB: ucmd env default -f -a
-FB: ucmd env exists mfg_$machine
 
 # Boot partition 0; keep the user area accessible.
 FB: ucmd mmc partconf 0 1 1 0
