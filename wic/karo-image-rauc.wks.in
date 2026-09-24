@@ -9,7 +9,8 @@
 #  - User filesystem partition
 
 # Boot filesystem partition
-part /boot --source karo-rootfs --rootfs-dir=${IMAGE_ROOTFS}/boot --ondisk mmcblk0 --fstype=ext4 --label boot --use-label --fsoptions noauto --active --align 1024 --fixed-size ${BOOTFS_PARTITION_SIZE}k
+# U-Boot ext4 write: no metadata_csum, no dir_index
+part /boot --source karo-rootfs --rootfs-dir=${IMAGE_ROOTFS}/boot --ondisk mmcblk0 --fstype=ext4 --mkfs-extraopts "-F -i 4096 -O ^metadata_csum,^dir_index" --label boot --use-label --fsoptions noauto --active --align 1024 --fixed-size ${BOOTFS_PARTITION_SIZE}k
 
 # Root filesystem partition
 part / --source karo-rootfs --ondisk mmcblk0 --fstype=ext4 --label rootfs --use-label --align 1024 --fixed-size ${ROOTFS_PARTITION_SIZE}k --exclude-path boot/ usr/local/
@@ -18,7 +19,7 @@ part / --source karo-rootfs --ondisk mmcblk0 --fstype=ext4 --label rootfs --use-
 part /usr/local --source karo-rootfs --rootfs-dir=${IMAGE_ROOTFS}/usr/local --ondisk mmcblk0 --fstype=ext4 --label userfs --use-label --fsoptions noauto --align 1024 --fixed-size ${USERFS_PARTITION_SIZE}k
 
 # RAUC backup partitions
-part --source karo-rootfs --rootfs-dir=${IMAGE_ROOTFS}/boot --ondisk mmcblk0 --fstype=ext4 --label bootB --active --align 1024 --fixed-size ${BOOTFS_PARTITION_SIZE}k
+part --source karo-rootfs --rootfs-dir=${IMAGE_ROOTFS}/boot --ondisk mmcblk0 --fstype=ext4 --mkfs-extraopts "-F -i 4096 -O ^metadata_csum,^dir_index" --label bootB --active --align 1024 --fixed-size ${BOOTFS_PARTITION_SIZE}k
 part --source karo-rootfs --ondisk mmcblk0 --fstype=ext4 --label rootfsB --align 1024 --fixed-size ${ROOTFS_PARTITION_SIZE}k --exclude-path boot/ usr/local/
 part --source karo-rootfs --rootfs-dir=${IMAGE_ROOTFS}/usr/local --ondisk mmcblk0 --fstype=ext4 --label userfsB --align 1024 --fixed-size ${USERFS_PARTITION_SIZE}k
 
