@@ -24,7 +24,6 @@ python do_create_uuu_auto_script() {
     image_bootloader=d.getVar('IMAGE_BOOTLOADER')
     uboot_suffix = d.getVar('UBOOT_SUFFIX') or "bin"
     dtb_name = "%s.dtb" % d.getVar('UBOOT_DTB_NAME')
-    fb_buf_addr = d.getVar('UUU_FASTBOOT_BUF_ADDR') or "0x0"
 
     overrides = d.getVar('MACHINEOVERRIDES').split(':')
     wic = 'tx6-nand' not in overrides
@@ -58,8 +57,7 @@ python do_create_uuu_auto_script() {
                 flash_cmds=flash_cmds,
                 uboot_suffix=uboot_suffix,
                 dtb_name=dtb_name,
-                image_bootloader=image_bootloader,
-                fastboot_buf_addr=fb_buf_addr
+                image_bootloader=image_bootloader
             )
             uuu_script.write(uuu_auto)
             uuu_script.close()
