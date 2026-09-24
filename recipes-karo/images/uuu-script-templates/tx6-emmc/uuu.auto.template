@@ -11,9 +11,8 @@ FB: ucmd karo_chksoc
 # enable boot from eMMC and switch to boot partition
 FB: ucmd mmc partconf $${emmc_dev} $${emmc_boot_ack} $${emmc_boot_part} $${emmc_boot_part}
 
-# Zero the stored env; an erase would widen to 4MiB.
-FB: ucmd mw.b $${loadaddr} 0 0x1000
-FB: ucmd mmc write $${loadaddr} 0xff8 0x8
+# erase environment in eMMC boot partition
+FB: ucmd mmc erase c00 400
 
 # bootloader: the ROM reads the IVT at sector 2
 # fastboot buffer equals loadaddr on every i.MX6 module
