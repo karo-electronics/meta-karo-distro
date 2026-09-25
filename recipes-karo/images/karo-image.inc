@@ -91,7 +91,6 @@ IMAGE_INSTALL:append = " \
     ${@bb.utils.contains('MACHINE_FEATURES','nxp-wifi','firmware-nxp-wifi-nxp8987-sdio','',d)} \
     lsof \
     mmc-utils \
-    ${@bb.utils.contains('MACHINE_FEATURES',"nand"," mtd-utils","",d)} \
     ncurses \
     net-tools \
     nfs-utils \
@@ -120,6 +119,8 @@ KARO_ROOTFS_KERNEL:tx6-nand = ""
 IMAGE_INSTALL:append = " kernel-modules ${KARO_ROOTFS_KERNEL}"
 # kernel-base recommends the versioned kernel-image-<ver> package
 BAD_RECOMMENDATIONS:append:tx6-nand = " kernel-image-*"
+# NAND flash and UBI tools
+IMAGE_INSTALL:append:tx6-nand = " mtd-utils"
 
 IMAGE_INSTALL:append:use-nxp-bsp = " \
     ${@ bb.utils.contains('DISTRO_FEATURES', 'wifi', bb.utils.contains('DISTRO_FEATURES', 'systemd', " firmwared", "", d), "", d)} \
@@ -135,11 +136,9 @@ CORE_IMAGE_EXTRA_INSTALL:append:stm32mp2 = "${@ \
 }"
 
 # mkubifs parameters
-MKUBIFS_LEB_SIZE = "126976"
+MKUBIFS_LEB_SIZE:tx6-nand = "126976"
 
-MKUBIFS_ARGS ?= "-F -x zlib -m 2048 -e ${MKUBIFS_LEB_SIZE}"
-
-MKUBIFS_LEB_CNT ?= "${@int(((${IMAGE_ROOTFS_SIZE} + ${IMAGE_ROOTFS_EXTRA_SPACE}) * 1024 + ${MKUBIFS_LEB_SIZE} - 1) / ${MKUBIFS_LEB_SIZE})}"
+MKUBIFS_ARGS:tx6-nand ?= "-F -x zlib -m 2048 -e ${MKUBIFS_LEB_SIZE}"
 MKUBIFS_ARGS:append:tx6-nand = " -c ${MKUBIFS_LEB_CNT}"
 
 # UBI reserves 24 PEBs: 4 internal, 20 bad blocks
@@ -147,7 +146,7 @@ MKUBIFS_LEB_CNT:tx6-nand = "${@ int(d.getVar('ROOTFS_PARTITION_SIZE')) // 128 - 
 # dnf adds 102400 to IMAGE_ROOTFS_EXTRA_SPACE: clamp at 0
 IMAGE_ROOTFS_SIZE:tx6-nand = "${@ max(0, ${MKUBIFS_LEB_CNT} * ${MKUBIFS_LEB_SIZE} // 1024 - (${IMAGE_ROOTFS_EXTRA_SPACE}))}"
 
-UBINIZE_ARGS ?= "-m 2048 -s 2048 -p 128KiB"
+UBINIZE_ARGS:tx6-nand ?= "-m 2048 -s 2048 -p 128KiB"
 UBI_VOLNAME:tx6-nand = "rootfs"
 
 WKS_FILE_BASE = "karo-image"
