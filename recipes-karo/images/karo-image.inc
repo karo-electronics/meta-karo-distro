@@ -134,10 +134,6 @@ CORE_IMAGE_EXTRA_INSTALL:append:stm32mp2 = "${@ \
     bb.utils.contains('MACHINE_FEATURES', 'stm-tsn-swch', d.getVar('TTT_IP_INIT_PKGS'), "", d) \
 }"
 
-# mkfs.ext4 parameters
-# set inode size to 256 to support timestamps beyond 2038-01-19
-EXTRA_IMAGECMD:ext4 += "-I 256"
-
 # mkubifs parameters
 MKUBIFS_LEB_SIZE = "126976"
 
