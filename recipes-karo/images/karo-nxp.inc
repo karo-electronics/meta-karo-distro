@@ -28,6 +28,11 @@ python do_create_uuu_auto_script() {
     overrides = d.getVar('MACHINEOVERRIDES').split(':')
     wic = 'tx6-nand' not in overrides
 
+    if not wic and 'ubi' not in (d.getVar('IMAGE_FSTYPES') or "").split():
+        # NAND without a UBI image: nothing to flash
+        bb.note("%s has no UBI image, no uuu.auto" % rootfs_image)
+        return
+
     if 'mx6-nxp-bsp' in overrides:
         # The template writes the .imx bootloader raw
         flash_cmds = ""
