@@ -9,16 +9,16 @@ SDP: boot -f $image_bootloader-$machine-mfg.$uboot_suffix
 # Refuse a foreign SoC before writing anything.
 FB: ucmd karo_chksoc
 
-### kernel, dtb and rootfs live one directory above
+### kernel, dtb and rootfs from this folder
 # fastboot flash never erases NAND first (fb_nand.c).
 # All Karo i.MX6 kernels deploy as uImage.
 FB: erase linux
-FB: flash linux ../uImage
+FB: flash linux uImage
 FB: erase dtb
-FB: flash dtb ../$dtb_name
+FB: flash dtb $dtb_name
 # TRIMFFS skips the trailing empty pages for UBI.
 FB: erase rootfs
-FB: flash rootfs ../$image-$machine.ubi
+FB: flash rootfs $image-$machine.ubi
 
 ### bootloader with FCB and DBBT, written last
 # fastboot buffer equals loadaddr on every i.MX6 module

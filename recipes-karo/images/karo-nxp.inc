@@ -7,6 +7,8 @@ addtask do_create_uuu_auto_script after do_image_complete before do_build
 addtask do_unpack before do_create_uuu_auto_script
 
 do_create_uuu_auto_script[depends] += "virtual/bootloader:do_deploy"
+# NAND copies the deployed kernel and DTB
+do_create_uuu_auto_script[depends] += "${@ 'virtual/kernel:do_deploy' if 'tx6-nand' in d.getVar('MACHINEOVERRIDES').split(':') else ''}"
 
 python do_create_uuu_auto_script() {
     bb.note("DEPLOY_DIR_IMAGE='%s'" % d.expand("${DEPLOY_DIR_IMAGE}"))
@@ -46,6 +48,11 @@ python do_create_uuu_auto_script() {
     if wic:
         do_copyfile("%s/%s-%s.wic.zst" % \
             (d.getVar('DEPLOY_DIR_IMAGE'), rootfs_image, machine), img_dirname)
+    else:
+        # NAND: kernel, DTB and UBI go beside uuu.auto
+        for name in (d.getVar('KERNEL_IMAGETYPE'), dtb_name,
+                     "%s-%s.ubi" % (rootfs_image, machine)):
+            do_copyfile("%s/%s" % (d.getVar('DEPLOY_DIR_IMAGE'), name), img_dirname)
 
     # generate uuu auto script 
     f = open(uuu_template_path, 'r')
