@@ -148,7 +148,8 @@ MKUBIFS_ARGS:append:tx6-nand = " -c ${MKUBIFS_LEB_CNT}"
 
 # UBI reserves 24 PEBs: 4 internal, 20 bad blocks
 MKUBIFS_LEB_CNT:tx6-nand = "${@ int(d.getVar('ROOTFS_PARTITION_SIZE')) // 128 - 24}"
-IMAGE_ROOTFS_SIZE:tx6-nand = "${@ ${MKUBIFS_LEB_CNT} * ${MKUBIFS_LEB_SIZE} // 1024 - (${IMAGE_ROOTFS_EXTRA_SPACE})}"
+# dnf adds 102400 to IMAGE_ROOTFS_EXTRA_SPACE: clamp at 0
+IMAGE_ROOTFS_SIZE:tx6-nand = "${@ max(0, ${MKUBIFS_LEB_CNT} * ${MKUBIFS_LEB_SIZE} // 1024 - (${IMAGE_ROOTFS_EXTRA_SPACE}))}"
 
 UBINIZE_ARGS ?= "-m 2048 -s 2048 -p 128KiB"
 UBI_VOLNAME:tx6-nand = "rootfs"
