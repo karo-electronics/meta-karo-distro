@@ -19,7 +19,6 @@ CORE_IMAGE_BASE_INSTALL:append = " \
 "
 
 IMAGE_INSTALL:append = " \
-    adwaita-icon-theme-cursors \
     gst-examples \
     libdrm \
     libdrm-tests \
@@ -27,6 +26,7 @@ IMAGE_INSTALL:append = " \
 "
 
 IMAGE_INSTALL:append:mx6-nxp-bsp = " \
+    adwaita-icon-theme-cursors \
     libdrm-etnaviv \
 "
 
