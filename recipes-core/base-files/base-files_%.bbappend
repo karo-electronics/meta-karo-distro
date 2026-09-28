@@ -22,8 +22,8 @@ require ${@ bb.utils.contains('DISTRO_FEATURES', 'systemd', '', 'no-systemd.inc'
 do_install:append:mx6-nxp-bsp () {
     # NAND boots from UBI; GPT partition labels do not exist.
     if ${@ bb.utils.contains('MACHINE_FEATURES', 'nand', 'true', 'false', d)};then
-        sed -i -e 's|^PARTLABEL=rootfs[[:space:]].*|ubi0:rootfs\t/\t\tubifs\t\trw\t\t\t0\t0|' \
-               -e '/^PARTLABEL=boot[[:space:]]/d' ${D}${sysconfdir}/fstab
+        sed -i -e 's|^\(PART\)\?LABEL=rootfs[[:space:]].*|ubi0:rootfs\t/\t\tubifs\t\trw\t\t\t0\t0|' \
+               -e '/^\(PART\)\?LABEL=boot[[:space:]]/d' ${D}${sysconfdir}/fstab
     fi
 }
 
