@@ -25,7 +25,7 @@ python do_create_uuu_auto_script() {
 
     image_bootloader=d.getVar('IMAGE_BOOTLOADER')
     uboot_suffix = d.getVar('UBOOT_SUFFIX') or "bin"
-    dtb_name = "%s.dtb" % d.getVar('UBOOT_DTB_NAME')
+    dtb_name = "%s.dtb" % d.getVar('DTB_BASENAME')
 
     overrides = d.getVar('MACHINEOVERRIDES').split(':')
     wic = 'tx6-nand' not in overrides
