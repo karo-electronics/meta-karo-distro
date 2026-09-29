@@ -42,10 +42,11 @@ IMAGE_INSTALL:append:qsxp = " \
     ${@bb.utils.contains('DISTRO_FEATURES', 'csi-camera', 'kernel-module-isp-vvcam isp-imx packagegroup-imx-isp', '', d)} \
 "
 
-# karo-image-weston won't fit in any of our nand modules!
-IMAGE_FSTYPES:remove:tx6-nand = "ubi"
-# rootfs tarball for an NFS root instead
-IMAGE_FSTYPES:append:tx6-nand = " tar.bz2"
+# the NAND of the TX6 modules is too small for a graphical rootfs
+python extend_recipe_sysroot:append() {
+    if 'tx6-nand' in d.getVar('MACHINEOVERRIDES').split(':'):
+        raise_sanity_error("cannot build '%s' for NAND module '%s'" % (d.getVar('BPN'), d.getVar('MACHINE')), d)
+}
 
 ROOTFS_PARTITION_SIZE ?= "2097152"
 
