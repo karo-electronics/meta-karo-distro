@@ -29,6 +29,9 @@ python do_create_uuu_auto_script() {
 
     overrides = d.getVar('MACHINEOVERRIDES').split(':')
     wic = 'tx6-nand' not in overrides
+    # linux-karo_6.6.bb do_deploy:append:tx6-nand: do_check_dtbs carrier merge, module DTB without carrier
+    if not wic and d.getVar('KARO_BASEBOARD'):
+        dtb_name = "%s-%s.dtb" % (d.getVar('DTB_BASENAME'), d.getVar('KARO_BASEBOARD'))
 
     if 'mx6-nxp-bsp' in overrides:
         # The template writes the .imx bootloader raw

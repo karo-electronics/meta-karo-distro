@@ -5,8 +5,6 @@ require karo-image-weston.bb
 INHERIT += "${@ "populate_sdk_qt6_base" if d.getVar('DISTRO') != "karo-minimal" else ""}"
 
 QT6_PACKAGEGROUP ?= "${@ "packagegroup-qt6-imx" if "use-nxp-bsp" in d.getVar('MACHINEOVERRIDES').split(':') else "packagegroup-qt6"}"
-# TX6 uses the NXP BSP without meta-imx and the Vivante stack.
-QT6_PACKAGEGROUP:mx6-nxp-bsp = "packagegroup-qt6"
 
 IMAGE_INSTALL:append = " ${QT6_PACKAGEGROUP}"
 

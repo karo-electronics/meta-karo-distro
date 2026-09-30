@@ -2,9 +2,8 @@ FILESEXTRAPATHS:prepend := "${THISDIR}/${PN}:"
 
 PACKAGECONFIG:append:stm32mp2 = "${@ bb.utils.contains('MACHINE_FEATURES', 'gpu', "", " use-pixman", d)}"
 
-# GPU-less i.MX6UL and TX6 kernels: pixman renderer, not software GL.
-PACKAGECONFIG:append:txul = " use-pixman"
-PACKAGECONFIG:append:tx6 = " use-pixman"
+# GPU-less i.MX6 kernels: pixman renderer, not software GL.
+PACKAGECONFIG:append:mx6-nxp-bsp = " use-pixman"
 
 do_install:prepend() {
     # Replace template variables
