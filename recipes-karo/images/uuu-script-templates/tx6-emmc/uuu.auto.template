@@ -3,26 +3,22 @@ uuu_version 1.5.21
 # i.MX6 eMMC. Generated from template - do not edit.
 
 ### boot U-Boot with fastboot support
-SDP: boot -f $image_bootloader-$machine-mfg.$uboot_suffix
+SDP: boot -f $image_bootloader-$machine-mfg.bin
 
-# Refuse a foreign SoC before writing anything.
-FB: ucmd karo_chksoc
+FB: ucmd mmc partconf $${emmc_dev} $${emmc_boot_ack} $${emmc_boot_part} 0
 
-# enable boot from eMMC and switch to boot partition
-FB: ucmd mmc partconf $${emmc_dev} $${emmc_boot_ack} $${emmc_boot_part} $${emmc_boot_part}
+FB: ucmd mmc dev $${emmc_dev} $${emmc_boot_part}
 
-# erase environment in eMMC boot partition
-FB: ucmd mmc erase c00 400
+FB: ucmd env erase
 
 # bootloader: the ROM reads the IVT at sector 2
 # fastboot buffer equals loadaddr on every i.MX6 module
-FB: download -f $image_bootloader-$machine-default.$uboot_suffix
+FB: download -f $image_bootloader-$machine-default.bin
 FB: ucmd setexpr fb_blk $${filesize} + 0x1ff
 FB: ucmd setexpr fb_blk $${fb_blk} / 0x200
 FB: ucmd mmc write $${loadaddr} 0x2 $${fb_blk}
 
-# switch to eMMC user partition
-FB: ucmd mmc partconf $${emmc_dev} $${emmc_boot_ack} $${emmc_boot_part} 0
+FB: ucmd mmc dev $${emmc_dev} 0
 
 ### Flashing partitions
 $flash_cmds

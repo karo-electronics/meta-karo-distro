@@ -24,7 +24,6 @@ python do_create_uuu_auto_script() {
     uuu_auto_path = os.path.join(img_dirname, "uuu.auto")
 
     image_bootloader=d.getVar('IMAGE_BOOTLOADER')
-    uboot_suffix = d.getVar('UBOOT_SUFFIX') or "bin"
     dtb_name = "%s.dtb" % d.getVar('DTB_BASENAME')
 
     overrides = d.getVar('MACHINEOVERRIDES').split(':')
@@ -65,7 +64,6 @@ python do_create_uuu_auto_script() {
                 image=rootfs_image,
                 machine=machine,
                 flash_cmds=flash_cmds,
-                uboot_suffix=uboot_suffix,
                 dtb_name=dtb_name,
                 image_bootloader=image_bootloader
             )

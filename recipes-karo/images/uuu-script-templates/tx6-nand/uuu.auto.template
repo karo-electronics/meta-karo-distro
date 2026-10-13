@@ -4,10 +4,7 @@ uuu_version 1.5.21
 # Bootloader last: an interrupted run stays USB-recoverable.
 
 ### boot U-Boot with fastboot support
-SDP: boot -f $image_bootloader-$machine-mfg.$uboot_suffix
-
-# Refuse a foreign SoC before writing anything.
-FB: ucmd karo_chksoc
+SDP: boot -f $image_bootloader-$machine-mfg.bin
 
 ### kernel, dtb and rootfs from this folder
 # fastboot flash never erases NAND first (fb_nand.c).
@@ -22,7 +19,7 @@ FB: flash rootfs $image-$machine.ubi
 
 ### bootloader with FCB and DBBT, written last
 # fastboot buffer equals loadaddr on every i.MX6 module
-FB: download -f $image_bootloader-$machine-default.$uboot_suffix
+FB: download -f $image_bootloader-$machine-default.bin
 FB: ucmd nandbcb init $${loadaddr} nandboot $${filesize}
 
 ### return to U-Boot prompt
