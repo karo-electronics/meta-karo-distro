@@ -1,5 +1,11 @@
 LICENSE = "MIT"
 
+FILESEXTRAPATHS:prepend := "${THISDIR}/uuu-script-templates:"
+
+# Set to "1" to enable STM32CubeProgrammer flashlayout generation for
+# STM32MP-based machines. This includes st-machine-common-stm32mp.inc,
+# which defines the boot/rootfs/userfs partition images and install
+# scripts used by STM32CubeProgrammer to flash the board.
 KARO_STM32_CUBE_PROGRAMMER ?= "0"
 
 def do_copyfile (src, destdir):
@@ -7,8 +13,12 @@ def do_copyfile (src, destdir):
     if os.system("cp %s %s" % (src, destdir)):
         bb.fatal("Failed to copy %s to %s" % (src, destdir))
 
-inherit core-image features_check rootfs-postprocess ${@ '' if 'tx6-nand' in d.getVar('MACHINEOVERRIDES').split(':') else 'export-wic-partitions'}
+inherit core-image features_check rootfs-postprocess
 
+# UBI image for NAND modules, otherwise use WIC image format
+require ${@ "karo-ubi.inc" if 'nand' in d.getVar('MACHINE_FEATURES').split() else "karo-wic.inc"}
+
+# Vendor specific flash script generation for NXP, RZG2 and STM32MP-based machines
 require ${@ "karo-nxp.inc" if 'use-nxp-bsp' in d.getVar('MACHINEOVERRIDES').split(':') else ""}
 require ${@ "karo-rzg2.inc" if 'rzg2' in d.getVar('MACHINEOVERRIDES').split(':') else ""}
 require ${@ "karo-stm.inc" if 'stm32mpcommon' in d.getVar('MACHINEOVERRIDES').split(':') else ""}
@@ -31,21 +41,14 @@ python () {
     d.delVarFlag('do_unpack', 'noexec')
 }
 
-# Partitioning using wic image format
-IMAGE_FSTYPES = "wic.zst"
-# NAND modules flash a UBI image, no WIC
-IMAGE_FSTYPES:tx6-nand = "ubi"
-
 # Default partition sizes
 BOOTFS_PARTITION_SIZE ??= "65536"
 ROOTFS_PARTITION_SIZE ??= "131072"
 USERFS_PARTITION_SIZE ??= "131072"
 
-FILESEXTRAPATHS:prepend := "${THISDIR}/uuu-script-templates:"
+UUU_TEMPLATE_NAME ??= "uuu.auto.template"
 
-SRC_URI:append = " file://uuu.auto.template"
-SRC_URI:append:stm32mpcommon = " file://start-fastboot.template"
-SRC_URI:append:rzg2 = " file://install-bootloader.template"
+SRC_URI:append = " file://${UUU_TEMPLATE_NAME}"
 
 DEPENDS:append = " cross-localedef-native qemuwrapper-cross"
 
@@ -113,14 +116,7 @@ IMAGE_INSTALL:append = " \
     ${@bb.utils.contains('DISTRO_FEATURES','copro','packagegroup-copro','',d)} \
 "
 
-# NAND boots kernel and DTB from their own partitions
-KARO_ROOTFS_KERNEL = "kernel-devicetree kernel-image"
-KARO_ROOTFS_KERNEL:tx6-nand = ""
-IMAGE_INSTALL:append = " kernel-modules ${KARO_ROOTFS_KERNEL}"
-# kernel-base recommends the versioned kernel-image-<ver> package
-BAD_RECOMMENDATIONS:append:tx6-nand = " kernel-image-*"
-# NAND flash and UBI tools
-IMAGE_INSTALL:append:tx6-nand = " mtd-utils"
+IMAGE_INSTALL:append = " kernel-modules"
 
 IMAGE_INSTALL:append:use-nxp-bsp = " \
     ${@ bb.utils.contains('DISTRO_FEATURES', 'wifi', bb.utils.contains('DISTRO_FEATURES', 'systemd', " firmwared", "", d), "", d)} \
@@ -134,27 +130,6 @@ TTT_IP_INIT_PKGS:append = "${@ \
 CORE_IMAGE_EXTRA_INSTALL:append:stm32mp2 = "${@ \
     bb.utils.contains('MACHINE_FEATURES', 'stm-tsn-swch', d.getVar('TTT_IP_INIT_PKGS'), "", d) \
 }"
-
-# UBI sizing as in the hardknott karo-image.inc / karo-minimal.inc
-IMAGE_ROOTFS_ALIGNMENT:tx6-nand = "128"
-IMAGE_ROOTFS_EXTRA_SPACE:tx6-nand = "${@2*128}"
-IMAGE_OVERHEAD_FACTOR:tx6-nand = "1"
-IMAGE_ROOTFS_SIZE:tx6-nand ?= "${@${ROOTFS_PARTITION_SIZE}-(${IMAGE_ROOTFS_EXTRA_SPACE})}"
-
-MKUBIFS_LEB_SIZE:tx6-nand = "126976"
-MKUBIFS_LEB_CNT:tx6-nand ?= "${@int(((${IMAGE_ROOTFS_SIZE} + ${IMAGE_ROOTFS_EXTRA_SPACE}) * 1024 + ${MKUBIFS_LEB_SIZE} - 1) / ${MKUBIFS_LEB_SIZE})}"
-MKUBIFS_ARGS:tx6-nand ?= "-F -x zlib -m 2048 -e ${MKUBIFS_LEB_SIZE} -c ${MKUBIFS_LEB_CNT}"
-UBINIZE_ARGS:tx6-nand ?= "-m 2048 -s 2048 -p 128KiB"
-UBI_VOLNAME:tx6-nand = "rootfs"
-
-WKS_FILE_BASE = "karo-image"
-WKS_FILE_BASE:stm32mpcommon = "karo-image-st"
-
-WKS_FILE_BASE:append = "${@ bb.utils.contains('DISTRO_FEATURES', 'rauc', '-rauc', '', d)}"
-
-WKS_FILE = "${WKS_FILE_BASE}.wks.in"
-
-WIC_PARTITIONS_EXPORT = "boot rootfs userfs"
 
 # U-Boot overwrites files in /boot: no symlinks there
 IMAGE_PREPROCESS_COMMAND:append = " karo_bootfs_replace_symlinks"

@@ -8,7 +8,7 @@ addtask do_unpack before do_create_uuu_auto_script
 
 do_create_uuu_auto_script[depends] += "virtual/bootloader:do_deploy"
 # NAND copies the deployed kernel and DTB
-do_create_uuu_auto_script[depends] += "${@ 'virtual/kernel:do_deploy' if 'tx6-nand' in d.getVar('MACHINEOVERRIDES').split(':') else ''}"
+do_create_uuu_auto_script[depends] += "${@ 'virtual/kernel:do_deploy' if 'nand' in d.getVar('MACHINE_FEATURES').split() else ''}"
 
 python do_create_uuu_auto_script() {
     bb.note("DEPLOY_DIR_IMAGE='%s'" % d.expand("${DEPLOY_DIR_IMAGE}"))
@@ -18,38 +18,49 @@ python do_create_uuu_auto_script() {
 
     machine = d.getVar('MACHINE')
     rootfs_image = d.getVar('BPN')
+    overrides = d.getVar('MACHINEOVERRIDES').split(':')
+    nand = 'nand' in d.getVar('MACHINE_FEATURES').split()
+    uuu_template_name = d.getVar('UUU_TEMPLATE_NAME')
 
-    uuu_template_path = os.path.join(d.getVar('WORKDIR'), "uuu.auto.template")
+    uuu_template_path = os.path.join(d.getVar('WORKDIR'), uuu_template_name)
     img_dirname = os.path.join(d.getVar('DEPLOY_DIR_IMAGE'), d.getVar('BPN'))
     uuu_auto_path = os.path.join(img_dirname, "uuu.auto")
 
     image_bootloader=d.getVar('IMAGE_BOOTLOADER')
     dtb_name = "%s.dtb" % d.getVar('DTB_BASENAME')
 
-    overrides = d.getVar('MACHINEOVERRIDES').split(':')
-    wic = 'tx6-nand' not in overrides
-    # linux-karo_6.6.bb do_deploy:append:tx6-nand: do_check_dtbs carrier merge, module DTB without carrier
-    if not wic and d.getVar('KARO_BASEBOARD'):
+    # For nand modules the DTB overlays are merged onto the carrier DTB
+    if nand and d.getVar('KARO_BASEBOARD'):
         dtb_name = "%s-%s.dtb" % (d.getVar('DTB_BASENAME'), d.getVar('KARO_BASEBOARD'))
 
-    if 'mx6-nxp-bsp' in overrides:
-        # The template writes the .imx bootloader raw
-        flash_cmds = ""
-    else:
-        flash_cmds = "FB: flash mmc0boot0 %s-%s-default.bin\n" % (image_bootloader, machine)
-    if wic:
-        flash_cmds += "FB: flash -raw2sparse mmc0 %s-%s.wic.zst/*" % (rootfs_image, machine)
+    flash_cmds = ""
 
     bb.utils.mkdirhier(img_dirname)
 
-    if wic:
-        do_copyfile("%s/%s-%s.wic.zst" % \
-            (d.getVar('DEPLOY_DIR_IMAGE'), rootfs_image, machine), img_dirname)
-    else:
+    if 'mx6-nxp-bsp' in overrides:
+        # i.MX6 ROM reads IVT at sector 2 (offset 1 KB) of eMMC boot partition.
+        # Pad bootloader with 1 KB of zeros so FB: flash mmc0boot0 places it at sector 2.
+        bl_src = os.path.join(d.getVar('DEPLOY_DIR_IMAGE'),
+                            "%s-%s-default.%s" % (image_bootloader, machine, uboot_suffix))
+        bl_padded = os.path.join(img_dirname,
+                                "%s-%s-default-padded.%s" % (image_bootloader, machine, uboot_suffix))
+        with open(bl_src, 'rb') as f:
+            bl_data = f.read()
+        with open(bl_padded, 'wb') as f:
+            f.write(b'\x00' * 1024)
+            f.write(bl_data)
+
+    flash_cmds = "FB: flash mmc0boot0 %s-%s-default%s.bin\n" % (image_bootloader, machine, uboot_suffix)
+
+    if nand:
         # NAND: kernel, DTB and UBI go beside uuu.auto
         for name in (d.getVar('KERNEL_IMAGETYPE'), dtb_name,
                      "%s-%s.ubi" % (rootfs_image, machine)):
             do_copyfile("%s/%s" % (d.getVar('DEPLOY_DIR_IMAGE'), name), img_dirname)
+    else:
+        flash_cmds += "FB: flash -raw2sparse mmc0 %s-%s.wic.zst/*" % (rootfs_image, machine)
+        do_copyfile("%s/%s-%s.wic.zst" % \
+            (d.getVar('DEPLOY_DIR_IMAGE'), rootfs_image, machine), img_dirname)
 
     # generate uuu auto script 
     f = open(uuu_template_path, 'r')

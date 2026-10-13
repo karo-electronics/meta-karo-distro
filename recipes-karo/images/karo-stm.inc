@@ -2,6 +2,8 @@
 # STM32 specific processing
 #
 
+SRC_URI:append = " file://start-fastboot.template"
+
 BOOTLOADER_BASENAME = "${SOC_FAMILY}-${MACHINE}-${BOOTSCHEME_DEFAULT}"
 BOOTLOADER_BASENAME:append = "${@ bb.utils.contains('SIGN_ENABLE', '1', '_Signed', '', d)}"
 

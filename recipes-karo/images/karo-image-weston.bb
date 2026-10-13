@@ -44,7 +44,7 @@ IMAGE_INSTALL:append:qsxp = " \
 
 # the NAND of the TX6 modules is too small for a graphical rootfs
 python extend_recipe_sysroot:append() {
-    if 'tx6-nand' in d.getVar('MACHINEOVERRIDES').split(':'):
+    if 'nand' in d.getVar('MACHINE_FEATURES').split():
         raise_sanity_error("cannot build '%s' for NAND module '%s'" % (d.getVar('BPN'), d.getVar('MACHINE')), d)
 }
 

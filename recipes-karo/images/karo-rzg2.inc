@@ -2,6 +2,8 @@
 # RZ/G2L specific processing
 #
 
+SRC_URI:append = " file://install-bootloader.template"
+
 # create shell scripts for image flashing
 addtask do_unpack before do_create_install_scripts
 addtask do_create_install_scripts after do_image_complete before do_build
