@@ -1,5 +1,11 @@
 LICENSE = "MIT"
 
+FILESEXTRAPATHS:prepend := "${THISDIR}/uuu-script-templates:"
+
+# Set to "1" to enable STM32CubeProgrammer flashlayout generation for
+# STM32MP-based machines. This includes st-machine-common-stm32mp.inc,
+# which defines the boot/rootfs/userfs partition images and install
+# scripts used by STM32CubeProgrammer to flash the board.
 KARO_STM32_CUBE_PROGRAMMER ?= "0"
 
 def do_copyfile (src, destdir):
@@ -7,11 +13,17 @@ def do_copyfile (src, destdir):
     if os.system("cp %s %s" % (src, destdir)):
         bb.fatal("Failed to copy %s to %s" % (src, destdir))
 
-inherit core-image features_check rootfs-postprocess export-wic-partitions
+inherit core-image features_check rootfs-postprocess
 
+IMAGE_FSTYPES:append = " wic.zst"
+
+# Vendor specific flash script generation for NXP, RZG2 and STM32MP-based machines
 require ${@ "karo-nxp.inc" if 'use-nxp-bsp' in d.getVar('MACHINEOVERRIDES').split(':') else ""}
 require ${@ "karo-rzg2.inc" if 'rzg2' in d.getVar('MACHINEOVERRIDES').split(':') else ""}
 require ${@ "karo-stm.inc" if 'stm32mpcommon' in d.getVar('MACHINEOVERRIDES').split(':') else ""}
+
+# WIC partition and image generation
+require ${@ "karo-wic.inc" if any(fstype.startswith('wic') for fstype in d.getVar('IMAGE_FSTYPES').split()) else ""}
 
 # STM32CubeProgrammer flashlayout generation
 require ${@ "st-machine-common-stm32mp.inc" if 'stm32mpcommon' in d.getVar('MACHINEOVERRIDES').split(':') and d.getVar('KARO_STM32_CUBE_PROGRAMMER') == '1' else ""}
@@ -31,19 +43,12 @@ python () {
     d.delVarFlag('do_unpack', 'noexec')
 }
 
-# Partitioning using wic image format
-IMAGE_FSTYPES = "wic.zst"
-
 # Default partition sizes
 BOOTFS_PARTITION_SIZE ??= "65536"
 ROOTFS_PARTITION_SIZE ??= "131072"
 USERFS_PARTITION_SIZE ??= "131072"
 
-FILESEXTRAPATHS:prepend := "${THISDIR}/uuu-script-templates:"
-
 SRC_URI:append = " file://uuu.auto.template"
-SRC_URI:append:stm32mpcommon = " file://start-fastboot.template"
-SRC_URI:append:rzg2 = " file://install-bootloader.template"
 
 DEPENDS:append = " cross-localedef-native qemuwrapper-cross"
 
@@ -125,15 +130,6 @@ TTT_IP_INIT_PKGS:append = "${@ \
 CORE_IMAGE_EXTRA_INSTALL:append:stm32mp2 = "${@ \
     bb.utils.contains('MACHINE_FEATURES', 'stm-tsn-swch', d.getVar('TTT_IP_INIT_PKGS'), "", d) \
 }"
-
-WKS_FILE_BASE = "karo-image"
-WKS_FILE_BASE:stm32mpcommon = "karo-image-st"
-
-WKS_FILE_BASE:append = "${@ bb.utils.contains('DISTRO_FEATURES', 'rauc', '-rauc', '', d)}"
-
-WKS_FILE = "${WKS_FILE_BASE}.wks.in"
-
-WIC_PARTITIONS_EXPORT = "boot rootfs userfs"
 
 karo_rename_kernel_images() {
     bootdir="${IMAGE_ROOTFS}/boot"

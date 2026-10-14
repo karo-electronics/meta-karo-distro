@@ -4,8 +4,14 @@
 # SPDX-License-Identifier: GPL-2.0-only
 #
 # DESCRIPTION
-# This implements the 'rootfs' source plugin class for 'wic'
-# Added exporting of target rootfs as tar.bz
+# This implements the 'rootfs' source plugin class for 'wic'.
+# In addition to the standard rootfs partition handling, it exports each
+# partition's content as tar archives corresponding to the tar.* entries in
+# IMAGE_FSTYPES (e.g. tar.bz2, tar.gz, tar.xz, tar.zst). The compression is
+# selected by the archive suffix via 'tar -a'. Archives are created per
+# partition and deployed to IMGDEPLOYDIR as
+# ${IMAGE_BASENAME}-${MACHINE}.<partition-label>.tar.<ending>.
+# Note: IMAGE_FSTYPES must be added to WICVARS for the wic run to see it.
 #
 # AUTHORS
 # Tom Zanussi <tom.zanussi (at] linux.intel.com>
@@ -14,6 +20,7 @@
 #
 
 import os
+import shutil
 
 from wic.misc import exec_native_cmd, get_bitbake_var
 
@@ -22,6 +29,8 @@ from wic.plugins.source.rootfs import RootfsPlugin
 
 class KaroRootfsPlugin(RootfsPlugin):
     name = 'karo-rootfs'
+
+    supported_tar_fstypes = ['tar.bz2', 'tar.gz', 'tar.xz', 'tar.zst']
 
     @staticmethod
     def __canonicalize(paths):
@@ -40,16 +49,14 @@ class KaroRootfsPlugin(RootfsPlugin):
         return pseudo
 
     @classmethod
-    def __create_tar_bz2(cls, part, cr_workdir, native_sysroot, part_dir, rootfs_dir, pseudo_dir):
-        tar_name = "%s.tar.bz2" % part.label
+    def __create_tar(cls, part_dir, tar_name, cr_workdir, native_sysroot, rootfs_dir, pseudo_dir):
         tar_path = os.path.realpath(os.path.join(cr_workdir, tar_name))
-
         if os.path.exists(tar_path):
             os.remove(tar_path)
 
         ignore_paths = [tar_path] + (get_bitbake_var("PSEUDO_IGNORE_PATHS") or "").split(',')
         pseudo = cls.__get_pseudo(native_sysroot, rootfs_dir, pseudo_dir, ignore_paths)
-        tar_cmd = "tar cjf %s -C %s ." % (tar_path, part_dir)
+        tar_cmd = "tar -caf %s -C %s ." % (tar_path, part_dir)
         exec_native_cmd(tar_cmd, native_sysroot, pseudo)
 
     @classmethod
@@ -62,6 +69,9 @@ class KaroRootfsPlugin(RootfsPlugin):
             krootfs_dir, native_sysroot
         )
 
+        deploy_dir = get_bitbake_var("IMGDEPLOYDIR")
+        dest_basename = "%s-%s" % (get_bitbake_var("IMAGE_BASENAME"), get_bitbake_var("MACHINE"))
+
         part_dir = part.rootfs_dir
         rootfs_dir = os.path.realpath(get_bitbake_var("IMAGE_ROOTFS"))
         pseudo_dir = os.path.join(rootfs_dir, "../pseudo")
@@ -70,4 +80,11 @@ class KaroRootfsPlugin(RootfsPlugin):
             part_dir = os.path.realpath(os.path.join(cr_workdir, "rootfs%d" % part.lineno))
             pseudo_dir = os.path.realpath(os.path.join(cr_workdir, "pseudo%d" % part.lineno))
 
-        cls.__create_tar_bz2(part, cr_workdir, native_sysroot, part_dir, rootfs_dir, pseudo_dir)
+        fstypes = [fstype for fstype in (get_bitbake_var("IMAGE_FSTYPES") or "").split() if fstype.startswith("tar")]
+        for fstype in fstypes:
+            if fstype not in cls.supported_tar_fstypes:
+                continue
+            tar_name = f"{part.label}.{fstype}"
+            cls.__create_tar(part_dir, tar_name, cr_workdir, native_sysroot, rootfs_dir, pseudo_dir)
+            tar_path = os.path.realpath(os.path.join(cr_workdir, tar_name))
+            shutil.copy2(tar_path, os.path.join(deploy_dir, f"{dest_basename}.{tar_name}"))

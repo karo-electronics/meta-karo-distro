@@ -1,10 +1,30 @@
-# Export WIC partitions to deploy directory
-# 
-# This class provides the do_export_wic_partitions task which exports
-# partition images from the WIC build directory to the deploy directory.
+# Export WIC partition images to the deploy directory
 #
-# The partitions to export are controlled by the WIC_PARTITIONS_EXPORT variable,
-# which should be a space-separated list of partition labels.
+# This class provides the do_export_wic_partitions task, which runs after
+# do_image_wic and copies the individual partition filesystem images from
+# the wic build directory (${WORKDIR}/build-wic) into ${IMGDEPLOYDIR},
+# so they can be flashed standalone without writing the full disk image.
+#
+# WIC_PARTITIONS_EXPORT controls which partitions are exported. It is a
+# space-separated list of partition filesystem labels, as assigned with
+# '--label <name>' in the wks file. Only partitions whose label appears
+# in this list are exported; with the default empty value nothing is
+# exported and the task is effectively a no-op.
+#
+#   WIC_PARTITIONS_EXPORT = "boot rootfs userfs"
+#
+# Each partition image in the build directory is inspected with blkid to
+# determine its filesystem label (LABEL) and type (TYPE). A partition is
+# exported as:
+#
+#   ${IMAGE_BASENAME}-${MACHINE}.<label>.<fstype>
+#
+# e.g. myimage-mymachine.boot.ext4. The <fstype> suffix is the filesystem
+# type reported by blkid (e.g. ext4, vfat), not the wic fstype. Partitions
+# whose filesystem carries no label are never matched by this list.
+#
+# This class is typically inherited together with image_types_wic, e.g.
+# from a wic-specific include file.
 
 WIC_PARTITIONS_EXPORT ?= ""
 
@@ -33,7 +53,5 @@ python do_export_wic_partitions() {
             continue
         dest_basename = f"{image_basename}-{machine}.{fsname}"
         bb.utils.copyfile(path, os.path.join(deploy_dir, f"{dest_basename}.{fstype}"))
-        path = os.path.join(build_wic, f"{fsname}.tar.bz2")
-        bb.utils.copyfile(path, os.path.join(deploy_dir, f"{dest_basename}.tar.bz2"))
 }
 addtask export_wic_partitions after do_image_wic before do_image_complete
