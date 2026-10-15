@@ -11,6 +11,13 @@ FB: ucmd mmc dev $${emmc_dev} $${emmc_boot_part}
 
 FB: ucmd env erase
 
+# bootloader: the ROM reads the IVT at sector 2
+# fastboot buffer equals loadaddr on every i.MX6 module
+FB: download -f $image_bootloader-$machine-default.bin
+FB: ucmd setexpr fb_blk $${filesize} + 0x1ff
+FB: ucmd setexpr fb_blk $${fb_blk} / 0x200
+FB: ucmd mmc write $${loadaddr} 0x2 $${fb_blk}
+
 FB: ucmd mmc dev $${emmc_dev} 0
 
 ### Flashing partitions

@@ -34,32 +34,19 @@ python do_create_uuu_auto_script() {
     if nand and d.getVar('KARO_BASEBOARD'):
         dtb_name = "%s-%s.dtb" % (d.getVar('DTB_BASENAME'), d.getVar('KARO_BASEBOARD'))
 
-    flash_cmds = ""
-
     bb.utils.mkdirhier(img_dirname)
 
-    if 'mx6-nxp-bsp' in overrides:
-        # i.MX6 ROM reads IVT at sector 2 (offset 1 KB) of eMMC boot partition.
-        # Pad bootloader with 1 KB of zeros so FB: flash mmc0boot0 places it at sector 2.
-        bl_src = os.path.join(d.getVar('DEPLOY_DIR_IMAGE'),
-                            "%s-%s-default.%s" % (image_bootloader, machine, uboot_suffix))
-        bl_padded = os.path.join(img_dirname,
-                                "%s-%s-default-padded.%s" % (image_bootloader, machine, uboot_suffix))
-        with open(bl_src, 'rb') as f:
-            bl_data = f.read()
-        with open(bl_padded, 'wb') as f:
-            f.write(b'\x00' * 1024)
-            f.write(bl_data)
-        flash_cmds = "FB: flash mmc0boot0 %s-%s-default-padded.%s\n" % (image_bootloader, machine, uboot_suffix)
-    else:
+    flash_cmds = ""
+    if 'mx6-nxp-bsp' not in overrides:
         flash_cmds = "FB: flash mmc0boot0 %s-%s-default.%s\n" % (image_bootloader, machine, uboot_suffix)
 
     if nand:
-        # NAND: kernel, DTB and UBI go beside uuu.auto
+        # NAND: kernel, DTB and UBI goes beside uuu.auto
         for name in (d.getVar('KERNEL_IMAGETYPE'), dtb_name,
                      "%s-%s.ubi" % (rootfs_image, machine)):
             do_copyfile("%s/%s" % (d.getVar('DEPLOY_DIR_IMAGE'), name), img_dirname)
     else:
+        # MMC: wic goes beside uuu.auto
         flash_cmds += "FB: flash -raw2sparse mmc0 %s-%s.wic.zst/*" % (rootfs_image, machine)
         do_copyfile("%s/%s-%s.wic.zst" % \
             (d.getVar('DEPLOY_DIR_IMAGE'), rootfs_image, machine), img_dirname)
