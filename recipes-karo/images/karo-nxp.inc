@@ -21,6 +21,7 @@ python do_create_uuu_auto_script() {
     overrides = d.getVar('MACHINEOVERRIDES').split(':')
     nand = 'nand' in d.getVar('MACHINE_FEATURES').split()
     uuu_template_name = d.getVar('UUU_TEMPLATE_NAME')
+    uboot_suffix = d.getVar('UBOOT_SUFFIX')
 
     uuu_template_path = os.path.join(d.getVar('WORKDIR'), uuu_template_name)
     img_dirname = os.path.join(d.getVar('DEPLOY_DIR_IMAGE'), d.getVar('BPN'))
@@ -49,8 +50,9 @@ python do_create_uuu_auto_script() {
         with open(bl_padded, 'wb') as f:
             f.write(b'\x00' * 1024)
             f.write(bl_data)
-
-    flash_cmds = "FB: flash mmc0boot0 %s-%s-default%s.bin\n" % (image_bootloader, machine, uboot_suffix)
+        flash_cmds = "FB: flash mmc0boot0 %s-%s-default-padded.%s\n" % (image_bootloader, machine, uboot_suffix)
+    else:
+        flash_cmds = "FB: flash mmc0boot0 %s-%s-default.%s\n" % (image_bootloader, machine, uboot_suffix)
 
     if nand:
         # NAND: kernel, DTB and UBI go beside uuu.auto
@@ -86,6 +88,6 @@ python do_create_uuu_auto_script() {
     # copy bootloader binaries to uuu install dir
     for type in d.getVar('UBOOT_CONFIG').split():
         do_copyfile("%s/%s-%s-%s.%s" % (d.getVar('DEPLOY_DIR_IMAGE'), \
-            d.getVar('IMAGE_BOOTLOADER'), machine, type, d.getVar('UBOOT_SUFFIX')), \
+            d.getVar('IMAGE_BOOTLOADER'), machine, type, uboot_suffix), \
             img_dirname)
 }

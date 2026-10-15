@@ -1,4 +1,4 @@
-UUU_TEMPLATE_NAME ??= "uuu-nand.auto.template"
+UUU_TEMPLATE_NAME ?= "uuu-nand.auto.template"
 
 # kernel-base recommends the versioned kernel-image-<ver> package
 BAD_RECOMMENDATIONS:append = " kernel-image-*"
