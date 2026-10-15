@@ -15,13 +15,18 @@ def do_copyfile (src, destdir):
 
 inherit core-image features_check rootfs-postprocess
 
-# UBI image for NAND modules, otherwise use WIC image format
-require ${@ "karo-ubi.inc" if 'nand' in d.getVar('MACHINE_FEATURES').split() else "karo-wic.inc"}
+IMAGE_FSTYPES:append = " ${@ "ubi" if 'nand' in d.getVar('MACHINE_FEATURES').split() else "wic.zst"}"
 
 # Vendor specific flash script generation for NXP, RZG2 and STM32MP-based machines
 require ${@ "karo-nxp.inc" if 'use-nxp-bsp' in d.getVar('MACHINEOVERRIDES').split(':') else ""}
 require ${@ "karo-rzg2.inc" if 'rzg2' in d.getVar('MACHINEOVERRIDES').split(':') else ""}
 require ${@ "karo-stm.inc" if 'stm32mpcommon' in d.getVar('MACHINEOVERRIDES').split(':') else ""}
+
+# WIC partition and image generation
+require ${@ "karo-wic.inc" if any(fstype.startswith('wic') for fstype in d.getVar('IMAGE_FSTYPES').split()) else ""}
+
+# UBI image for NAND modules
+require ${@ "karo-ubi.inc" if "ubi" in d.getVar('IMAGE_FSTYPES').split() else ""}
 
 # STM32CubeProgrammer flashlayout generation
 require ${@ "st-machine-common-stm32mp.inc" if 'stm32mpcommon' in d.getVar('MACHINEOVERRIDES').split(':') and d.getVar('KARO_STM32_CUBE_PROGRAMMER') == '1' else ""}
@@ -131,24 +136,17 @@ CORE_IMAGE_EXTRA_INSTALL:append:stm32mp2 = "${@ \
     bb.utils.contains('MACHINE_FEATURES', 'stm-tsn-swch', d.getVar('TTT_IP_INIT_PKGS'), "", d) \
 }"
 
-# U-Boot overwrites files in /boot: no symlinks there
-IMAGE_PREPROCESS_COMMAND:append = " karo_bootfs_replace_symlinks"
-
-karo_bootfs_replace_symlinks() {
-    bootfs="${IMAGE_ROOTFS}/boot"
-    [ -d "$bootfs" ] || return 0
-    for f in "$bootfs"/*; do
+karo_rename_kernel_images() {
+    bootdir="${IMAGE_ROOTFS}/boot"
+    for type in ${KERNEL_IMAGETYPES} ; do
+        f="$bootdir/$type"
         if [ -h "$f" ]; then
             target="$(readlink "$f")"
-            if [ -f "$bootfs/$target" ]; then
-                bbnote "Replacing symlink '$f' with actual file '$target'"
-                mv -v "$bootfs/$target" "$f"
-            else
-                rm -v "$f"
-            fi
+            mv -v "$bootdir/$target" "$f"
         fi
-    done
+	done
 }
+IMAGE_PREPROCESS_COMMAND:append = " karo_rename_kernel_images"
 
 python do_export_sbom() {
     machine = d.getVar('MACHINE')
