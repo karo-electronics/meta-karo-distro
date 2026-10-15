@@ -2,6 +2,7 @@ FILESEXTRAPATHS:prepend := "${THISDIR}/${PN}:"
 SRC_URI += "\
     file://adjtime \
 "
+SRC_URI:append = "${@bb.utils.contains('MACHINE_FEATURES', 'nand', ' file://fstab-nand', '', d)}"
 
 dirs1777 = " \
     /tmp \
@@ -19,6 +20,9 @@ dirs755:append = " \
 require ${@ bb.utils.contains('DISTRO_FEATURES', 'systemd', '', 'no-systemd.inc', d)}
 
 do_install:append () {
+    if ${@ bb.utils.contains('MACHINE_FEATURES', 'nand', 'true', 'false', d)};then
+        install -v -m 0644 ${WORKDIR}/fstab-nand ${D}${sysconfdir}/fstab
+    fi
     if ${@ bb.utils.contains('MACHINE_FEATURES', 'emmc', 'true', 'false', d)};then
         sed -i '/root/s/0$/1/' ${D}${sysconfdir}/fstab
     fi
