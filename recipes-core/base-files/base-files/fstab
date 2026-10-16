@@ -1,3 +1,11 @@
+# BEGIN-DEV-NOTE
+# When using wic to create and partition images, all partitions defined
+# in the .wks file are added to the /etc/fstab of the target image
+# automatically. Mount options can be configured per partition in the .wks
+# file with the --fsoptions=<options> parameter of the 'part' command.
+# This note is for reference only and is removed from the fstab installed in
+# the target image by the base-files recipe.
+# END-DEV-NOTE
 # device		dir			type		options		dump	fsck
 
 LABEL=rootfs    /           auto        rw          0       1

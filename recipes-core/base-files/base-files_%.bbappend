@@ -19,6 +19,9 @@ dirs755:append = " \
 require ${@ bb.utils.contains('DISTRO_FEATURES', 'systemd', '', 'no-systemd.inc', d)}
 
 do_install:append () {
+    # Remove the dev note from the fstab; it is only relevant for developers
+    # and must not end up in the target image.
+    sed -i '/^# BEGIN-DEV-NOTE/,/^# END-DEV-NOTE/d' ${D}${sysconfdir}/fstab
     if ${@ bb.utils.contains('MACHINE_FEATURES', 'emmc', 'true', 'false', d)};then
         sed -i '/root/s/0$/1/' ${D}${sysconfdir}/fstab
     fi
