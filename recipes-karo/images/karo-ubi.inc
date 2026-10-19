@@ -19,7 +19,7 @@ UBI_VOLNAME = "rootfs"
 
 python do_create_flash_package:append() {
     # NAND: kernel, DTB and UBI goes beside uuu.auto
-    for name in (d.getVar('KERNEL_IMAGETYPE'), dtb_name,
-                    "%s-%s.ubi" % (rootfs_image, machine)):
-        do_copyfile("%s/%s" % (d.getVar('DEPLOY_DIR_IMAGE'), name), img_dirname)
+    do_copyfile("%s/%s" % (d.getVar('DEPLOY_DIR_IMAGE'), d.getVar('KERNEL_IMAGETYPE')), d.getVar('KARO_PACKAGE_DIR'))
+    do_copyfile("%s/%s.dtb" % (d.getVar('DEPLOY_DIR_IMAGE'), d.getVar('UBOOT_DTB_NAME')), d.getVar('KARO_PACKAGE_DIR'))
+    do_copyfile("%s/%s-%s.ubi" % (d.getVar('DEPLOY_DIR_IMAGE'), d.getVar('BPN'), d.getVar('MACHINE')), d.getVar('KARO_PACKAGE_DIR'))
 }
