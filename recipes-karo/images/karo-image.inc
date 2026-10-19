@@ -2,7 +2,7 @@ LICENSE = "MIT"
 
 inherit core-image features_check rootfs-postprocess
 
-IMAGE_FSTYPES:append = " ${@ "ubi" if 'nand' in d.getVar('MACHINE_FEATURES').split() else "wic.zst"}"
+IMAGE_FSTYPES:append = " ${@bb.utils.contains('MACHINE_FEATURES', 'nand', 'ubi', 'wic.zst', d)}"
 
 require ${@ "karo-wic.inc" if any(fstype.startswith('wic') for fstype in d.getVar('IMAGE_FSTYPES').split()) else ""}
 
