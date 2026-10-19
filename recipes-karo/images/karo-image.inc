@@ -1,35 +1,20 @@
 LICENSE = "MIT"
 
-FILESEXTRAPATHS:prepend := "${THISDIR}/uuu-script-templates:"
-
-# Set to "1" to enable STM32CubeProgrammer flashlayout generation for
-# STM32MP-based machines. This includes st-machine-common-stm32mp.inc,
-# which defines the boot/rootfs/userfs partition images and install
-# scripts used by STM32CubeProgrammer to flash the board.
-KARO_STM32_CUBE_PROGRAMMER ?= "0"
-
-def do_copyfile (src, destdir):
-    bb.note("Copying %s to %s" % (src, destdir))
-    if os.system("cp %s %s" % (src, destdir)):
-        bb.fatal("Failed to copy %s to %s" % (src, destdir))
-
 inherit core-image features_check rootfs-postprocess
 
 IMAGE_FSTYPES:append = " ${@ "ubi" if 'nand' in d.getVar('MACHINE_FEATURES').split() else "wic.zst"}"
 
-# Vendor specific flash script generation for NXP, RZG2 and STM32MP-based machines
-require ${@ "karo-nxp.inc" if 'use-nxp-bsp' in d.getVar('MACHINEOVERRIDES').split(':') else ""}
-require ${@ "karo-rzg2.inc" if 'rzg2' in d.getVar('MACHINEOVERRIDES').split(':') else ""}
-require ${@ "karo-stm.inc" if 'stm32mpcommon' in d.getVar('MACHINEOVERRIDES').split(':') else ""}
-
-# WIC partition and image generation
 require ${@ "karo-wic.inc" if any(fstype.startswith('wic') for fstype in d.getVar('IMAGE_FSTYPES').split()) else ""}
 
 # UBI image for NAND modules
 require ${@ "karo-ubi.inc" if "ubi" in d.getVar('IMAGE_FSTYPES').split() else ""}
 
-# STM32CubeProgrammer flashlayout generation
-require ${@ "st-machine-common-stm32mp.inc" if 'stm32mpcommon' in d.getVar('MACHINEOVERRIDES').split(':') and d.getVar('KARO_STM32_CUBE_PROGRAMMER') == '1' else ""}
+# Vendor specific flash package generation for NXP, RZG2 and STM32MP-based machines
+KARO_PACKAGING_VENDOR:use-nxp-bsp = "nxp"
+KARO_PACKAGING_VENDOR:rzg2 = "rzg2"
+KARO_PACKAGING_VENDOR:stm32mpcommon = "stm"
+
+require packaging/karo-${KARO_PACKAGING_VENDOR}.inc
 
 inherit extrausers
 EXTRA_USERS_PARAMS ?= "usermod -p '' root"
@@ -41,19 +26,10 @@ ROOTFS_POSTPROCESS_COMMAND:remove = "\
     ${@bb.utils.contains('IMAGE_FEATURES','read-only-rootfs','empty_var_volatile','',d)} \
 "
 
-python () {
-    # Needed for template files
-    d.delVarFlag('do_unpack', 'noexec')
-}
-
-# Default partition sizes
+# Default partition sizes (KiB)
 BOOTFS_PARTITION_SIZE ??= "65536"
 ROOTFS_PARTITION_SIZE ??= "131072"
 USERFS_PARTITION_SIZE ??= "131072"
-
-UUU_TEMPLATE_NAME ??= "uuu.auto.template"
-
-SRC_URI:append = " file://${UUU_TEMPLATE_NAME}"
 
 DEPENDS:append = " cross-localedef-native qemuwrapper-cross"
 
@@ -144,18 +120,6 @@ karo_rename_kernel_images() {
             target="$(readlink "$f")"
             mv -v "$bootdir/$target" "$f"
         fi
-	done
+    done
 }
 IMAGE_PREPROCESS_COMMAND:append = " karo_rename_kernel_images"
-
-python do_export_sbom() {
-    machine = d.getVar('MACHINE')
-    rootfs_image = d.getVar('BPN')
-    img_dirname = os.path.join(d.getVar('DEPLOY_DIR_IMAGE'), rootfs_image)
-    
-    bb.utils.mkdirhier(img_dirname)
-    do_copyfile("%s/%s-%s.spdx.json" % \
-        (d.getVar('SPDXIMAGEDEPLOYDIR'), rootfs_image, machine), img_dirname)
-}
-do_create_image_sbom_spdx[postfuncs] += "do_export_sbom"
-do_create_image_sbom_spdx_setscene[postfuncs] += "do_export_sbom"

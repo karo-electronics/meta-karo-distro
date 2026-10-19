@@ -22,6 +22,10 @@ require ${@ bb.utils.contains('DISTRO_FEATURES', 'systemd', '', 'no-systemd.inc'
 do_install:append () {
     if ${@ bb.utils.contains('MACHINE_FEATURES', 'nand', 'true', 'false', d)};then
         install -v -m 0644 ${WORKDIR}/fstab-nand ${D}${sysconfdir}/fstab
+    else
+        # Remove the dev note from the fstab; it is only relevant for developers
+        # and must not end up in the target image.
+        sed -i '/^# BEGIN-DEV-NOTE/,/^# END-DEV-NOTE/d' ${D}${sysconfdir}/fstab
     fi
     if ${@ bb.utils.contains('MACHINE_FEATURES', 'emmc', 'true', 'false', d)};then
         sed -i '/root/s/0$/1/' ${D}${sysconfdir}/fstab

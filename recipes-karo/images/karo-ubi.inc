@@ -16,3 +16,10 @@ MKUBIFS_LEB_CNT ?= "${@int(((${IMAGE_ROOTFS_SIZE} + ${IMAGE_ROOTFS_EXTRA_SPACE})
 MKUBIFS_ARGS ?= "-F -x zlib -m 2048 -e ${MKUBIFS_LEB_SIZE} -c ${MKUBIFS_LEB_CNT}"
 UBINIZE_ARGS ?= "-m 2048 -s 2048 -p 128KiB"
 UBI_VOLNAME = "rootfs"
+
+python do_create_flash_package:append() {
+    # NAND: kernel, DTB and UBI goes beside uuu.auto
+    for name in (d.getVar('KERNEL_IMAGETYPE'), dtb_name,
+                    "%s-%s.ubi" % (rootfs_image, machine)):
+        do_copyfile("%s/%s" % (d.getVar('DEPLOY_DIR_IMAGE'), name), img_dirname)
+}
