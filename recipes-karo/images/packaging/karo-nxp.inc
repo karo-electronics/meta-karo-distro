@@ -21,11 +21,6 @@ python do_create_flash_package() {
     overrides = d.getVar('MACHINEOVERRIDES').split(':')
     image_bootloader = d.getVar('IMAGE_BOOTLOADER')
 
-    dtb_name = "%s.dtb" % d.getVar('DTB_BASENAME')
-    # For NAND modules the DTB overlays are merged onto the carrier DTB
-    if 'nand' in d.getVar('MACHINE_FEATURES').split():
-        dtb_name = "%s.dtb" % d.getVar('UBOOT_DTB_NAME')
-
     img_deploy_dir = d.getVar('DEPLOY_DIR_IMAGE')
     img_dirname = d.getVar('KARO_PACKAGE_DIR')
 
@@ -34,7 +29,6 @@ python do_create_flash_package() {
     # generate uuu auto script
     karo_generate_uuu_script(d, extra_subs={
         'image_bootloader': image_bootloader,
-        'dtb_name': dtb_name,
     })
 
     # copy bootloader binaries into the package directory
@@ -63,7 +57,4 @@ def karo_mx6_uuu_rootfs_cmd(d):
     image = "%s-%s" % (d.getVar('BPN'), d.getVar('MACHINE'))
     if 'nand' not in d.getVar('MACHINE_FEATURES').split():
         return "FB: flash -raw2sparse mmc0 %s.wic.zst/*" % image
-    flash_cmd = "FB: erase linux\nFB: flash linux %s\n" % d.getVar('KERNEL_IMAGETYPE')
-    flash_cmd += "FB: erase dtb\nFB: flash dtb %s.dtb\n" % d.getVar('UBOOT_DTB_NAME')
-    flash_cmd += "FB: erase rootfs\nFB: flash rootfs %s.ubi" % image
-    return flash_cmd
+    return "FB: erase rootfs\nFB: flash rootfs %s.ubi" % image

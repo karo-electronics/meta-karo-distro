@@ -7,6 +7,8 @@ uuu_version 1.5.21
 ### boot U-Boot with fastboot support
 SDP: boot -f $image_bootloader-$machine-mfg.bin
 
+FB: ucmd env erase
+
 ### Flashing partitions
 $flash_cmds
 
