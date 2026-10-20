@@ -6,7 +6,6 @@ IMAGE_FSTYPES:append = " ${@bb.utils.contains('MACHINE_FEATURES', 'nand', 'ubi',
 
 require ${@ "karo-wic.inc" if any(fstype.startswith('wic') for fstype in d.getVar('IMAGE_FSTYPES').split()) else ""}
 
-# UBI image for NAND modules
 require ${@ "karo-ubi.inc" if "ubi" in d.getVar('IMAGE_FSTYPES').split() else ""}
 
 # Vendor specific flash package generation for NXP, RZG2 and STM32MP-based machines
