@@ -56,9 +56,6 @@ karo_ubi_boot_volume() {
     install -d "${WORKDIR}/bootfs"
     install -m 0644 "${DEPLOY_DIR_IMAGE}/${KERNEL_IMAGETYPE}" \
         "${WORKDIR}/bootfs/${KERNEL_IMAGETYPE}"
-    # DTB with the overlays merged onto the carrier DTB (loaded by U-Boot)
-    install -m 0644 "${DEPLOY_DIR_IMAGE}/${UBOOT_DTB_NAME}.dtb" \
-        "${WORKDIR}/bootfs/"
     # Kernel DTBs and overlays
     for dtb in ${IMAGE_BOOT_FILES}; do
         install -m 0644 "${DEPLOY_DIR_IMAGE}/$dtb" "${WORKDIR}/bootfs/"
@@ -91,8 +88,5 @@ KARO_UBI_CMD() {
 }
 
 python do_create_flash_package:append() {
-    # NAND: kernel, DTB and UBI goes beside uuu.auto
-    do_copyfile("%s/%s" % (d.getVar('DEPLOY_DIR_IMAGE'), d.getVar('KERNEL_IMAGETYPE')), d.getVar('KARO_PACKAGE_DIR'))
-    do_copyfile("%s/%s.dtb" % (d.getVar('DEPLOY_DIR_IMAGE'), d.getVar('UBOOT_DTB_NAME')), d.getVar('KARO_PACKAGE_DIR'))
     do_copyfile("%s/%s-%s.ubi" % (d.getVar('DEPLOY_DIR_IMAGE'), d.getVar('BPN'), d.getVar('MACHINE')), d.getVar('KARO_PACKAGE_DIR'))
 }
