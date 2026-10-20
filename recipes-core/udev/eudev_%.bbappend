@@ -2,13 +2,11 @@ inherit relative_symlinks
 FILESEXTRAPATHS:prepend := "${THISDIR}/files:"
 
 SRC_URI:append = "\
-        file://firmware.rules \
-        file://rtcsymlink.sh \
-        file://rtcsymlink.rule \
-        ${@ bb.utils.contains('DISTRO_FEATURES', 'wayland', " file://weston.rule", "", d)} \
-"
-SRC_URI:append:stm32mp2 = " \
-        ${@ bb.utils.contains('MACHINE_FEATURES', 'gpu', " file://galcore.rules", "", d)} \
+    file://firmware.rules \
+    file://rtcsymlink.sh \
+    file://rtcsymlink.rule \
+    ${@ bb.utils.contains('DISTRO_FEATURES', 'wayland', " file://weston.rule", "", d)} \
+    ${@ bb.utils.contains('MACHINE_FEATURES', 'gpu', " file://galcore.rules", "", d)} \
 "
 
 do_install:append() {
