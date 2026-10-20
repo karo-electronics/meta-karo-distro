@@ -1,5 +1,3 @@
-# kernel-base recommends the versioned kernel-image-<ver> package
-BAD_RECOMMENDATIONS:append = " kernel-image-*"
 # NAND flash and UBI tools
 IMAGE_INSTALL:append = " mtd-utils"
 

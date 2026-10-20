@@ -33,6 +33,10 @@ USERFS_PARTITION_SIZE ??= "131072"
 
 DEPENDS:append = " cross-localedef-native qemuwrapper-cross"
 
+# Kernel image and devicetree files are provided by the dedicated
+# boot partition, so don't install them into the rootfs images.
+BAD_RECOMMENDATIONS += "kernel-image* kernel-devicetree"
+
 PREFERRED_PROVIDER_fdisk = "util-linux"
 
 PACKAGE_INSTALL += "${@ bb.utils.contains('DISTRO_FEATURES', 'rauc', "u-boot-script", "", d)}"
@@ -97,8 +101,6 @@ IMAGE_INSTALL:append = " \
     ${@bb.utils.contains('DISTRO_FEATURES','copro','packagegroup-copro','',d)} \
 "
 
-IMAGE_INSTALL:append = " kernel-modules"
-
 IMAGE_INSTALL:append:use-nxp-bsp = " \
     ${@ bb.utils.contains('DISTRO_FEATURES', 'wifi', bb.utils.contains('DISTRO_FEATURES', 'systemd', " firmwared", "", d), "", d)} \
 "
@@ -111,15 +113,3 @@ TTT_IP_INIT_PKGS:append = "${@ \
 CORE_IMAGE_EXTRA_INSTALL:append:stm32mp2 = "${@ \
     bb.utils.contains('MACHINE_FEATURES', 'stm-tsn-swch', d.getVar('TTT_IP_INIT_PKGS'), "", d) \
 }"
-
-karo_rename_kernel_images() {
-    bootdir="${IMAGE_ROOTFS}/boot"
-    for type in ${KERNEL_IMAGETYPES} ; do
-        f="$bootdir/$type"
-        if [ -h "$f" ]; then
-            target="$(readlink "$f")"
-            mv -v "$bootdir/$target" "$f"
-        fi
-    done
-}
-IMAGE_PREPROCESS_COMMAND:append = " karo_rename_kernel_images"

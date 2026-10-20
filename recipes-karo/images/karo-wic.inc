@@ -5,8 +5,6 @@ inherit export-wic-partitions
 # by default (see KARO_PACKAGE_INCLUDE_PARTITIONS in packaging/karo.inc).
 WIC_PARTITIONS_EXPORT ?= "boot rootfs userfs"
 
-IMAGE_INSTALL:append = " kernel-devicetree kernel-image"
-
 WKS_FILE_BASE = "karo-image"
 WKS_FILE_BASE:stm32mpcommon = "karo-image-st"
 
