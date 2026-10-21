@@ -6,8 +6,7 @@ IMAGE_INSTALL:append = " mtd-utils"
 # Multi-volume UBI image: the .ubi image carries three volumes:
 #   boot   (vol_id 0): kernel image and DTB files
 #   rootfs (vol_id 1): the root filesystem
-#   userfs (vol_id 2): volume mounted at /usr/local, populated from the
-#   rootfs /usr/local directory, autoresized into the remaining flash
+#   userfs (vol_id 2): volume mounted at /usr/local, autoresized into the remaining flash
 
 BOOTFS_PARTITION_SIZE ?= "16384"
 ROOTFS_PARTITION_SIZE ?= "32768"
@@ -17,8 +16,8 @@ MKUBIFS_LEB_SIZE = "126976"
 MKUBIFS_ROOTFS_LEB_CNT ?= "${@int((${ROOTFS_PARTITION_SIZE} * 1024 + ${MKUBIFS_LEB_SIZE} - 1) / ${MKUBIFS_LEB_SIZE})}"
 MKUBIFS_ARGS_ROOTFS ?= "-x zlib -m 2048 -e ${MKUBIFS_LEB_SIZE} -c ${MKUBIFS_ROOTFS_LEB_CNT}"
 
-MKUBIFS_BOOT_LEB_CNT ?= "${@int((${BOOTFS_PARTITION_SIZE} * 1024 + ${MKUBIFS_LEB_SIZE} - 1) / ${MKUBIFS_LEB_SIZE})}"
-MKUBIFS_ARGS_BOOT ?= "-x zlib -m 2048 -e ${MKUBIFS_LEB_SIZE} -c ${MKUBIFS_BOOT_LEB_CNT}"
+MKUBIFS_BOOTFS_LEB_CNT ?= "${@int((${BOOTFS_PARTITION_SIZE} * 1024 + ${MKUBIFS_LEB_SIZE} - 1) / ${MKUBIFS_LEB_SIZE})}"
+MKUBIFS_ARGS_BOOTFS ?= "-x zlib -m 2048 -e ${MKUBIFS_LEB_SIZE} -c ${MKUBIFS_BOOTFS_LEB_CNT}"
 
 MKUBIFS_USERFS_LEB_CNT ?= "${@int((${USERFS_PARTITION_SIZE} * 1024 + ${MKUBIFS_LEB_SIZE} - 1) / ${MKUBIFS_LEB_SIZE})}"
 MKUBIFS_ARGS_USERFS ?= "-x zlib -m 2048 -e ${MKUBIFS_LEB_SIZE} -c ${MKUBIFS_USERFS_LEB_CNT}"
@@ -33,11 +32,7 @@ do_image_ubi[depends] += "virtual/kernel:do_deploy virtual/bootloader:do_deploy"
 # ubinize volume layout template
 KARO_UBINIZE_CFG ?= "ubinize-karo.cfg.in"
 
-karo_write_ubi_config() {
-    sed -e "s|@WORKDIR@|${WORKDIR}|g" "${WORKDIR}/${KARO_UBINIZE_CFG}" > ${WORKDIR}/ubinize-${IMAGE_NAME}.cfg
-}
-
-karo_ubi_boot_volume() {
+karo_ubi_prep_bootfs() {
     rm -rf "${WORKDIR}/bootfs"
     install -d "${WORKDIR}/bootfs"
     install -m 0644 "${DEPLOY_DIR_IMAGE}/${KERNEL_IMAGETYPE}" \
@@ -48,7 +43,7 @@ karo_ubi_boot_volume() {
     done
 }
 
-karo_ubi_userfs_volume() {
+karo_ubi_prep_userfs() {
     rm -rf "${WORKDIR}/userfs"
     install -d "${WORKDIR}/userfs"
     # Move the rootfs /usr/local content into the userfs volume; the
@@ -57,6 +52,33 @@ karo_ubi_userfs_volume() {
         find "${IMAGE_ROOTFS}/usr/local" -mindepth 1 -maxdepth 1 \
             -exec mv -t "${WORKDIR}/userfs" {} +
     fi
+}
+
+karo_ubi_tar_archives() {
+    for fstype in ${IMAGE_FSTYPES}; do
+        case "$fstype" in
+            tar.*) ;;
+            *) continue ;;
+        esac
+        for vol in boot rootfs userfs; do
+            vol_dir="${vol%fs}fs"
+            tar -caf "${WORKDIR}/$vol.$fstype" -C "${WORKDIR}/$vol_dir" .
+            cp "${WORKDIR}/$vol.$fstype" "${IMGDEPLOYDIR}/${BPN}-${MACHINE}.$vol.$fstype"
+        done
+    done
+}
+
+karo_ubi_volumes() {
+    mkfs.ubifs -r ${WORKDIR}/rootfs -o ${WORKDIR}/rootfs.ubifs ${MKUBIFS_ARGS_ROOTFS}
+    cp ${WORKDIR}/rootfs.ubifs ${IMGDEPLOYDIR}/${BPN}-${MACHINE}.rootfs.ubifs
+    mkfs.ubifs -r ${WORKDIR}/bootfs -o ${WORKDIR}/boot.ubifs ${MKUBIFS_ARGS_BOOTFS}
+    cp ${WORKDIR}/boot.ubifs ${IMGDEPLOYDIR}/${BPN}-${MACHINE}.boot.ubifs
+    mkfs.ubifs -r ${WORKDIR}/userfs -o ${WORKDIR}/userfs.ubifs ${MKUBIFS_ARGS_USERFS}
+    cp ${WORKDIR}/userfs.ubifs ${IMGDEPLOYDIR}/${BPN}-${MACHINE}.userfs.ubifs
+}
+
+karo_write_ubi_config() {
+    sed -e "s|@WORKDIR@|${WORKDIR}|g" "${WORKDIR}/${KARO_UBINIZE_CFG}" > ${WORKDIR}/ubinize-${IMAGE_NAME}.cfg
 }
 
 addhandler karo_set_ubi_cmd
@@ -69,19 +91,16 @@ python karo_set_ubi_cmd() {
 }
 
 KARO_UBI_CMD() {
-    karo_ubi_boot_volume
-    karo_ubi_userfs_volume
-    mkfs.ubifs -r ${WORKDIR}/rootfs -o ${WORKDIR}/rootfs.ubifs ${MKUBIFS_ARGS_ROOTFS}
-    mkfs.ubifs -r ${WORKDIR}/bootfs -o ${WORKDIR}/boot.ubifs ${MKUBIFS_ARGS_BOOT}
-    mkfs.ubifs -r ${WORKDIR}/userfs -o ${WORKDIR}/userfs.ubifs ${MKUBIFS_ARGS_USERFS}
-
+    # Prepare volume contents
+    karo_ubi_prep_bootfs
+    karo_ubi_prep_userfs
+    # Generate and deploy tar archives
+    karo_ubi_tar_archives
+    # Generate and deploy the individual volume images
+    karo_ubi_volumes
+    # Generate the ubi image containing all volumes
     karo_write_ubi_config
     ubinize -o ${IMGDEPLOYDIR}/${IMAGE_NAME}.ubi ${UBINIZE_ARGS} ${WORKDIR}/ubinize-${IMAGE_NAME}.cfg
-
-    # Deploy the individual volume images alongside the combined .ubi image
-    cp ${WORKDIR}/rootfs.ubifs ${IMGDEPLOYDIR}/${BPN}-${MACHINE}.rootfs.ubifs
-    cp ${WORKDIR}/boot.ubifs ${IMGDEPLOYDIR}/${BPN}-${MACHINE}.boot.ubifs
-    cp ${WORKDIR}/userfs.ubifs ${IMGDEPLOYDIR}/${BPN}-${MACHINE}.userfs.ubifs
 }
 
 python do_create_flash_package:append() {
