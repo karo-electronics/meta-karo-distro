@@ -4,9 +4,7 @@ require karo-image-weston.bb
 
 INHERIT += "${@ "populate_sdk_qt6_base" if d.getVar('DISTRO') != "karo-minimal" else ""}"
 
-QT6_PACKAGEGROUP ?= "${@ "packagegroup-qt6-imx" if "use-nxp-bsp" in d.getVar('MACHINEOVERRIDES').split(':') else "packagegroup-qt6"}"
-
-IMAGE_INSTALL:append = " ${QT6_PACKAGEGROUP}"
+IMAGE_INSTALL:append = " ${@bb.utils.contains('MACHINEOVERRIDES', 'use-nxp-bsp', 'packagegroup-qt6-imx', 'packagegroup-qt6', d)}"
 
 IMAGE_FEATURES += "qtcreator-debug"
 
