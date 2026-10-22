@@ -35,11 +35,9 @@ KARO_UBINIZE_CFG ?= "ubinize-karo.cfg.in"
 karo_ubi_prep_bootfs() {
     rm -rf "${WORKDIR}/bootfs"
     install -d "${WORKDIR}/bootfs"
-    install -m 0644 "${DEPLOY_DIR_IMAGE}/${KERNEL_IMAGETYPE}" \
-        "${WORKDIR}/bootfs/${KERNEL_IMAGETYPE}"
-    # Kernel DTBs and overlays
-    for dtb in ${IMAGE_BOOT_FILES}; do
-        install -m 0644 "${DEPLOY_DIR_IMAGE}/$dtb" "${WORKDIR}/bootfs/"
+    # Kernel image and DTBs
+    for file in ${IMAGE_BOOT_FILES}; do
+        install -m 0644 "${DEPLOY_DIR_IMAGE}/$file" "${WORKDIR}/bootfs/"
     done
 }
 
