@@ -7,20 +7,25 @@ IMAGE_INSTALL:append = " mtd-utils"
 #   boot   (vol_id 0): kernel image and DTB files
 #   rootfs (vol_id 1): the root filesystem
 #   userfs (vol_id 2): volume mounted at /usr/local, autoresized into the remaining flash
-
 BOOTFS_PARTITION_SIZE ?= "16384"
 ROOTFS_PARTITION_SIZE ?= "32768"
 USERFS_PARTITION_SIZE ?= "32768"
+
+# UBI geometry: the UBI device is attached to the rootfs partition of
+# CONFIG_MTDPARTS_DEFAULT; UBI_AREA_SIZE must match its size (KiB).
+UBI_AREA_SIZE ?= "126080"
+MKUBIFS_PEB_SIZE = "131072"
 MKUBIFS_LEB_SIZE = "126976"
 
-MKUBIFS_ROOTFS_LEB_CNT ?= "${@int((${ROOTFS_PARTITION_SIZE} * 1024 + ${MKUBIFS_LEB_SIZE} - 1) / ${MKUBIFS_LEB_SIZE})}"
-MKUBIFS_ARGS_ROOTFS ?= "-x zlib -m 2048 -e ${MKUBIFS_LEB_SIZE} -c ${MKUBIFS_ROOTFS_LEB_CNT}"
+# Maximum number of LEBs available to UBI volumes: the PEBs of the
+# UBI area minus the PEBs UBI reserves for the volume table, wear
+# leveling, EBA and fastmap.
+MKUBIFS_RESERVED_LEB_CNT ?= "25"
+MKUBIFS_MAX_LEB_CNT = "${@int(${UBI_AREA_SIZE} * 1024 / ${MKUBIFS_PEB_SIZE}) - ${MKUBIFS_RESERVED_LEB_CNT}}"
 
-MKUBIFS_BOOTFS_LEB_CNT ?= "${@int((${BOOTFS_PARTITION_SIZE} * 1024 + ${MKUBIFS_LEB_SIZE} - 1) / ${MKUBIFS_LEB_SIZE})}"
-MKUBIFS_ARGS_BOOTFS ?= "-x zlib -m 2048 -e ${MKUBIFS_LEB_SIZE} -c ${MKUBIFS_BOOTFS_LEB_CNT}"
-
-MKUBIFS_USERFS_LEB_CNT ?= "${@int((${USERFS_PARTITION_SIZE} * 1024 + ${MKUBIFS_LEB_SIZE} - 1) / ${MKUBIFS_LEB_SIZE})}"
-MKUBIFS_ARGS_USERFS ?= "-x zlib -m 2048 -e ${MKUBIFS_LEB_SIZE} -c ${MKUBIFS_USERFS_LEB_CNT}"
+MKUBIFS_ARGS_BOOTFS ?= "-x zlib -m 2048 -e ${MKUBIFS_LEB_SIZE} -c ${MKUBIFS_MAX_LEB_CNT}"
+MKUBIFS_ARGS_ROOTFS ?= "-x zlib -m 2048 -e ${MKUBIFS_LEB_SIZE} -c ${MKUBIFS_MAX_LEB_CNT}"
+MKUBIFS_ARGS_USERFS ?= "-x zlib -m 2048 -e ${MKUBIFS_LEB_SIZE} -c ${MKUBIFS_MAX_LEB_CNT}"
 
 UBINIZE_ARGS ?= "-m 2048 -s 2048 -p 128KiB"
 
@@ -76,7 +81,11 @@ karo_ubi_volumes() {
 }
 
 karo_write_ubi_config() {
-    sed -e "s|@WORKDIR@|${WORKDIR}|g" "${WORKDIR}/${KARO_UBINIZE_CFG}" > ${WORKDIR}/ubinize-${IMAGE_NAME}.cfg
+    sed -e "s|@WORKDIR@|${WORKDIR}|g" \
+        -e "s|@BOOTFS_PARTITION_SIZE@|${BOOTFS_PARTITION_SIZE}|g" \
+        -e "s|@ROOTFS_PARTITION_SIZE@|${ROOTFS_PARTITION_SIZE}|g" \
+        -e "s|@USERFS_PARTITION_SIZE@|${USERFS_PARTITION_SIZE}|g" \
+        "${WORKDIR}/${KARO_UBINIZE_CFG}" > ${WORKDIR}/ubinize-${IMAGE_NAME}.cfg
 }
 
 addhandler karo_set_ubi_cmd

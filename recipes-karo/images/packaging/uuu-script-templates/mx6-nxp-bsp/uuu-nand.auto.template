@@ -1,8 +1,6 @@
 uuu_version 1.5.21
 
 # i.MX6 NAND. Generated from template - do not edit.
-# Flash commands come from KARO_UUU_FLASH_STEPS; keep the bootloader
-# step last so an interrupted run stays USB-recoverable.
 
 ### boot U-Boot with fastboot support
 SDP: boot -f $image_bootloader-$machine-mfg.bin

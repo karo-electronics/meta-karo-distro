@@ -25,14 +25,14 @@ KARO_PACKAGE_DIR = "${DEPLOY_DIR_IMAGE}/${BPN}"
 # line (a command may itself span multiple lines).
 #
 # Example:
-#   KARO_UUU_FLASH_STEPS = "bootloader rootfs"
+#   KARO_UUU_FLASH_STEPS = "rootfs bootloader"
 #   KARO_UUU_FLASH_CMD_bootloader = "FB: flash mmc0boot0 u-boot.bin"
 #   KARO_UUU_FLASH_CMD_rootfs = "FB: flash -raw2sparse mmc0 image.wic.zst/*"
 #
 # Append a step to extend the script, remove one from the list
 # to disable it, or override a command to change
 # the flash behavior for a specific machine or image.
-KARO_UUU_FLASH_STEPS ??= "bootloader rootfs"
+KARO_UUU_FLASH_STEPS ??= "rootfs bootloader"
 
 do_create_flash_package[dirs] = "${DEPLOY_DIR_IMAGE}"
 
