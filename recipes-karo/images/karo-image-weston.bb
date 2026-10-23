@@ -26,6 +26,7 @@ IMAGE_INSTALL:append = " \
 "
 
 IMAGE_INSTALL:append:mx6-nxp-bsp = " \
+    adwaita-icon-theme-cursors \
     libdrm-etnaviv \
 "
 
@@ -40,6 +41,12 @@ IMAGE_INSTALL:append:mx8mm-nxp-bsp = " \
 IMAGE_INSTALL:append:qsxp = " \
     ${@bb.utils.contains('DISTRO_FEATURES', 'csi-camera', 'kernel-module-isp-vvcam isp-imx packagegroup-imx-isp', '', d)} \
 "
+
+# the NAND of the TX6 modules is too small for a graphical rootfs
+python extend_recipe_sysroot:append() {
+    if 'nand' in d.getVar('MACHINE_FEATURES').split():
+        raise_sanity_error("cannot build '%s' for NAND module '%s'" % (d.getVar('BPN'), d.getVar('MACHINE')), d)
+}
 
 ROOTFS_PARTITION_SIZE ?= "2097152"
 

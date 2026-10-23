@@ -25,6 +25,9 @@ KARO_BOOTLOADER_SBOM_RECIPES:use-nxp-bsp = "\
     ${IMX_EXTRA_FIRMWARE} \
     ${@bb.utils.contains('MACHINE_FEATURES', 'optee', 'optee-os', '', d)} \
 "
+# i.MX6 boots a monolithic DCD U-Boot image: no ATF
+# (mirrors DEPENDS:remove:mx6-nxp-bsp in u-boot-karo).
+KARO_BOOTLOADER_SBOM_RECIPES:remove:mx6-nxp-bsp = "imx-atf"
 KARO_BOOTLOADER_SBOM_RECIPES:rzg2 = "virtual/bootloader tf-a-rzg2 flashwriter-rzg2"
 KARO_BOOTLOADER_SBOM_RECIPES:stm32mpcommon = "\
     virtual/bootloader \

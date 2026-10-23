@@ -2,9 +2,11 @@ LICENSE = "MIT"
 
 inherit core-image features_check rootfs-postprocess
 
-IMAGE_FSTYPES:append = " wic.zst"
+IMAGE_FSTYPES:append = " ${@bb.utils.contains('MACHINE_FEATURES', 'nand', 'ubi', 'wic.zst', d)}"
 
 require ${@ "karo-wic.inc" if any(fstype.startswith('wic') for fstype in d.getVar('IMAGE_FSTYPES').split()) else ""}
+
+require ${@ "karo-ubi.inc" if "ubi" in d.getVar('IMAGE_FSTYPES').split() else ""}
 
 # Vendor specific flash package generation for NXP, RZG2 and STM32MP-based machines
 KARO_PACKAGING_VENDOR:use-nxp-bsp = "nxp"

@@ -11,7 +11,9 @@ python () {
     d.delVarFlag('do_unpack', 'noexec')
 }
 
-SRC_URI:append = " file://uuu.auto.template"
+UUU_TEMPLATE_NAME ??= "uuu.auto.template"
+
+SRC_URI:append = " file://${UUU_TEMPLATE_NAME}"
 
 # Directory where the flash package is assembled
 KARO_PACKAGE_DIR = "${DEPLOY_DIR_IMAGE}/${BPN}"
@@ -23,14 +25,14 @@ KARO_PACKAGE_DIR = "${DEPLOY_DIR_IMAGE}/${BPN}"
 # line (a command may itself span multiple lines).
 #
 # Example:
-#   KARO_UUU_FLASH_STEPS = "bootloader rootfs"
+#   KARO_UUU_FLASH_STEPS = "rootfs bootloader"
 #   KARO_UUU_FLASH_CMD_bootloader = "FB: flash mmc0boot0 u-boot.bin"
 #   KARO_UUU_FLASH_CMD_rootfs = "FB: flash -raw2sparse mmc0 image.wic.zst/*"
 #
 # Append a step to extend the script, remove one from the list
 # to disable it, or override a command to change
 # the flash behavior for a specific machine or image.
-KARO_UUU_FLASH_STEPS ??= "bootloader rootfs"
+KARO_UUU_FLASH_STEPS ??= "rootfs bootloader"
 
 do_create_flash_package[dirs] = "${DEPLOY_DIR_IMAGE}"
 
@@ -75,7 +77,8 @@ def karo_generate_uuu_script(d, extra_subs=None):
         return
 
     img_dirname = d.getVar('KARO_PACKAGE_DIR')
-    template_path = os.path.join(d.getVar('WORKDIR'), "uuu.auto.template")
+    uuu_template_name = d.getVar('UUU_TEMPLATE_NAME')
+    template_path = os.path.join(d.getVar('WORKDIR'), uuu_template_name)
     uuu_auto_path = os.path.join(img_dirname, "uuu.auto")
 
     subs = {

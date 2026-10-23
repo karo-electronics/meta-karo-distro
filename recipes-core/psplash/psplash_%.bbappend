@@ -1,4 +1,4 @@
-FILESEXTRAPATHS:prepend := "${THISDIR}/splashscreen:"
+FILESEXTRAPATHS:prepend := "${THISDIR}/${PN}:"
 
 FILES:${PN} += "/mnt/.psplash"
 
@@ -7,3 +7,6 @@ do_install:append() {
 }
 
 SPLASH_IMAGES = "file://karologo.png;outsuffix=default"
+
+# Single buffer only: DRM fbdev emulation cannot flip.
+SRC_URI:append = " file://0001-fb-never-request-double-buffering.patch"
