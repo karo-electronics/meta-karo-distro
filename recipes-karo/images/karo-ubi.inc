@@ -20,7 +20,7 @@ MKUBIFS_LEB_SIZE = "126976"
 # Maximum number of LEBs available to UBI volumes: the PEBs of the
 # UBI area minus the PEBs UBI reserves for the volume table, wear
 # leveling, EBA and fastmap.
-MKUBIFS_RESERVED_LEB_CNT ?= "25"
+MKUBIFS_RESERVED_LEB_CNT ?= "24"
 MKUBIFS_MAX_LEB_CNT = "${@int(${UBI_AREA_SIZE} * 1024 / ${MKUBIFS_PEB_SIZE}) - ${MKUBIFS_RESERVED_LEB_CNT}}"
 
 MKUBIFS_ARGS_BOOTFS ?= "-x zlib -m 2048 -e ${MKUBIFS_LEB_SIZE} -c ${MKUBIFS_MAX_LEB_CNT}"
