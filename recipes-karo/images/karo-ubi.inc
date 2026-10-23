@@ -8,8 +8,8 @@ IMAGE_INSTALL:append = " mtd-utils"
 #   rootfs (vol_id 1): the root filesystem
 #   userfs (vol_id 2): volume mounted at /usr/local, autoresized into the remaining flash
 BOOTFS_PARTITION_SIZE ?= "16384"
-ROOTFS_PARTITION_SIZE ?= "32768"
-USERFS_PARTITION_SIZE ?= "32768"
+ROOTFS_PARTITION_SIZE ?= "65536"
+USERFS_PARTITION_SIZE ?= "16384"
 
 # UBI geometry: the UBI device is attached to the rootfs partition of
 # CONFIG_MTDPARTS_DEFAULT; UBI_AREA_SIZE must match its size (KiB).
