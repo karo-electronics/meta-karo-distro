@@ -8,4 +8,4 @@ devpts			/dev/pts	devpts		mode=0620,gid=5	0	0
 tmpfs			/tmp		tmpfs		defaults	0		0
 tmpfs			/var/tmp	tmpfs		defaults	0		0
 ubi0:boot		/boot       ubifs		noauto		0		0
-ubi0:userfs		/usr/local  ubifs		noauto		0		0
+ubi0:userfs		/usr/local  ubifs		defaults		0		0
