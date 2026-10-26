@@ -58,11 +58,11 @@ EOF
         bbwarn "'${NETWORK_INTERFACES_AUTO}' is not listed in 'NETWORK_INTERFACES'"
     fi
 
-    install -D -m 0644 ${WORKDIR}/ntp.conf ${D}/run/dhcpcd/hook-state/ntp.conf/${ifname}.dhcp
+    install -D -m 0644 ${UNPACKDIR}/ntp.conf ${D}/run/dhcpcd/hook-state/ntp.conf/${ifname}.dhcp
     ln -snvf /run/dhcpcd/hook-state/ntp.conf/${ifname}.dhcp ${D}${sysconfdir}/ntp.conf
 
     if ${@ bb.utils.contains('DISTRO_FEATURES', 'systemd', 'false', 'true', d)};then
-        install -D -m 0644 ${WORKDIR}/resolv.conf ${D}/run/dhcpcd/hook-state/resolv.conf/${ifname}.dhcp
+        install -D -m 0644 ${UNPACKDIR}/resolv.conf ${D}/run/dhcpcd/hook-state/resolv.conf/${ifname}.dhcp
         ln -snvf /run/dhcpcd/hook-state/resolv.conf/${ifname}.dhcp ${D}${sysconfdir}/resolv.conf
     else
         ln -snvf resolv-conf.systemd ${D}${sysconfdir}/resolv.conf

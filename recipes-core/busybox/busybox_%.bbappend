@@ -10,6 +10,7 @@ SRC_URI:append = " \
     ${@ bb.utils.contains('DISTRO_FEATURES', 'pam', 'file://pam.cfg', '', d)} \
     ${@ bb.utils.contains('DISTRO_FEATURES', 'busybox-crond', '', 'file://no-crond.cfg', d)} \
     ${@ bb.utils.contains('DISTRO_FEATURES', 'systemd', 'file://sysrq.conf', '', d)} \
+    ${@ bb.utils.contains('TARGET_ARCH', 'x86_64', '', 'file://no-sha-hwaccel.cfg', d)} \
 "
 
 # overrule prio 200 of sysvinit and shadow
@@ -70,7 +71,7 @@ do_install:append () {
         fi
     else
         install -v -d 0755 ${D}${sysconfdir}/sysctl.d
-        install -v -m 0664 ${WORKDIR}/sysrq.conf ${D}${sysconfdir}/sysctl.d/
+        install -v -m 0664 ${UNPACKDIR}/sysrq.conf ${D}${sysconfdir}/sysctl.d/
     fi
 }
 

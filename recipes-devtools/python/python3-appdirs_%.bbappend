@@ -1,2 +1,1 @@
-
 BBCLASSEXTEND = "nativesdk native"

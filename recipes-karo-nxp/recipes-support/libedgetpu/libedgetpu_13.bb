@@ -9,7 +9,7 @@ INSANE_SKIP:${PN} = "file-rdeps"
 SRC_URI = "https://dl.google.com/coral/edgetpu_api/edgetpu_runtime_20210119.zip"
 SRC_URI[sha256sum] = "b23b2c5a227d7f0e65dcc91585028d27c12e764f8ce4c4db3f114be4a49af3ae"
 
-S = "${WORKDIR}/edgetpu_runtime"
+S = "${UNPACKDIR}/edgetpu_runtime"
 
 FILES:${PN} = "${libdir}/libedgetpu.so.*"
 

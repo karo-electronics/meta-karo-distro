@@ -8,6 +8,11 @@
 require karo.inc
 
 do_create_flash_package[depends] += "virtual/bootloader:do_deploy"
+do_create_flash_package[depends] += "imx-boot:do_deploy"
+
+# Name of the bootloader flash image deployed by the imx-boot recipe.
+# meta-freescale used to provide this variable.
+IMAGE_BOOTLOADER ?= "imx-boot"
 
 UUU_TEMPLATE_NAME:mx6-nxp-bsp ?= "${@bb.utils.contains('MACHINE_FEATURES', 'nand', 'uuu-nand.auto.template', 'uuu.auto.template', d)}"
 
@@ -17,6 +22,9 @@ KARO_UUU_FLASH_CMD_rootfs ?= "FB: flash -raw2sparse mmc0 ${BPN}-${MACHINE}.wic.z
 KARO_UUU_FLASH_CMD_rootfs:mx6-nxp-bsp ?= "${@karo_mx6_uuu_rootfs_cmd(d)}"
 
 python do_create_flash_package() {
+    import os
+    import shutil
+
     machine = d.getVar('MACHINE')
     overrides = d.getVar('MACHINEOVERRIDES').split(':')
     image_bootloader = d.getVar('IMAGE_BOOTLOADER')
@@ -33,7 +41,21 @@ python do_create_flash_package() {
 
     # copy bootloader binaries into the package directory
     for type in d.getVar('UBOOT_CONFIG').split():
-        do_copyfile("%s/%s-%s-%s.bin" % (img_deploy_dir, image_bootloader, machine, type), img_dirname)
+        src = "%s/%s-%s-%s.bin" % (img_deploy_dir, image_bootloader, machine, type)
+        dst = os.path.join(img_dirname, "%s-%s-%s.bin" % (image_bootloader, machine, type))
+        if not os.path.exists(src):
+            # Since wrynose, the imx-boot recipe deploys one image per
+            # build target, e.g. imx-boot-<machine>-<type>.bin-flash_a55.
+            # Copy it under the targetless name so that the uuu script
+            # and the flash package layout stay the same for all
+            # machines.
+            for target in (d.getVar('IMXBOOT_TARGETS') or '').split():
+                candidate = "%s-%s" % (src, target)
+                if os.path.exists(candidate):
+                    src = candidate
+                    break
+        bb.note("Copying %s to %s" % (src, dst))
+        shutil.copyfile(src, dst)
 
     # i.MX6 RM Table 8-25: eMMC IVT at 1 KiB; mmc0boot0 is flashed at 0
     if 'mx6-nxp-bsp' in overrides and 'nand' not in d.getVar('MACHINE_FEATURES').split():

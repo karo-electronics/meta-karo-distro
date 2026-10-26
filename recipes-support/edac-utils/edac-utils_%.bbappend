@@ -9,5 +9,5 @@ RDEPENDS:${PN}:append = " \
 "
 
 do_install:append() {
-    install -D ${WORKDIR}/edac-driver ${D}${sysconfdir}/edac/edac-driver
+    install -D ${UNPACKDIR}/edac-driver ${D}${sysconfdir}/edac/edac-driver
 }

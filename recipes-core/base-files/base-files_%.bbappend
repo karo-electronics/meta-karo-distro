@@ -21,7 +21,7 @@ require ${@ bb.utils.contains('DISTRO_FEATURES', 'systemd', '', 'no-systemd.inc'
 
 do_install:append () {
     if ${@ bb.utils.contains('MACHINE_FEATURES', 'nand', 'true', 'false', d)};then
-        install -v -m 0644 ${WORKDIR}/fstab-nand ${D}${sysconfdir}/fstab
+        install -v -m 0644 ${UNPACKDIR}/fstab-nand ${D}${sysconfdir}/fstab
     else
         # Remove the dev note from the fstab; it is only relevant for developers
         # and must not end up in the target image.
@@ -31,10 +31,10 @@ do_install:append () {
         sed -i '/root/s/0$/1/' ${D}${sysconfdir}/fstab
     fi
     if ${@ bb.utils.contains('IMAGE_FEATURES','read-only-rootfs','true','false',d)};then
-        install -v -m 0744 ${WORKDIR}/adjtime ${D}${localstatedir}/lib/hwclock/adjtime
+        install -v -m 0744 ${UNPACKDIR}/adjtime ${D}${localstatedir}/lib/hwclock/adjtime
         ln -snvf ${localstatedir}/lib/hwclock/adjtime ${D}${sysconfdir}/adjtime
         sed -i '/root/s/rw/ro/' ${D}${sysconfdir}/fstab
     else
-        install -v -m 0744 ${WORKDIR}/adjtime ${D}${sysconfdir}/adjtime
+        install -v -m 0744 ${UNPACKDIR}/adjtime ${D}${sysconfdir}/adjtime
     fi
 }

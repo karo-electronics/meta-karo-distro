@@ -19,24 +19,24 @@ rmfiles = " \
 "
 
 do_install:append () {
-    install -m 0755 ${WORKDIR}/initvar.sh ${D}${sysconfdir}/init.d
+    install -m 0755 ${UNPACKDIR}/initvar.sh ${D}${sysconfdir}/init.d
     update-rc.d -r ${D} -v initvar.sh start 02 S .
 
     install -d -m 0755 ${D}${sysconfdir}/.run
     install -d -m 0755 ${D}${sysconfdir}/.var
 
     install -d -m 0755 ${D}${libdir}/init
-    install -m 0755 ${WORKDIR}/vars.sh ${D}${libdir}/init/vars.sh
+    install -m 0755 ${UNPACKDIR}/vars.sh ${D}${libdir}/init/vars.sh
     if ${@ bb.utils.contains('DISTRO_FEATURES', 'systemd', "false", "true", d)};then
         for f in ${rmfiles};do
             rm -rvf ${D}${sysconfdir}/${f}
         done
     fi
 
-    install -m 0755 ${WORKDIR}/umountroot ${D}${sysconfdir}/init.d/umountroot
+    install -m 0755 ${UNPACKDIR}/umountroot ${D}${sysconfdir}/init.d/umountroot
     update-rc.d -r ${D} -v umountroot start 41 0 6 .
 
-    install -m 0755 ${WORKDIR}/checkfs.sh ${D}${sysconfdir}/init.d/checkfs.sh
+    install -m 0755 ${UNPACKDIR}/checkfs.sh ${D}${sysconfdir}/init.d/checkfs.sh
     update-rc.d -r ${D} -v checkfs.sh start 04 S .
 
     update-rc.d -r ${D} -v -f checkroot.sh remove

@@ -6,7 +6,7 @@ SRC_URI:remove = "\
 
 do_install () {
     install -d ${D}${sysconfdir}
-    install -m 0644 ${WORKDIR}/inittab ${D}${sysconfdir}/inittab
+    install -m 0644 ${UNPACKDIR}/inittab ${D}${sysconfdir}/inittab
 
     i=0
     cons="${SERIAL_CONSOLES}"

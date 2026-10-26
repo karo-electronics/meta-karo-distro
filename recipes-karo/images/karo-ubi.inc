@@ -1,5 +1,11 @@
 SRC_URI:append = " file://ubinize-karo.cfg.in"
 
+python () {
+    # Needed in image recipes, otherwise
+    # template files are not copied into the UNPACKDIR
+    d.delVarFlag('do_unpack', 'noexec')
+}
+
 # NAND flash and UBI tools
 IMAGE_INSTALL:append = " mtd-utils"
 
@@ -85,7 +91,7 @@ karo_write_ubi_config() {
         -e "s|@BOOTFS_PARTITION_SIZE@|${BOOTFS_PARTITION_SIZE}|g" \
         -e "s|@ROOTFS_PARTITION_SIZE@|${ROOTFS_PARTITION_SIZE}|g" \
         -e "s|@USERFS_PARTITION_SIZE@|${USERFS_PARTITION_SIZE}|g" \
-        "${WORKDIR}/${KARO_UBINIZE_CFG}" > ${WORKDIR}/ubinize-${IMAGE_NAME}.cfg
+        "${UNPACKDIR}/${KARO_UBINIZE_CFG}" > ${WORKDIR}/ubinize-${IMAGE_NAME}.cfg
 }
 
 addhandler karo_set_ubi_cmd

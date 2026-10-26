@@ -7,7 +7,7 @@ FILESEXTRAPATHS:prepend := "${THISDIR}/uuu-script-templates:"
 
 python () {
     # Needed in image recipes, otherwise
-    # template files are not copied into the WORKDIR
+    # template files are not copied into the UNPACKDIR
     d.delVarFlag('do_unpack', 'noexec')
 }
 
@@ -67,7 +67,7 @@ def karo_uuu_flash_cmds(d):
 
 def karo_generate_uuu_script(d, extra_subs=None):
     """
-    Render the uuu.auto.template from WORKDIR into the flash package
+    Render the uuu.auto.template from UNPACKDIR into the flash package
     directory as uuu.auto. Available placeholders: $image, $machine,
     $flash_cmds and everything passed in extra_subs.
     """
@@ -78,7 +78,7 @@ def karo_generate_uuu_script(d, extra_subs=None):
 
     img_dirname = d.getVar('KARO_PACKAGE_DIR')
     uuu_template_name = d.getVar('UUU_TEMPLATE_NAME')
-    template_path = os.path.join(d.getVar('WORKDIR'), uuu_template_name)
+    template_path = os.path.join(d.getVar('UNPACKDIR'), uuu_template_name)
     uuu_auto_path = os.path.join(img_dirname, "uuu.auto")
 
     subs = {

@@ -11,7 +11,7 @@ LIC_FILES_CHKSUM = "file://LICENSE;md5=38ec0c18112e9a92cffc4951661e85a5"
 
 inherit cmake pkgconfig
 
-S = "${WORKDIR}/git"
+S = "${UNPACKDIR}/git"
 
 DEPENDS = "libusb zlib bzip2 openssl zstd libtinyxml2"
 

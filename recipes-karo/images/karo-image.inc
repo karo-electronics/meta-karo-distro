@@ -18,6 +18,8 @@ require packaging/karo-${KARO_PACKAGING_VENDOR}.inc
 inherit extrausers
 EXTRA_USERS_PARAMS ?= "usermod -p '' root"
 
+S = "${UNPACKDIR}"
+
 REQUIRED_DISTRO_FEATURES ??= ""
 
 ROOTFS_POSTPROCESS_COMMAND:remove = "\
@@ -87,7 +89,6 @@ IMAGE_INSTALL:append = " \
     ${@bb.utils.contains('DISTRO_FEATURES','pcie','pciutils','',d)} \
     rsync \
     sysfsutils \
-    tcp-wrappers \
     tzdata \
     util-linux-fsck \
     util-linux-mkfs \
@@ -103,12 +104,3 @@ IMAGE_INSTALL:append = " \
 IMAGE_INSTALL:append:use-nxp-bsp = " \
     ${@ bb.utils.contains('DISTRO_FEATURES', 'wifi', bb.utils.contains('DISTRO_FEATURES', 'systemd', " firmwared", "", d), "", d)} \
 "
-
-TTT_IP_INIT_PKGS = "kernel-module-edge kernel-module-st-stm32-deip bridge-utils"
-TTT_IP_INIT_PKGS:append = "${@ \
-    bb.utils.contains('DISTRO_FEATURES', 'systemd', " ttt-ip-switch", "", d) \
-}"
-
-CORE_IMAGE_EXTRA_INSTALL:append:stm32mp2 = "${@ \
-    bb.utils.contains('MACHINE_FEATURES', 'stm-tsn-swch', d.getVar('TTT_IP_INIT_PKGS'), "", d) \
-}"

@@ -6,6 +6,8 @@ inherit nopackages
 
 PACKAGE_ARCH = "${MACHINE_ARCH}"
 
+S = "${UNPACKDIR}"
+
 # Vendor specific package generation for NXP, RZG2 and STM32MP-based machines
 PACKAGING_VENDOR:use-nxp-bsp = "nxp"
 PACKAGING_VENDOR:rzg2 = "rzg2"
@@ -25,15 +27,16 @@ KARO_BOOTLOADER_SBOM_RECIPES:use-nxp-bsp = "\
     ${IMX_EXTRA_FIRMWARE} \
     ${@bb.utils.contains('MACHINE_FEATURES', 'optee', 'optee-os', '', d)} \
 "
-# i.MX6 boots a monolithic DCD U-Boot image: no ATF
-# (mirrors DEPENDS:remove:mx6-nxp-bsp in u-boot-karo).
-KARO_BOOTLOADER_SBOM_RECIPES:remove:mx6-nxp-bsp = "imx-atf"
 KARO_BOOTLOADER_SBOM_RECIPES:rzg2 = "virtual/bootloader tf-a-rzg2 flashwriter-rzg2"
 KARO_BOOTLOADER_SBOM_RECIPES:stm32mpcommon = "\
     virtual/bootloader \
     tf-a-stm32mp \
     ${@bb.utils.contains('MACHINE_FEATURES', 'optee', 'optee-os-stm32mp', '', d)} \
 "
+
+# i.MX6 boots a monolithic DCD U-Boot image: no ATF
+# (mirrors DEPENDS:remove:mx6-nxp-bsp in u-boot-karo).
+KARO_BOOTLOADER_SBOM_RECIPES:remove:mx6-nxp-bsp = "imx-atf"
 
 # The bootloader recipes must be in the dependency closure so their SBOMs
 # are built before the combined package SBOM is generated.
@@ -64,7 +67,7 @@ python do_create_image_sbom_spdx() {
         else:
             pn = r
         dep_build, dep_objset = oe.sbom30.find_root_obj_in_jsonld(
-            d, "recipes", "recipe-%s" % pn, oe.spdx30.build_Build)
+            d, "builds", "build-%s" % pn, oe.spdx30.build_Build)
         root_elements.append(dep_build)
         dep_objsets.append(dep_objset)
 
@@ -83,7 +86,7 @@ do_create_image_sbom_spdx[sstate-outputdirs] = "${DEPLOY_DIR_IMAGE}"
 do_create_image_sbom_spdx[recrdeptask] += "do_create_spdx"
 do_create_image_sbom_spdx[cleandirs] = "${SPDXIMAGEDEPLOYDIR}"
 do_create_image_sbom_spdx[stamp-extra-info] = "${MACHINE_ARCH}"
-do_create_image_sbom_spdx[file-checksums] += "${SPDX3_LIB_DEP_FILES}"
+do_create_image_sbom_spdx[file-checksums] += "${SPDX3_DEP_FILES}"
 
 python do_create_image_sbom_spdx_setscene() {
     sstate_setscene(d)

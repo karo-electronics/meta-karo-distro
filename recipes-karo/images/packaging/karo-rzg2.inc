@@ -28,7 +28,7 @@ python do_create_flash_package() {
     fiptool_dir = d.getVar('FIPTOOL_DIR')
     img_deploy_dir = d.getVar('DEPLOY_DIR_IMAGE')
     img_dirname = d.getVar('KARO_PACKAGE_DIR')
-    template_path = os.path.join(d.getVar('WORKDIR'), "install-bootloader.template")
+    template_path = os.path.join(d.getVar('UNPACKDIR'), "install-bootloader.template")
     script_path = os.path.join(img_dirname, "install-bootloader.sh")
 
     bb.utils.mkdirhier(img_dirname)
