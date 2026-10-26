@@ -27,8 +27,13 @@ ROOTFS_POSTPROCESS_COMMAND:remove = "\
 
 # Default partition sizes (KiB)
 BOOTFS_PARTITION_SIZE ??= "65536"
-ROOTFS_PARTITION_SIZE ??= "131072"
+ROOTFS_PARTITION_SIZE ??= "196608"
 USERFS_PARTITION_SIZE ??= "131072"
+
+# The i.MX95 root filesystem (kernel modules, NXP firmware, debug tools)
+# does not fit into the 128 MiB default rootfs partition used by the karo
+# images. Give it 192 MiB with headroom for package management.
+ROOTFS_PARTITION_SIZE:mx95-nxp-bsp ??= "196608"
 
 DEPENDS:append = " cross-localedef-native qemuwrapper-cross"
 
