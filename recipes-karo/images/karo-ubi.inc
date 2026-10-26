@@ -1,11 +1,3 @@
-SRC_URI:append = " file://ubinize-karo.cfg.in"
-
-python () {
-    # Needed in image recipes, otherwise
-    # template files are not copied into the UNPACKDIR
-    d.delVarFlag('do_unpack', 'noexec')
-}
-
 # NAND flash and UBI tools
 IMAGE_INSTALL:append = " mtd-utils"
 
@@ -42,6 +34,8 @@ do_image_ubi[depends] += "virtual/kernel:do_deploy virtual/bootloader:do_deploy"
 
 # ubinize volume layout template
 KARO_UBINIZE_CFG ?= "ubinize-karo.cfg.in"
+KARO_UBINIZE_CFG_PATH = "${@karo_layer_file(d, d.getVar('KARO_UBINIZE_CFG'))}"
+do_image_ubi[file-checksums] = "${KARO_UBINIZE_CFG_PATH}:True"
 
 karo_ubi_prep_bootfs() {
     rm -rf "${WORKDIR}/bootfs"
@@ -91,7 +85,7 @@ karo_write_ubi_config() {
         -e "s|@BOOTFS_PARTITION_SIZE@|${BOOTFS_PARTITION_SIZE}|g" \
         -e "s|@ROOTFS_PARTITION_SIZE@|${ROOTFS_PARTITION_SIZE}|g" \
         -e "s|@USERFS_PARTITION_SIZE@|${USERFS_PARTITION_SIZE}|g" \
-        "${UNPACKDIR}/${KARO_UBINIZE_CFG}" > ${WORKDIR}/ubinize-${IMAGE_NAME}.cfg
+        "${KARO_UBINIZE_CFG_PATH}" > ${WORKDIR}/ubinize-${IMAGE_NAME}.cfg
 }
 
 addhandler karo_set_ubi_cmd

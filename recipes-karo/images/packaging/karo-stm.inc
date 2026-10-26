@@ -7,9 +7,9 @@
 
 require karo.inc
 
-SRC_URI:append = " file://start-fastboot.template"
-
 do_create_flash_package[depends] += "virtual/bootloader:do_deploy"
+
+do_create_flash_package[file-checksums] += " ${@karo_layer_file(d, 'start-fastboot.template')}:True"
 
 BOOTLOADER_BASENAME = "${SOC_FAMILY}-${MACHINE}-${BOOTSCHEME_DEFAULT}"
 BOOTLOADER_BASENAME:append = "${@ bb.utils.contains('SIGN_ENABLE', '1', '_Signed', '', d)}"
@@ -24,7 +24,7 @@ python do_create_flash_package() {
 
     img_deploy_dir = d.getVar('DEPLOY_DIR_IMAGE')
     img_dirname = d.getVar('KARO_PACKAGE_DIR')
-    template_path = os.path.join(d.getVar('UNPACKDIR'), "start-fastboot.template")
+    template_path = karo_layer_file(d, "start-fastboot.template")
     script_path = os.path.join(img_dirname, "start-fastboot.sh")
 
     bb.utils.mkdirhier(img_dirname)

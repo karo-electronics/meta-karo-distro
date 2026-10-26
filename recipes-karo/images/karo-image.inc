@@ -18,8 +18,6 @@ require packaging/karo-${KARO_PACKAGING_VENDOR}.inc
 inherit extrausers
 EXTRA_USERS_PARAMS ?= "usermod -p '' root"
 
-S = "${UNPACKDIR}"
-
 REQUIRED_DISTRO_FEATURES ??= ""
 
 ROOTFS_POSTPROCESS_COMMAND:remove = "\

@@ -6,8 +6,6 @@ inherit nopackages
 
 PACKAGE_ARCH = "${MACHINE_ARCH}"
 
-S = "${UNPACKDIR}"
-
 # Vendor specific package generation for NXP, RZG2 and STM32MP-based machines
 PACKAGING_VENDOR:use-nxp-bsp = "nxp"
 PACKAGING_VENDOR:rzg2 = "rzg2"

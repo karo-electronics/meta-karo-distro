@@ -5,15 +5,18 @@
 
 FILESEXTRAPATHS:prepend := "${THISDIR}/uuu-script-templates:"
 
-python () {
-    # Needed in image recipes, otherwise
-    # template files are not copied into the UNPACKDIR
-    d.delVarFlag('do_unpack', 'noexec')
-}
-
 UUU_TEMPLATE_NAME ??= "uuu.auto.template"
 
-SRC_URI:append = " file://${UUU_TEMPLATE_NAME}"
+def karo_layer_file(d, filename):
+    import bb.fetch2
+
+    path = bb.fetch2.localpath("file://%s" % filename, d)
+    if not os.path.exists(path):
+        bb.fatal("Cannot find '%s' in FILESPATH" % filename)
+    return path
+
+# Rerun do_create_flash_package when the template changes.
+do_create_flash_package[file-checksums] = "${@karo_layer_file(d, d.getVar('UUU_TEMPLATE_NAME'))}:True"
 
 # Directory where the flash package is assembled
 KARO_PACKAGE_DIR = "${DEPLOY_DIR_IMAGE}/${BPN}"
@@ -67,9 +70,10 @@ def karo_uuu_flash_cmds(d):
 
 def karo_generate_uuu_script(d, extra_subs=None):
     """
-    Render the uuu.auto.template from UNPACKDIR into the flash package
-    directory as uuu.auto. Available placeholders: $image, $machine,
-    $flash_cmds and everything passed in extra_subs.
+    Render the uuu.auto.template from the layer (see karo_layer_file)
+    into the flash package directory as uuu.auto. Available
+    placeholders: $image, $machine, $flash_cmds and everything passed
+    in extra_subs.
     """
     from string import Template
 
@@ -77,8 +81,7 @@ def karo_generate_uuu_script(d, extra_subs=None):
         return
 
     img_dirname = d.getVar('KARO_PACKAGE_DIR')
-    uuu_template_name = d.getVar('UUU_TEMPLATE_NAME')
-    template_path = os.path.join(d.getVar('UNPACKDIR'), uuu_template_name)
+    template_path = karo_layer_file(d, d.getVar('UUU_TEMPLATE_NAME'))
     uuu_auto_path = os.path.join(img_dirname, "uuu.auto")
 
     subs = {

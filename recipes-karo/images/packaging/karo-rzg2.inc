@@ -8,12 +8,12 @@
 
 require karo.inc
 
-SRC_URI:append = " file://install-bootloader.template"
-
 do_create_flash_package[depends] += "\
     flashwriter-rzg2:do_deploy \
     virtual/bootloader:do_deploy \
 "
+
+do_create_flash_package[file-checksums] += " ${@karo_layer_file(d, 'install-bootloader.template')}:True"
 
 # The bootloader is re-programmed by the commands in the uuu.auto
 # template itself, so the flash command for the bootloader step
@@ -28,7 +28,7 @@ python do_create_flash_package() {
     fiptool_dir = d.getVar('FIPTOOL_DIR')
     img_deploy_dir = d.getVar('DEPLOY_DIR_IMAGE')
     img_dirname = d.getVar('KARO_PACKAGE_DIR')
-    template_path = os.path.join(d.getVar('UNPACKDIR'), "install-bootloader.template")
+    template_path = karo_layer_file(d, "install-bootloader.template")
     script_path = os.path.join(img_dirname, "install-bootloader.sh")
 
     bb.utils.mkdirhier(img_dirname)
