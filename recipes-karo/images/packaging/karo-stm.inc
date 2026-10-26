@@ -7,15 +7,6 @@
 
 require karo.inc
 
-# Set to "1" to enable STM32CubeProgrammer flashlayout generation for
-# STM32MP-based machines. This includes st-machine-common-stm32mp.inc,
-# which defines the boot/rootfs/userfs partition images and install
-# scripts used by STM32CubeProgrammer to flash the board.
-KARO_STM32_CUBE_PROGRAMMER ?= "0"
-
-# STM32CubeProgrammer flashlayout generation
-require ${@ "cubeprog/st-machine-common-stm32mp.inc" if d.getVar('KARO_STM32_CUBE_PROGRAMMER') == '1' else ""}
-
 SRC_URI:append = " file://start-fastboot.template"
 
 do_create_flash_package[depends] += "virtual/bootloader:do_deploy"
@@ -33,7 +24,7 @@ python do_create_flash_package() {
 
     img_deploy_dir = d.getVar('DEPLOY_DIR_IMAGE')
     img_dirname = d.getVar('KARO_PACKAGE_DIR')
-    template_path = os.path.join(d.getVar('WORKDIR'), "start-fastboot.template")
+    template_path = os.path.join(d.getVar('UNPACKDIR'), "start-fastboot.template")
     script_path = os.path.join(img_dirname, "start-fastboot.sh")
 
     bb.utils.mkdirhier(img_dirname)

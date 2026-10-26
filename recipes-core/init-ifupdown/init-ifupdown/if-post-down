@@ -1,7 +1,0 @@
-#!/bin/sh
-
-case $IFACE in
-    sw0ep)
-	/sbin/ifdown br0
-esac
-exit 0
