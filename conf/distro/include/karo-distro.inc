@@ -1,10 +1,8 @@
 POKY_DISTRO ??= "poky"
 require conf/distro/${POKY_DISTRO}.conf
-require ${@ "gpu_vivante.inc" if 'stm32mpcommon' in d.getVar('MACHINEOVERRIDES').split(":") else ""}
-require ${@ "karo-nxp.inc" if 'use-nxp-bsp' in d.getVar('MACHINEOVERRIDES').split(":") else ""}
 require ${@bb.utils.contains('DISTRO_FEATURES', 'systemd', "systemd.inc", "", d)}
 
-DISTRO_VERSION = "${PREFERRED_VERSION_linux-karo}-${DISTRO_CODENAME}"
+DISTRO_VERSION = "6.18-${DISTRO_CODENAME}"
 
 POKY_DEFAULT_DISTRO_FEATURES:remove = "\
     largefile \
@@ -14,7 +12,7 @@ POKY_DEFAULT_DISTRO_FEATURES:remove = "\
     wayland \
 "
 
-DISTRO_FEATURES_DEFAULT ?= "\
+DISTRO_FEATURES_DEFAULTS ?= "\
     acl \
     alsa \
     argp \
@@ -33,7 +31,7 @@ DISTRO_FEATURES_DEFAULT ?= "\
     vfat \
     xattr \
 "
-DISTRO_FEATURES_DEFAULT:append:mx9-nxp-bsp = " edac"
+DISTRO_FEATURES_DEFAULTS:append:mx9-nxp-bsp = " edac"
 
 ethifname() {
     iface="$1"
@@ -52,28 +50,34 @@ UBOOT_INITIAL_ENV ?= "u-boot-initial-env"
 IMAGE_CLASSES:remove = "image_populate_mfgtool"
 IMAGE_NAME_SUFFIX = ""
 
-DISTRO_FEATURES_DEFAULT:append:stm32mp2 = " csi-camera imx219"
-DISTRO_FEATURES_DEFAULT:append:qsmp-1570w = " wifi bluetooth bcm4373"
-DISTRO_FEATURES_DEFAULT:append:qsmp-1530w = " wifi bluetooth bcm4373"
-
 VIRTUAL-RUNTIME_base-utils-hwclock = "util-linux-hwclock"
 VIRTUAL-RUNTIME_dev_manager ??= "udev"
 
-VOLATILE_LOG_DIR ?= "no"
+PACKAGECONFIG:append:pn-gstreamer1.0-plugins-ugly = " x264"
 
-MACHINE_FIRMWARE:remove = "${@ bb.utils.contains('DISTRO_FEATURES', 'wifi', "", "linux-firmware-ath10k", d)}"
+TOOLCHAIN_HOST_TASK:append = " \
+    nativesdk-binutils \
+    nativesdk-gcc nativesdk-gcc-symlinks \
+    nativesdk-gnutls-dev \
+"
 
-NETWORK_INTERFACES ??= "${@bb.utils.contains('MACHINE_FEATURES', 'stm-tsn-swch', "eth0 br0 sw0ep", "eth0", d)}"
-NETWORK_INTERFACES_AUTO ??= "${@bb.utils.contains('MACHINE_FEATURES', 'stm-tsn-swch', "eth0", \
-                             d.getVar('NETWORK_INTERFACES'), d)}"
-DEFAULT_ETHERNET_MAIN_TSN_BRIDGE_INTERFACE ??= "${@bb.utils.contains('DISTRO_FEATURES', 'systemd', 'end0', 'eth0', d)}"
+IMX_MALI_DRIVERS ??= "mali-imx mesa"
+
+PACKAGECONFIG:append:pn-pulseaudio = " autospawn-for-root"
+
+PACKAGECONFIG:append:pn-mesa-demos = " wayland"
+PACKAGECONFIG:remove:pn-mesa-demos = "vulkan"
+
+BB_SIGNATURE_HANDLER = "OEBasicHash"
+unset SOURCE_DATE_EPOCH
+
+DEFAULT_TIMEZONE ?= "Etc/UTC"
+
+ROOT_HOME ?= "/root"
+
+IMAGE_PREPROCESS_COMMAND:remove = "${@ bb.utils.contains('DISTRO_FEATURES', 'reproducible-timestamps', "", "reproducible_final_image_task", d)}"
+ROOTFS_POST_PROCESS_COMMAND:remove = "${@ bb.utils.contains('DISTRO_FEATURES', 'reproducible-timestamps', "", "rootfs_reproducible", d)}"
+KERNEL_DEBUG_TIMESTAMPS = "${@ bb.utils.contains('DISTRO_FEATURES', 'reproducible-timestamps', "0", "1", d)}"
 
 # convert update alternatives to relative symlinks
 INHERIT += "${@bb.utils.contains('DISTRO_FEATURES', 'alternatives-symlinks-relative', 'update-alternatives-relative', '', d)}"
-
-# CRA compliance support
-# Create SPDX 3.0 SBOM and embed vulnerability metadata
-INHERIT:remove = "create-spdx"
-INHERIT += "create-spdx-3.0"
-SPDX_INCLUDE_VEX = "current"
-INHERIT += "vex"
