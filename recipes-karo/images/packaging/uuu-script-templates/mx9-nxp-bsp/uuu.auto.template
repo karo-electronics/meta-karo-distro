@@ -10,6 +10,19 @@ uuu_version 1.5.11
 ### boot U-Boot with fastboot support
 SDPS: boot -f $image_bootloader-$machine-mfg.bin
 
+# The i.MX9 ROM only loads the first container of the boot image
+# (system manager, OEI and SPL). SPL then comes up with its own SDP
+# handler and waits for the remaining image (U-Boot). Download it and
+# jump to it; SDPV is used by SPLs supporting SDP v2, SDPU by older
+# SPLs. A block whose device never appears is skipped automatically,
+# so boards whose SPL boots through without SDP are unaffected.
+SDPU: delay 1000
+SDPU: write -f $image_bootloader-$machine-mfg.bin -offset 0x57c00
+SDPU: jump
+SDPV: delay 1000
+SDPV: write -f $image_bootloader-$machine-mfg.bin -skipspl
+SDPV: jump
+
 # enable boot from eMMC and switch to boot partition
 FB: ucmd mmc partconf $${emmc_dev} $${emmc_boot_ack} $${emmc_boot_part} $${emmc_boot_part}
 
