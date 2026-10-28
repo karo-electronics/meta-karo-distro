@@ -1,6 +1,10 @@
 POKY_DISTRO ??= "poky"
 require conf/distro/${POKY_DISTRO}.conf
-require ${@bb.utils.contains('DISTRO_FEATURES', 'systemd', "systemd.inc", "", d)}
+
+# The init manager is selected through the standard INIT_MANAGER
+# variable (conf/distro/include/init-manager-${INIT_MANAGER}.inc):
+# set INIT_MANAGER = "systemd" in the configuration to build with
+# systemd instead of the default sysvinit.
 
 DISTRO_VERSION = "6.18-${DISTRO_CODENAME}"
 
@@ -24,7 +28,6 @@ DISTRO_FEATURES_DEFAULTS ?= "\
     pam \
     nfs \
     seccomp \
-    telnet-login \
     u-boot-fw-utils \
     usbgadget \
     usbhost \
@@ -44,11 +47,12 @@ UBOOT_INITIAL_ENV ?= "u-boot-initial-env"
 IMAGE_NAME_SUFFIX = ""
 
 # KARO_ROOTFS_READ_ONLY (set by the karo-distro/read-only-rootfs
-# fragment) is the single switch for the read-only root filesystem:
-# it derives the read-only-rootfs image feature and is consumed by
-# recipes (e.g. base-files) that must adapt the root filesystem for
-# read-only operation, since recipes cannot see image features.
-EXTRA_IMAGE_FEATURES += "${@ 'read-only-rootfs' if d.getVar('KARO_ROOTFS_READ_ONLY') == '1' else '' }"
+# fragment) is the single switch for the read-only root filesystem.
+# Read-only roots are only supported with sysvinit, so the effective
+# flag is inactive with systemd. Recipes (e.g. base-files) consume the
+# effective flag since they cannot see image features.
+KARO_ROOTFS_READ_ONLY_ACTIVE = "${@ '1' if d.getVar('KARO_ROOTFS_READ_ONLY') == '1' and not bb.utils.contains('DISTRO_FEATURES', 'systemd', True, False, d) else '0' }"
+EXTRA_IMAGE_FEATURES += "${@ 'read-only-rootfs' if d.getVar('KARO_ROOTFS_READ_ONLY_ACTIVE') == '1' else '' }"
 
 VIRTUAL-RUNTIME_base-utils-hwclock = "util-linux-hwclock"
 

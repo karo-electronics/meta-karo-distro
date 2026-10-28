@@ -41,14 +41,4 @@ EOF
         done
         echo "" >> ${D}${sysconfdir}/inittab
     fi
-
-    if ${@ bb.utils.contains('DISTRO_FEATURES','telnet-login','true','false',d)};then
-	if ! grep -q '# Telnet daemon' ${D}${sysconfdir}/inittab;then
-	    cat << EOF >> ${D}${sysconfdir}/inittab
-
-# Telnet daemon
-T0:2345:respawn:/usr/sbin/telnetd -F
-EOF
-	fi
-    fi
 }
