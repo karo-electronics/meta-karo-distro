@@ -15,11 +15,3 @@ IMAGE_INSTALL:append = " \
         packagegroup-fsl-gstreamer1.0 \
         packagegroup-fsl-gstreamer1.0-full \
 "
-
-IMAGE_INSTALL:append:mx8mp-nxp-bsp = " \
-        kernel-module-isp-vvcam \
-        imx8mp-modprobe-config \
-        basler-camera \
-        isp-imx \
-        packagegroup-imx-isp \
-"

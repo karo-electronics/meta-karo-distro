@@ -6,10 +6,8 @@ inherit nopackages
 
 PACKAGE_ARCH = "${MACHINE_ARCH}"
 
-# Vendor specific package generation for NXP, RZG2 and STM32MP-based machines
+# Vendor specific package generation for NXP-based machines
 PACKAGING_VENDOR:use-nxp-bsp = "nxp"
-PACKAGING_VENDOR:rzg2 = "rzg2"
-PACKAGING_VENDOR:stm32mpcommon = "stm"
 
 require packaging/karo-${PACKAGING_VENDOR}.inc
 
@@ -25,16 +23,6 @@ KARO_BOOTLOADER_SBOM_RECIPES:use-nxp-bsp = "\
     ${IMX_EXTRA_FIRMWARE} \
     ${@bb.utils.contains('MACHINE_FEATURES', 'optee', 'optee-os', '', d)} \
 "
-KARO_BOOTLOADER_SBOM_RECIPES:rzg2 = "virtual/bootloader tf-a-rzg2 flashwriter-rzg2"
-KARO_BOOTLOADER_SBOM_RECIPES:stm32mpcommon = "\
-    virtual/bootloader \
-    tf-a-stm32mp \
-    ${@bb.utils.contains('MACHINE_FEATURES', 'optee', 'optee-os-stm32mp', '', d)} \
-"
-
-# i.MX6 boots a monolithic DCD U-Boot image: no ATF
-# (mirrors DEPENDS:remove:mx6-nxp-bsp in u-boot-karo).
-KARO_BOOTLOADER_SBOM_RECIPES:remove:mx6-nxp-bsp = "imx-atf"
 
 # The bootloader recipes must be in the dependency closure so their SBOMs
 # are built before the combined package SBOM is generated.

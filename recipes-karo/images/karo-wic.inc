@@ -1,11 +1,8 @@
 inherit export-wic-partitions
-# Partition images exported from the wic partition generation
-# The seperate partition images are needed for STM32 flashlayout
-# generation and also generating a RAUC update bundle.
+# Partition images exported from the wic partition generation.
 WIC_PARTITIONS_EXPORT ?= "boot rootfs userfs"
 
 WKS_FILE_BASE = "karo-image"
-WKS_FILE_BASE:stm32mpcommon = "karo-image-st"
 
 WKS_FILE_BASE:append = "${@ bb.utils.contains('DISTRO_FEATURES', 'rauc', '-rauc', '', d)}"
 

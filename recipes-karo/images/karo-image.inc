@@ -2,16 +2,12 @@ LICENSE = "MIT"
 
 inherit core-image features_check rootfs-postprocess
 
-IMAGE_FSTYPES:append = " ${@bb.utils.contains('MACHINE_FEATURES', 'nand', 'ubi', 'wic.zst', d)}"
+IMAGE_FSTYPES:append = " wic.zst"
 
 require ${@ "karo-wic.inc" if any(fstype.startswith('wic') for fstype in d.getVar('IMAGE_FSTYPES').split()) else ""}
 
-require ${@ "karo-ubi.inc" if "ubi" in d.getVar('IMAGE_FSTYPES').split() else ""}
-
-# Vendor specific flash package generation for NXP, RZG2 and STM32MP-based machines
+# Vendor specific flash package generation for NXP-based machines
 KARO_PACKAGING_VENDOR:use-nxp-bsp = "nxp"
-KARO_PACKAGING_VENDOR:rzg2 = "rzg2"
-KARO_PACKAGING_VENDOR:stm32mpcommon = "stm"
 
 require packaging/karo-${KARO_PACKAGING_VENDOR}.inc
 
@@ -44,8 +40,6 @@ BAD_RECOMMENDATIONS += "kernel-image* kernel-devicetree"
 PREFERRED_PROVIDER_fdisk = "util-linux"
 
 PACKAGE_INSTALL += "${@ bb.utils.contains('DISTRO_FEATURES', 'rauc', "u-boot-script", "", d)}"
-
-IMAGE_FEATURES:append = " tools-debug"
 
 DEBUG_TOOLS ?= " \
     gdbserver \

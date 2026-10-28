@@ -4,8 +4,6 @@ require karo-image.inc
 
 IMAGE_LINGUAS = ""
 
-IMAGE_FEATURES:remove = "tools-debug"
-
 # remove packages that pull in openssl
 IMAGE_INSTALL:remove = "curl git"
 
@@ -13,14 +11,3 @@ python extend_recipe_sysroot:append() {
     if d.getVar('DISTRO') != 'karo-minimal':
         raise_sanity_error("cannot build '%s' with DISTRO '%s'" % (d.getVar('BPN'), d.getVar('DISTRO')), d)
 }
-
-ROOTFS_PARTITION_SIZE:stm32mp1 ?= "${@ \
-    bb.utils.contains('DISTRO_FEATURES', "rauc", 256*1024, 128*1024, d) \
-}"
-
-ROOTFS_PARTITION_SIZE:stm32mp2 ?= "${@ \
-    bb.utils.contains('DISTRO_FEATURES', "rauc", 256*1024, \
-    bb.utils.contains('DISTRO_FEATURES', "systemd", 150*1024, \
-    bb.utils.contains('DISTRO_FEATURES', "bluetooth", 140*1024, \
-    128*1024, d), d), d) \
-}"

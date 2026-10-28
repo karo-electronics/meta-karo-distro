@@ -18,9 +18,3 @@ do_install:append() {
         install -v -m 0644 ${UNPACKDIR}/weston.rule ${D}${nonarch_base_libdir}/udev/rules.d/50-weston.rules
     fi
 }
-
-do_install:append:stm32mp2() {
-    if ${@ bb.utils.contains('MACHINE_FEATURES', 'gpu', 'true', 'false', d)};then
-        install -v -m 0644 ${UNPACKDIR}/galcore.rules ${D}${nonarch_base_libdir}/udev/rules.d/72-galcore.rules
-    fi
-}
