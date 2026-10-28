@@ -30,7 +30,7 @@ INITSCRIPT_PACKAGES += "${PN}-inetd"
 RDEPENDS:${PN}-inetd = "busybox"
 RRECOMMENDS:${PN} += "${INITSCRIPT_PACKAGES}"
 
-inherit useradd relative_symlinks
+inherit useradd
 
 USERADD_PACKAGES += "${PN}"
 USERADD_PARAM:${PN} = ""

@@ -1,5 +1,4 @@
 FILESEXTRAPATHS:prepend := "${THISDIR}/${PN}:"
-inherit relative_symlinks
 
 do_install:append () {
     rm -rvf ${D}${sysconfdir}/default/volatiles

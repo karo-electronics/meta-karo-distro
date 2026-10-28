@@ -1,4 +1,4 @@
-inherit relative_symlinks useradd
+inherit useradd
 
 PACKAGECONFIG:remove = "${@ bb.utils.contains('IMAGE_INSTALL','openssl',"","openssl",d)}"
 
