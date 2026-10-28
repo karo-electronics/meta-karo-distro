@@ -79,17 +79,10 @@ PACKAGECONFIG:remove:pn-mesa-demos = "vulkan"
 FILESYSTEM_PERMS_TABLES:remove = "${@ '' if d.getVar('KARO_ROOTFS_READ_ONLY') == '1' else 'files/fs-perms-volatile-log.txt files/fs-perms-volatile-tmp.txt'}"
 FILESYSTEM_PERMS_TABLES:append = " meta/files/fs-perms-karo.txt"
 
-# Reproducible package contents follow the OE-Core defaults
+# Reproducible package and image timestamps follow the OE-Core defaults
 # (SOURCE_DATE_EPOCH stays set, which is also required by the OEEquivHash
-# signature handler). Image timestamps are not normalized by default so
-# images carry the build date in /.timestamp; enable the
-# 'reproducible-timestamps' distro feature (fragment
-# karo-distro/reproducible-timestamps) to normalize image timestamps.
+# signature handler).
 
 DEFAULT_TIMEZONE ?= "Etc/UTC"
 
 ROOT_HOME ?= "/root"
-
-IMAGE_PREPROCESS_COMMAND:remove = "${@ bb.utils.contains('DISTRO_FEATURES', 'reproducible-timestamps', "", "reproducible_final_image_task", d)}"
-ROOTFS_POST_PROCESS_COMMAND:remove = "${@ bb.utils.contains('DISTRO_FEATURES', 'reproducible-timestamps', "", "rootfs_reproducible", d)}"
-KERNEL_DEBUG_TIMESTAMPS = "${@ bb.utils.contains('DISTRO_FEATURES', 'reproducible-timestamps', "0", "1", d)}"

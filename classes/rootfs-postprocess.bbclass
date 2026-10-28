@@ -20,8 +20,4 @@ rootfs_postinst_cleanup () {
     if [ "${DISTRO}" = "karo-minimal" ];then
         rm -vrf ${IMAGE_ROOTFS}/usr/share/man
     fi
-
-    if ${@ bb.utils.contains('DISTRO_FEATURES', 'reproducible-timestamps', "false", "true", d)};then
-        date -u > ${IMAGE_ROOTFS}/.timestamp
-    fi
 }
