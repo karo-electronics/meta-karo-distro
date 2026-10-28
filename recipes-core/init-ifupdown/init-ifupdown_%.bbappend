@@ -3,8 +3,6 @@ FILESEXTRAPATHS:prepend := "${THISDIR}/${PN}:"
 # default template file for /etc/interfaces.d/${iface}
 SRC_URI:append = " file://iface"
 
-do_compile[noexec] := "1"
-
 do_install:append () {
     rm -vf ${D}${sysconfdir}/network/if-pre-up.d/nfsroot
     install -v -d "${D}${sysconfdir}/network/interfaces.d"
@@ -24,4 +22,3 @@ do_install:append () {
         $auto || sed -i 's/^auto/#auto/' "${D}${sysconfdir}/network/interfaces.d/${iface}"
     done
 }
-do_install[vardeps] += "NETWORK_INTERFACES NETWORK_INTERFACES_AUTO"
