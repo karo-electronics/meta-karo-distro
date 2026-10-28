@@ -22,22 +22,17 @@ ROOTFS_POSTPROCESS_COMMAND:remove = "\
 "
 
 # Default partition sizes (KiB)
+# The i.MX95 root filesystem (kernel modules, NXP firmware, debug tools)
+# needs headroom for package management, hence the 192 MiB rootfs default.
 BOOTFS_PARTITION_SIZE ??= "65536"
 ROOTFS_PARTITION_SIZE ??= "196608"
 USERFS_PARTITION_SIZE ??= "131072"
-
-# The i.MX95 root filesystem (kernel modules, NXP firmware, debug tools)
-# does not fit into the 128 MiB default rootfs partition used by the karo
-# images. Give it 192 MiB with headroom for package management.
-ROOTFS_PARTITION_SIZE:mx95-nxp-bsp ??= "196608"
 
 DEPENDS:append = " cross-localedef-native qemuwrapper-cross"
 
 # Kernel image and devicetree files are provided by the dedicated
 # boot partition, so don't install them into the rootfs images.
 BAD_RECOMMENDATIONS += "kernel-image* kernel-devicetree"
-
-PREFERRED_PROVIDER_fdisk = "util-linux"
 
 PACKAGE_INSTALL += "${@ bb.utils.contains('DISTRO_FEATURES', 'rauc', "u-boot-script", "", d)}"
 

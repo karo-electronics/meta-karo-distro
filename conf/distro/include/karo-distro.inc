@@ -47,7 +47,16 @@ IMAGE_NAME_SUFFIX = ""
 VIRTUAL-RUNTIME_base-utils-hwclock = "util-linux-hwclock"
 VIRTUAL-RUNTIME_dev_manager ??= "udev"
 
+# busybox and util-linux both provide fdisk
+PREFERRED_PROVIDER_fdisk = "util-linux"
+
 PACKAGECONFIG:append:pn-gstreamer1.0-plugins-ugly = " x264"
+
+# The Ka-Ro images do not rely on the openssl features of these recipes.
+# Recipes must not inspect IMAGE_INSTALL (image content) to pick their
+# PACKAGECONFIG: decide once, at distro level.
+PACKAGECONFIG:remove:pn-ntp = "openssl"
+PACKAGECONFIG:remove:pn-tcpdump = "openssl"
 
 TOOLCHAIN_HOST_TASK:append = " \
     nativesdk-binutils \
@@ -62,6 +71,18 @@ PACKAGECONFIG:append:pn-pulseaudio = " autospawn-for-root"
 PACKAGECONFIG:append:pn-mesa-demos = " wayland"
 PACKAGECONFIG:remove:pn-mesa-demos = "vulkan"
 
+# Ka-Ro images use a real (non-volatile) /var layout: drop the upstream
+# permission tables that turn /var/log and /var/tmp into volatile
+# symlinks, and apply the Ka-Ro permission deltas on top of the base
+# table.
+FILESYSTEM_PERMS_TABLES:remove = "files/fs-perms-volatile-log.txt files/fs-perms-volatile-tmp.txt"
+FILESYSTEM_PERMS_TABLES:append = " meta/files/fs-perms-karo.txt"
+
+# By default Ka-Ro images are not reproducible: they carry the build
+# date in /.timestamp and SOURCE_DATE_EPOCH is unset, so packages may
+# embed build timestamps. Enable the 'reproducible-timestamps' distro
+# feature (fragment karo-distro/reproducible-timestamps) to restore the
+# OE-Core reproducibility tasks.
 BB_SIGNATURE_HANDLER = "OEBasicHash"
 unset SOURCE_DATE_EPOCH
 

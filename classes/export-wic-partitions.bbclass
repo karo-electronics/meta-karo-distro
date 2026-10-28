@@ -55,3 +55,6 @@ python do_export_wic_partitions() {
         bb.utils.copyfile(path, os.path.join(deploy_dir, f"{dest_basename}.{fstype}"))
 }
 addtask export_wic_partitions after do_image_wic before do_image_complete
+
+# blkid is used to determine the partition labels and types
+do_export_wic_partitions[depends] += "util-linux-native:do_populate_sysroot"

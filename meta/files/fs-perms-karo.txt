@@ -1,0 +1,7 @@
+# Ka-Ro permission deltas applied on top of the upstream fs-perms.txt:
+# - ${oldincludedir} gets sanitized permissions as well
+# - /usr/src/debug keeps the original file modes instead of forcing 0644
+#
+# <path>	<mode>	<uid>	<gid>	<walk>	<fmode>	<fuid>	<fgid>
+${oldincludedir}	0755	root	root	true	0644	root	root
+/usr/src/debug		0755	root	root	true	-	root	root

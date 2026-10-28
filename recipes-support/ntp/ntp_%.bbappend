@@ -1,7 +1,5 @@
 inherit useradd
 
-PACKAGECONFIG:remove = "${@ bb.utils.contains('IMAGE_INSTALL','openssl',"","openssl",d)}"
-
 remove_ntp_conf = "${@ bb.utils.contains('DISTRO_FEATURES', 'dhcpcd', True, False, d)}"
 
 FILES:${PN}:remove := "${@ "${sysconfdir}/ntp.conf" if ${remove_ntp_conf} else ""}"

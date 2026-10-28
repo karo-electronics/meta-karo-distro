@@ -9,10 +9,6 @@ ALTERNATIVE:${PN}-doc = ""
 
 do_install:append () {
     # make sure only explicitly wanted files are being installed
-    echo "base_bindir = ${base_bindir}"
-    echo "bindir      = ${bindir}"
-    echo "sbindir     = ${sbindir}"
-set -x
     tempdir=$(mktemp -d ${B}/tempdir-XXXXXX)
     for f in ${base_bindir_progs};do
         if [ "$base_bindir" != "$bindir" ];then
@@ -45,6 +41,5 @@ set -x
     mv -v $tempdir "${D}${sbindir}"
 
     # remove now empty directories
-    echo "removing empty directories"
     find ${D} \( -path '*'${base_bindir} -o -path '*'${bindir} -o -path '*'${sbindir} \) -depth -type d -empty -exec rmdir -v \{\} \;
 }
