@@ -80,12 +80,6 @@ PACKAGECONFIG:append:pn-pulseaudio = " autospawn-for-root"
 PACKAGECONFIG:append:pn-mesa-demos = " wayland"
 PACKAGECONFIG:remove:pn-mesa-demos = "vulkan"
 
-# The upstream fs-perms tables (including the volatile log/tmp tables)
-# stay as they are: FILESYSTEM_PERMS_TABLES membership is the supported
-# switch for the volatile layout, consumed by base-files and initscripts.
-# Only apply the Ka-Ro permission deltas on top.
-FILESYSTEM_PERMS_TABLES:append = " meta/files/fs-perms-karo.txt"
-
 DEFAULT_TIMEZONE ?= "Etc/UTC"
 
 ROOT_HOME ?= "/root"
