@@ -4,9 +4,7 @@ SRC_URI:append = "\
     file://firmware.rules \
     file://rtcsymlink.sh \
     file://rtcsymlink.rule \
-    ${@ bb.utils.contains('DISTRO_FEATURES', 'wayland', " file://weston.rule", "", d)} \
-    ${@ bb.utils.contains('MACHINE_FEATURES', 'gpu', " file://galcore.rules", "", d)} \
-"
+    ${@ bb.utils.contains('DISTRO_FEATURES', 'wayland', " file://weston.rule", "", d)}"
 
 do_install:append() {
     install -v -m 0755 -d ${D}${nonarch_base_libdir}/udev/rules.d

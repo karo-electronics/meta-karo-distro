@@ -1,14 +1,8 @@
 FILESEXTRAPATHS:prepend := "${THISDIR}/${PN}:${THISDIR}/files:${THISDIR}/patches:"
 
-SRC_URI:remove = " \
-    file://ftpget.cfg \
-    file://login-utilities.cfg \
-    file://resize.cfg \
-    file://sha1sum.cfg \
-"
 SRC_URI:append = " \
     ${@ bb.utils.contains('DISTRO_FEATURES', 'pam', 'file://pam.cfg', '', d)} \
-    ${@ bb.utils.contains('DISTRO_FEATURES', 'busybox-crond', '', 'file://no-crond.cfg', d)} \
+    file://no-crond.cfg \
     ${@ bb.utils.contains('DISTRO_FEATURES', 'systemd', 'file://sysrq.conf', '', d)} \
     ${@ bb.utils.contains('TARGET_ARCH', 'x86_64', '', 'file://no-sha-hwaccel.cfg', d)} \
 "
