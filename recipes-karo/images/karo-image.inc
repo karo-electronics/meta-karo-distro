@@ -16,11 +16,6 @@ EXTRA_USERS_PARAMS ?= "usermod -p '' root"
 
 REQUIRED_DISTRO_FEATURES ??= ""
 
-ROOTFS_POSTPROCESS_COMMAND:remove = "\
-    rootfs_update_timestamp \
-    ${@bb.utils.contains('IMAGE_FEATURES','read-only-rootfs','empty_var_volatile','',d)} \
-"
-
 # Default partition sizes (KiB)
 # The i.MX95 root filesystem (kernel modules, NXP firmware, debug tools)
 # needs headroom for package management, hence the 192 MiB rootfs default.

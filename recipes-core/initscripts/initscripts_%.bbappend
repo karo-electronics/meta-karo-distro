@@ -1,6 +1,6 @@
 FILESEXTRAPATHS:prepend := "${THISDIR}/files:"
 
-init_files = "bootmisc.sh initvar.sh umountroot"
+init_files = "bootmisc.sh umountroot"
 SRC_URI:append = "${@ "".join(map(lambda f: " file://%s" % f, d.getVar('init_files').split()))}"
 
 SRC_URI:append = " file://vars.sh"
@@ -8,30 +8,9 @@ SRC_URI:append = " file://vars.sh"
 FILES:${PN} += "${libdir}/init/vars.sh"
 CONFFILES:${PN} += "${sysconfdir}/init.d/umountroot"
 
-rmfiles = " \
-    init.d/populate-volatile.sh \
-    init.d/read-only-rootfs-hook.sh \
-    init.d/save-rtc.sh \
-    rc*.d/*populate-volatile.sh \
-    rc*.d/*read-only-rootfs-hook.sh \
-    rc*.d/*save-rtc.sh \
-    default/volatiles \
-"
-
 do_install:append () {
-    install -m 0755 ${UNPACKDIR}/initvar.sh ${D}${sysconfdir}/init.d
-    update-rc.d -r ${D} -v initvar.sh start 02 S .
-
-    install -d -m 0755 ${D}${sysconfdir}/.run
-    install -d -m 0755 ${D}${sysconfdir}/.var
-
     install -d -m 0755 ${D}${libdir}/init
     install -m 0755 ${UNPACKDIR}/vars.sh ${D}${libdir}/init/vars.sh
-    if ${@ bb.utils.contains('DISTRO_FEATURES', 'systemd', "false", "true", d)};then
-        for f in ${rmfiles};do
-            rm -rvf ${D}${sysconfdir}/${f}
-        done
-    fi
 
     install -m 0755 ${UNPACKDIR}/umountroot ${D}${sysconfdir}/init.d/umountroot
     update-rc.d -r ${D} -v umountroot start 41 0 6 .

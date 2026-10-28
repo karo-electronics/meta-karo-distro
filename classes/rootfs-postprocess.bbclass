@@ -24,10 +24,4 @@ rootfs_postinst_cleanup () {
     if ${@ bb.utils.contains('DISTRO_FEATURES', 'reproducible-timestamps', "false", "true", d)};then
         date -u > ${IMAGE_ROOTFS}/.timestamp
     fi
-
-    if ${@ bb.utils.contains('DISTRO_FEATURES', 'systemd', "false", "true", d)};then
-        if [ -d "${IMAGE_ROOTFS}${sysconfdir}/default/volatiles" ];then
-            bbwarn "${sysconfdir}/default/volatiles still exists"
-        fi
-    fi
 }

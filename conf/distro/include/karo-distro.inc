@@ -71,20 +71,20 @@ PACKAGECONFIG:append:pn-pulseaudio = " autospawn-for-root"
 PACKAGECONFIG:append:pn-mesa-demos = " wayland"
 PACKAGECONFIG:remove:pn-mesa-demos = "vulkan"
 
-# Ka-Ro images use a real (non-volatile) /var layout: drop the upstream
-# permission tables that turn /var/log and /var/tmp into volatile
-# symlinks, and apply the Ka-Ro permission deltas on top of the base
-# table.
-FILESYSTEM_PERMS_TABLES:remove = "files/fs-perms-volatile-log.txt files/fs-perms-volatile-tmp.txt"
+# With a read-only root filesystem the volatile tables must stay enabled:
+# logs and tmp end up on the /var/volatile tmpfs, since only /var/lib is
+# made writable by the upstream read-only-rootfs hook. On a writable root
+# the tables are dropped, which gives persistent /var/log and /var/tmp
+# (the tables double as the switch consumed by base-files and initscripts).
+FILESYSTEM_PERMS_TABLES:remove = "${@ '' if d.getVar('KARO_ROOTFS_READ_ONLY') == '1' else 'files/fs-perms-volatile-log.txt files/fs-perms-volatile-tmp.txt'}"
 FILESYSTEM_PERMS_TABLES:append = " meta/files/fs-perms-karo.txt"
 
-# By default Ka-Ro images are not reproducible: they carry the build
-# date in /.timestamp and SOURCE_DATE_EPOCH is unset, so packages may
-# embed build timestamps. Enable the 'reproducible-timestamps' distro
-# feature (fragment karo-distro/reproducible-timestamps) to restore the
-# OE-Core reproducibility tasks.
-BB_SIGNATURE_HANDLER = "OEBasicHash"
-unset SOURCE_DATE_EPOCH
+# Reproducible package contents follow the OE-Core defaults
+# (SOURCE_DATE_EPOCH stays set, which is also required by the OEEquivHash
+# signature handler). Image timestamps are not normalized by default so
+# images carry the build date in /.timestamp; enable the
+# 'reproducible-timestamps' distro feature (fragment
+# karo-distro/reproducible-timestamps) to normalize image timestamps.
 
 DEFAULT_TIMEZONE ?= "Etc/UTC"
 

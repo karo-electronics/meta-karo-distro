@@ -4,20 +4,10 @@ SRC_URI += "\
     file://adjtime \
 "
 
-dirs1777 = " \
-    /tmp \
-    ${localstatedir}/tmp \
-"
-
 dirs755:append = " \
-    ${localstatedir}/log \
     ${localstatedir}/lib/hwclock \
-    /run/lock \
-    /run/network \
     ${prefix}/local \
 "
-
-require ${@ bb.utils.contains('DISTRO_FEATURES', 'systemd', '', 'no-systemd.inc', d)}
 
 do_install:append () {
     # Remove the dev note from the fstab; it is only relevant for developers

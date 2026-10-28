@@ -45,7 +45,7 @@ DEPENDS += "${@ bb.utils.contains('DISTRO_FEATURES','pam','libpam','',d)}"
 
 FILES:${PN} += "${@ bb.utils.contains('DISTRO_FEATURES', 'systemd', \
                     "${sysconfdir}/sysctl.d/sysrq.conf", \
-                    "${sysconfdir}/network/run /run/utmp ${localstatedir}/log/wtmp", d)}"
+                    "${sysconfdir}/network/run ${sysconfdir}/default/volatiles/99_busybox", d)}"
 
 do_install:append () {
     if ${@ bb.utils.contains('DISTRO_FEATURES', 'systemd', 'false', 'true', d)};then
@@ -56,12 +56,11 @@ do_install:append () {
         install -d -m 0755 ${D}${sysconfdir}/network
         ln -snvf /run/network ${D}${sysconfdir}/network/run
 
-        install -v -d -m 0755 ${D}/run
-        install -v -m 0664 -g utmp /dev/null ${D}/run/utmp
-        
-        install -v -d -m 0755 ${D}${localstatedir}/log
-        install -v -m 0664 -g utmp /dev/null ${D}${localstatedir}/log/wtmp
-        
+        # ifup/udhcpc state directory on the /run tmpfs, created at boot
+        install -d ${D}${sysconfdir}/default/volatiles
+        printf 'd root root 0755 /run/network none\n' \
+            > ${D}${sysconfdir}/default/volatiles/99_busybox
+
         if ${@ bb.utils.contains('MACHINE_FEATURES', 'emmc', 'true', 'false', d)};then
             if grep -q "CONFIG_INIT=y" ${B}/.config && \
                     ${@bb.utils.contains('VIRTUAL-RUNTIME_init_manager','mdev-busybox','true','false',d)}; then
@@ -74,6 +73,3 @@ do_install:append () {
         install -v -m 0664 ${UNPACKDIR}/sysrq.conf ${D}${sysconfdir}/sysctl.d/
     fi
 }
-
-# ignore empty dirs qa check
-INSANE_SKIP:${PN} += "empty-dirs"
