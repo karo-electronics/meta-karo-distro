@@ -44,6 +44,13 @@ UBOOT_INITIAL_ENV ?= "u-boot-initial-env"
 IMAGE_CLASSES:remove = "image_populate_mfgtool"
 IMAGE_NAME_SUFFIX = ""
 
+# KARO_ROOTFS_READ_ONLY (set by the karo-distro/read-only-rootfs
+# fragment) is the single switch for the read-only root filesystem:
+# it derives the read-only-rootfs image feature and is consumed by
+# recipes (e.g. base-files) that must adapt the root filesystem for
+# read-only operation, since recipes cannot see image features.
+EXTRA_IMAGE_FEATURES += "${@ 'read-only-rootfs' if d.getVar('KARO_ROOTFS_READ_ONLY') == '1' else '' }"
+
 VIRTUAL-RUNTIME_base-utils-hwclock = "util-linux-hwclock"
 VIRTUAL-RUNTIME_dev_manager ??= "udev"
 
@@ -76,10 +83,6 @@ PACKAGECONFIG:remove:pn-mesa-demos = "vulkan"
 # switch for the volatile layout, consumed by base-files and initscripts.
 # Only apply the Ka-Ro permission deltas on top.
 FILESYSTEM_PERMS_TABLES:append = " meta/files/fs-perms-karo.txt"
-
-# Reproducible package and image timestamps follow the OE-Core defaults
-# (SOURCE_DATE_EPOCH stays set, which is also required by the OEEquivHash
-# signature handler).
 
 DEFAULT_TIMEZONE ?= "Etc/UTC"
 
