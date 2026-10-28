@@ -71,12 +71,10 @@ PACKAGECONFIG:append:pn-pulseaudio = " autospawn-for-root"
 PACKAGECONFIG:append:pn-mesa-demos = " wayland"
 PACKAGECONFIG:remove:pn-mesa-demos = "vulkan"
 
-# With a read-only root filesystem the volatile tables must stay enabled:
-# logs and tmp end up on the /var/volatile tmpfs, since only /var/lib is
-# made writable by the upstream read-only-rootfs hook. On a writable root
-# the tables are dropped, which gives persistent /var/log and /var/tmp
-# (the tables double as the switch consumed by base-files and initscripts).
-FILESYSTEM_PERMS_TABLES:remove = "${@ '' if d.getVar('KARO_ROOTFS_READ_ONLY') == '1' else 'files/fs-perms-volatile-log.txt files/fs-perms-volatile-tmp.txt'}"
+# The upstream fs-perms tables (including the volatile log/tmp tables)
+# stay as they are: FILESYSTEM_PERMS_TABLES membership is the supported
+# switch for the volatile layout, consumed by base-files and initscripts.
+# Only apply the Ka-Ro permission deltas on top.
 FILESYSTEM_PERMS_TABLES:append = " meta/files/fs-perms-karo.txt"
 
 # Reproducible package and image timestamps follow the OE-Core defaults
