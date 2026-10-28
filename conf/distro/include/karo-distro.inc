@@ -78,6 +78,3 @@ ROOT_HOME ?= "/root"
 IMAGE_PREPROCESS_COMMAND:remove = "${@ bb.utils.contains('DISTRO_FEATURES', 'reproducible-timestamps', "", "reproducible_final_image_task", d)}"
 ROOTFS_POST_PROCESS_COMMAND:remove = "${@ bb.utils.contains('DISTRO_FEATURES', 'reproducible-timestamps', "", "rootfs_reproducible", d)}"
 KERNEL_DEBUG_TIMESTAMPS = "${@ bb.utils.contains('DISTRO_FEATURES', 'reproducible-timestamps', "0", "1", d)}"
-
-# convert update alternatives to relative symlinks
-INHERIT += "${@bb.utils.contains('DISTRO_FEATURES', 'alternatives-symlinks-relative', 'update-alternatives-relative', '', d)}"
