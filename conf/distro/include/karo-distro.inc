@@ -33,16 +33,10 @@ DISTRO_FEATURES_DEFAULTS ?= "\
 "
 DISTRO_FEATURES_DEFAULTS:append:mx9-nxp-bsp = " edac"
 
-ethifname() {
-    iface="$1"
-    if ${@ "false" if 'use-mainline-bsp' in d.getVar('MACHINEOVERRIDES').split(':') else "true"};then
-        echo "$iface"
-    elif ${@ bb.utils.contains('DISTRO_FEATURES', 'systemd', "true", "false", d)};then
-        echo "$iface" | sed s/eth/end/
-    else
-        echo "$iface"
-    fi
-}
+# Prefix of the network interface names as seen by the target kernel.
+# NXP BSP kernels name their MACs 'endX' instead of 'ethX' when systemd's
+# predictable interface naming is active; the mainline BSP keeps 'ethX'.
+KARO_NET_IFPREFIX = "${@ 'eth' if 'use-mainline-bsp' in d.getVar('MACHINEOVERRIDES').split(':') else bb.utils.contains('DISTRO_FEATURES', 'systemd', 'end', 'eth', d)}"
 
 # for fw_printenv/fw_setenv
 UBOOT_INITIAL_ENV ?= "u-boot-initial-env"
