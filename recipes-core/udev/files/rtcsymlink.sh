@@ -7,9 +7,9 @@ if [ -h /dev/rtc ];then
     if [ "$ACTION" = "remove" ];then
 	if [ "$target" = "$rtc" ];then
 	    rm -f /dev/rtc
-	    shopt -s nullglob
-	    for rtc in /sys/class/rtc/rtc*;do
-		ln -s "$rtc" /dev/rtc
+	    for r in /sys/class/rtc/rtc*;do
+		[ -e "$r" ] || continue
+		ln -s "${r##*/}" /dev/rtc
 		break
 	    done
 	fi
