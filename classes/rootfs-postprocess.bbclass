@@ -5,15 +5,6 @@ rootfs_postinst_cleanup () {
     # upon boot in tmpfs
     rm -vf "${IMAGE_ROOTFS}${sysconfdir}/logrotate-dmesg.conf"
 
-    # copy local timezone file from host, if none is installed
-    if [ ! -s "${IMAGE_ROOTFS}${sysconfdir}/localtime" -a -s /etc/localtime ];then
-        install -v /etc/localtime "${IMAGE_ROOTFS}${sysconfdir}"
-    fi
-
-    if ${@ bb.utils.contains('IMAGE_INSTALL','bash','true','false',d)};then
-       	grep -q "^${base_bindir}/bash$" $D${sysconfdir}/shells || echo ${base_bindir}/bash >> $D${sysconfdir}/shells
-    fi
-
     # remove unused file to prevent confusion
     rm -vf ${IMAGE_ROOTFS}${sysconfdir}/timezone
 

@@ -23,7 +23,8 @@ BOOTFS_PARTITION_SIZE ??= "65536"
 ROOTFS_PARTITION_SIZE ??= "196608"
 USERFS_PARTITION_SIZE ??= "131072"
 
-DEPENDS:append = " cross-localedef-native qemuwrapper-cross"
+# qemuwrapper-cross for running postinst scripts at rootfs time
+DEPENDS:append = " qemuwrapper-cross"
 
 # Kernel image and devicetree files are provided by the dedicated
 # boot partition, so don't install them into the rootfs images.
