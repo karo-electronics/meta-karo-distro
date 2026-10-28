@@ -41,7 +41,6 @@ KARO_NET_IFPREFIX = "${@ 'eth' if 'use-mainline-bsp' in d.getVar('MACHINEOVERRID
 # for fw_printenv/fw_setenv
 UBOOT_INITIAL_ENV ?= "u-boot-initial-env"
 
-IMAGE_CLASSES:remove = "image_populate_mfgtool"
 IMAGE_NAME_SUFFIX = ""
 
 # KARO_ROOTFS_READ_ONLY (set by the karo-distro/read-only-rootfs
@@ -52,7 +51,6 @@ IMAGE_NAME_SUFFIX = ""
 EXTRA_IMAGE_FEATURES += "${@ 'read-only-rootfs' if d.getVar('KARO_ROOTFS_READ_ONLY') == '1' else '' }"
 
 VIRTUAL-RUNTIME_base-utils-hwclock = "util-linux-hwclock"
-VIRTUAL-RUNTIME_dev_manager ??= "udev"
 
 # busybox and util-linux both provide fdisk
 PREFERRED_PROVIDER_fdisk = "util-linux"

@@ -20,7 +20,7 @@ EOF
 	fi
 	speed=$(echo ${c} | cut -d\; -f 1)
 	device=$(echo ${c} | cut -d\; -f 2)
-	label=$(echo ${device} | sed s/tty// | tail -n 5)
+	label=$(echo ${device} | sed s/tty//)
 	echo "${label}:123:respawn:${sbindir}/ttyrun ${device} ${base_sbindir}/getty -L ${speed} ${device} linux" >> ${D}${sysconfdir}/inittab
 	i=`expr $i + 1`
     done

@@ -7,9 +7,9 @@ inherit nopackages
 PACKAGE_ARCH = "${MACHINE_ARCH}"
 
 # Vendor specific package generation for NXP-based machines
-PACKAGING_VENDOR:use-nxp-bsp = "nxp"
+KARO_PACKAGING_VENDOR:use-nxp-bsp = "nxp"
 
-require packaging/karo-${PACKAGING_VENDOR}.inc
+require packaging/karo-${KARO_PACKAGING_VENDOR}.inc
 
 # The factory package contains bootloader binaries and flash scripts
 # only, no Linux image is built here, so only flash the bootloader.
