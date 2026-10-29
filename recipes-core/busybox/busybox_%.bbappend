@@ -1,18 +1,22 @@
-FILESEXTRAPATHS:prepend := "${THISDIR}/${PN}:${THISDIR}/files:${THISDIR}/patches:"
+FILESEXTRAPATHS:prepend := "${THISDIR}/${PN}:${THISDIR}/files:"
 
+# Drop config fragments from other layers that re-enable unwanted
+# utilities: ftpget.cfg (meta-imx, ftpget/ftpput applets), and the
+# oe-core fragments for the busybox user management utilities
+# (adduser/addgroup/..., handled by shadow in the Ka-Ro images), the
+# resize applet and the sha1sum fragment (SHA hardware acceleration
+# is governed by no-sha-hwaccel.cfg instead).
+SRC_URI:remove = " \
+    file://ftpget.cfg \
+    file://login-utilities.cfg \
+    file://resize.cfg \
+    file://sha1sum.cfg \
+"
 SRC_URI:append = " \
     ${@ bb.utils.contains('DISTRO_FEATURES', 'pam', 'file://pam.cfg', '', d)} \
-    file://no-crond.cfg \
     ${@ bb.utils.contains('DISTRO_FEATURES', 'systemd', 'file://sysrq.conf', '', d)} \
     ${@ bb.utils.contains('TARGET_ARCH', 'x86_64', '', 'file://no-sha-hwaccel.cfg', d)} \
 "
-
-# overrule prio 200 of sysvinit and shadow
-# if enabled, /bin/sh will be linked to /bin/busybox.nosuid
-# as workaround this is disabled, and will increase the size of the rootfs
-#ALTERNATIVE_PRIORITY = "201"
-
-#BUSYBOX_SPLIT_SUID = "0"
 
 PACKAGES =+ "${PN}-inetd"
 FILES:${PN}-inetd = "${sysconfdir}/init.d/${PN}-inetd"
