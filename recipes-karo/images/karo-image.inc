@@ -6,10 +6,21 @@ IMAGE_FSTYPES:append = " wic.zst"
 
 require ${@ "karo-wic.inc" if any(fstype.startswith('wic') for fstype in d.getVar('IMAGE_FSTYPES').split()) else ""}
 
-# Vendor specific flash package generation for NXP-based machines
+# Vendor specific flash package generation, e.g. 'nxp' on the NXP BSP
+# (set through the use-nxp-bsp override) or the corresponding value on
+# the mainline BSP. Fail with a clear error if the BSP layer did not
+# set a vendor: the require below could not resolve otherwise.
 KARO_PACKAGING_VENDOR:use-nxp-bsp = "nxp"
 
-require packaging/karo-${KARO_PACKAGING_VENDOR}.inc
+def karo_packaging_vendor_inc(d):
+    vendor = (d.getVar('KARO_PACKAGING_VENDOR') or '').strip()
+    if not vendor:
+        bb.fatal("KARO_PACKAGING_VENDOR is not set on machine '%s': the "
+                 "BSP layer must provide the flash packaging include "
+                 "(e.g. KARO_PACKAGING_VENDOR = \"nxp\")" % d.getVar('MACHINE'))
+    return "packaging/karo-%s.inc" % vendor
+
+require ${@karo_packaging_vendor_inc(d)}
 
 REQUIRED_DISTRO_FEATURES ??= ""
 
