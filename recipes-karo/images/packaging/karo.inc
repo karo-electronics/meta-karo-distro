@@ -50,9 +50,13 @@ python () {
 }
 
 def do_copyfile (src, destdir):
+    import shutil
+
     bb.note("Copying %s to %s" % (src, destdir))
-    if os.system("cp %s %s" % (src, destdir)):
-        bb.fatal("Failed to copy %s to %s" % (src, destdir))
+    try:
+        shutil.copy(src, os.path.join(destdir, os.path.basename(src)))
+    except OSError as e:
+        bb.fatal("Failed to copy %s to %s: %s" % (src, destdir, e))
 
 def karo_uuu_flash_cmds(d):
     """

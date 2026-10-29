@@ -36,9 +36,9 @@ python do_create_flash_package() {
     })
 
     # copy bootloader binaries into the package directory
-    for type in d.getVar('UBOOT_CONFIG').split():
-        src = "%s/%s-%s-%s.bin" % (img_deploy_dir, image_bootloader, machine, type)
-        dst = os.path.join(img_dirname, "%s-%s-%s.bin" % (image_bootloader, machine, type))
+    for uboot_type in d.getVar('UBOOT_CONFIG').split():
+        src = "%s/%s-%s-%s.bin" % (img_deploy_dir, image_bootloader, machine, uboot_type)
+        dst = os.path.join(img_dirname, "%s-%s-%s.bin" % (image_bootloader, machine, uboot_type))
         if not os.path.exists(src):
             # Since wrynose, the imx-boot recipe deploys one image per
             # build target, e.g. imx-boot-<machine>-<type>.bin-flash_a55.
