@@ -11,9 +11,6 @@ KARO_PACKAGING_VENDOR:use-nxp-bsp = "nxp"
 
 require packaging/karo-${KARO_PACKAGING_VENDOR}.inc
 
-inherit extrausers
-EXTRA_USERS_PARAMS ?= "usermod -p '' root"
-
 REQUIRED_DISTRO_FEATURES ??= ""
 
 # Default partition sizes (KiB)
