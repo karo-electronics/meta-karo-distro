@@ -15,3 +15,7 @@ IMAGE_INSTALL:append = " \
         packagegroup-fsl-gstreamer1.0 \
         packagegroup-fsl-gstreamer1.0-full \
 "
+
+# Only meaningful on NXP BSP machines
+COMPATIBLE_MACHINE = "^$"
+COMPATIBLE_MACHINE:use-nxp-bsp = ".*"

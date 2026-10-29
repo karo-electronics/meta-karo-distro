@@ -1,13 +1,14 @@
-base_bindir_progs = "date"
-bindir_progs = ""
-sbindir_progs = ""
+# Reduce coreutils to the date binary only for the karo-minimal distro;
+# the default distros use the full set
+base_bindir_progs:karo-minimal = "date"
+bindir_progs:karo-minimal = ""
+sbindir_progs:karo-minimal = ""
 
-ALTERNATIVE_PRIORITY = "0"
-ALTERNATIVE_PRIORITY[date] = "300"
-ALTERNATIVE:${PN} = "date"
-ALTERNATIVE:${PN}-doc = ""
+ALTERNATIVE_PRIORITY:karo-minimal = "300"
+ALTERNATIVE:${PN}:karo-minimal = "date"
+ALTERNATIVE:${PN}-doc:karo-minimal = ""
 
-do_install:append () {
+do_install:append:karo-minimal () {
     # make sure only explicitly wanted files are being installed
     tempdir=$(mktemp -d ${B}/tempdir-XXXXXX)
     for f in ${base_bindir_progs};do
@@ -25,7 +26,7 @@ do_install:append () {
         for f in ${bindir_progs};do
             mv -v ${D}${bindir}/$f $tempdir
         done
-        rm -rvf "${D}${bindir}"
+        rm -rvf "${D}/${bindir}"
         mv -v $tempdir "${D}${bindir}"
     fi
 

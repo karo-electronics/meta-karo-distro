@@ -20,3 +20,7 @@ do_install() {
     install -d 0755 ${D}${libdir}
     install -m 0644 ${PN}/throttled/${HOST_ARCH}/libedgetpu.so.* ${D}${libdir}
 }
+
+# Only meaningful on NXP BSP machines
+COMPATIBLE_MACHINE = "^$"
+COMPATIBLE_MACHINE:use-nxp-bsp = ".*"

@@ -32,3 +32,7 @@ TOOLCHAIN_TARGET_TASK:append = " \
         tensorflow-lite-dev \
         onnxruntime-dev \
 "
+
+# Only meaningful on NXP BSP machines
+COMPATIBLE_MACHINE = "^$"
+COMPATIBLE_MACHINE:use-nxp-bsp = ".*"
