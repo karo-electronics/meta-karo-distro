@@ -68,6 +68,12 @@ VIRTUAL-RUNTIME_base-utils-hwclock = "util-linux-hwclock"
 # busybox and util-linux both provide fdisk
 PREFERRED_PROVIDER_fdisk = "util-linux"
 
+# libedgetpu is built from Google's proprietary Coral runtime and is
+# gated behind its own license flag (see libedgetpu_13.bb). The Ka-Ro
+# ML images install it, so the distro accepts that one flag; a narrow
+# acceptance does not unblock anything else.
+LICENSE_FLAGS_ACCEPTED = "libedgetpu"
+
 PACKAGECONFIG:append:pn-gstreamer1.0-plugins-ugly = " x264"
 
 # The Ka-Ro images do not rely on the openssl features of these recipes.

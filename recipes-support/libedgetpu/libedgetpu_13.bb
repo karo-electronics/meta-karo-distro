@@ -2,6 +2,12 @@ DESCRIPTION = "The Edge TPU runtime for Google's Coral chip"
 SECTION = "libs"
 LICENSE = "Proprietary"
 LIC_FILES_CHKSUM = "file://${PN}/LICENSE.txt;md5=c0e85c67b919e863a1a7a3da109dc40d"
+# Upstream release 'edgetpu_runtime_20210119', packaged by Google as
+# libedgetpu 13. Google's proprietary Coral license: gate the recipe
+# behind a dedicated license flag, accepted in karo-distro.inc (see
+# there). A dedicated flag keeps the gate narrow, unlike the broad
+# 'commercial' flag.
+LICENSE_FLAGS = "libedgetpu"
 
 DEPENDS += "xz-native"
 INSANE_SKIP:${PN} = "file-rdeps"
