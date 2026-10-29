@@ -5,9 +5,6 @@ rootfs_postinst_cleanup () {
     # upon boot in tmpfs
     rm -vf "${IMAGE_ROOTFS}${sysconfdir}/logrotate-dmesg.conf"
 
-    # remove unused file to prevent confusion
-    rm -vf ${IMAGE_ROOTFS}${sysconfdir}/timezone
-
     if [ "${DISTRO}" = "karo-minimal" ];then
         rm -vrf ${IMAGE_ROOTFS}/usr/share/man
     fi
