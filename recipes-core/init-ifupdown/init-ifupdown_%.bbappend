@@ -14,7 +14,7 @@ do_install:append () {
         else
             sed "s/@@IFACE@@/${iface}/g" "${B}/iface" > "${D}${sysconfdir}/network/interfaces.d/${iface}"
         fi
-        ifname=$(echo "$iface" | sed "s/^eth/${KARO_NET_IFPREFIX}/")
+        ifname=$(echo "$iface" | sed "s/^eth/${NETWORK_INTERFACE_PREFIX}/")
         auto=false
         for a in ${NETWORK_INTERFACES_AUTO};do
             [ "$iface" = "$a" ] || [ "$ifname" = "$a" ] && auto=true && break

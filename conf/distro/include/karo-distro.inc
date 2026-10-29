@@ -42,8 +42,11 @@ DISTRO_FEATURES_DEFAULTS:append:mx9-nxp-bsp = " edac"
 # aliases on the NXP BSP network endpoints); eudev has no devicetree
 # support, so sysvinit keeps 'ethX'. Mainline BSP machines keep 'ethX'
 # either way.
-KARO_NET_IFPREFIX = "eth"
-KARO_NET_IFPREFIX:use-nxp-bsp = "${@ bb.utils.contains('DISTRO_FEATURES', 'systemd', 'end', 'eth', d)}"
+NETWORK_INTERFACE_PREFIX = "eth"
+NETWORK_INTERFACE_PREFIX:use-nxp-bsp = "${@ bb.utils.contains('DISTRO_FEATURES', 'systemd', 'end', 'eth', d)}"
+
+NETWORK_INTERFACES ??= "eth0"
+NETWORK_INTERFACES_AUTO ??= "${NETWORK_INTERFACES}"
 
 # for fw_printenv/fw_setenv
 UBOOT_INITIAL_ENV ?= "u-boot-initial-env"
