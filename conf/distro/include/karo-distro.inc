@@ -46,13 +46,15 @@ UBOOT_INITIAL_ENV ?= "u-boot-initial-env"
 
 IMAGE_NAME_SUFFIX = ""
 
-# KARO_ROOTFS_READ_ONLY (set by the karo-distro/read-only-rootfs
-# fragment) is the single switch for the read-only root filesystem.
-# Read-only roots are only supported with sysvinit, so the effective
-# flag is inactive with systemd. Recipes (e.g. base-files) consume the
-# effective flag since they cannot see image features.
-KARO_ROOTFS_READ_ONLY_ACTIVE = "${@ '1' if d.getVar('KARO_ROOTFS_READ_ONLY') == '1' and not bb.utils.contains('DISTRO_FEATURES', 'systemd', True, False, d) else '0' }"
-EXTRA_IMAGE_FEATURES += "${@ 'read-only-rootfs' if d.getVar('KARO_ROOTFS_READ_ONLY_ACTIVE') == '1' else '' }"
+# The read-only-rootfs distro feature (set by the
+# karo-distro/read-only-rootfs fragment) is the single switch for the
+# read-only root filesystem. Recipes (e.g. base-files) consume it
+# directly, since recipes cannot see image features, and the image
+# feature of the same name is derived from it here. Both init managers
+# are supported: sysvinit through populate-volatile.sh and the
+# read-only-rootfs hook, systemd through its tmpfiles setup and the
+# volatile-binds copy mounts (a hard systemd RDEPENDS).
+EXTRA_IMAGE_FEATURES += "${@bb.utils.contains('DISTRO_FEATURES', 'read-only-rootfs', ' read-only-rootfs', '', d)}"
 
 VIRTUAL-RUNTIME_base-utils-hwclock = "util-linux-hwclock"
 

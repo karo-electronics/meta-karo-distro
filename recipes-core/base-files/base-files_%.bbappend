@@ -16,7 +16,7 @@ do_install:append () {
     if ${@ bb.utils.contains('MACHINE_FEATURES', 'emmc', 'true', 'false', d)};then
         sed -i '/root/s/0$/1/' ${D}${sysconfdir}/fstab
     fi
-    if [ "${KARO_ROOTFS_READ_ONLY_ACTIVE}" = "1" ];then
+    if ${@ bb.utils.contains('DISTRO_FEATURES', 'read-only-rootfs', 'true', 'false', d)};then
         install -v -m 0744 ${UNPACKDIR}/adjtime ${D}${localstatedir}/lib/hwclock/adjtime
         ln -snvf ${localstatedir}/lib/hwclock/adjtime ${D}${sysconfdir}/adjtime
         sed -i '/root/s/rw/ro/' ${D}${sysconfdir}/fstab
