@@ -12,7 +12,12 @@ SRC_URI:remove = " \
     file://resize.cfg \
     file://sha1sum.cfg \
 "
+# The Ka-Ro busybox configuration is expressed as a delta (karo.cfg)
+# on top of the unmodified oe-core base defconfig, applied by
+# busybox.inc's merge_config.sh invocation; there is no full defconfig
+# shadowed here.
 SRC_URI:append = " \
+    file://karo.cfg \
     ${@ bb.utils.contains('DISTRO_FEATURES', 'pam', 'file://pam.cfg', '', d)} \
     ${@ bb.utils.contains('DISTRO_FEATURES', 'systemd', 'file://sysrq.conf', '', d)} \
     ${@ bb.utils.contains('TARGET_ARCH', 'x86_64', '', 'file://no-sha-hwaccel.cfg', d)} \
