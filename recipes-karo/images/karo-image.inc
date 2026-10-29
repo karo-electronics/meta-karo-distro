@@ -1,6 +1,6 @@
 LICENSE = "MIT"
 
-inherit core-image features_check rootfs-postprocess
+inherit core-image features_check
 
 IMAGE_FSTYPES:append = " wic.zst"
 

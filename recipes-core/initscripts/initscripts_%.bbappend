@@ -10,6 +10,9 @@ CONFFILES:${PN} += "${sysconfdir}/init.d/umountroot"
 
 do_install:append () {
     install -d -m 0755 ${D}${libdir}/init
+    # The Ka-Ro images do not ship logrotate, so the rotation config for
+    # the dmesg boot log would be inert; drop it at the source
+    rm -f ${D}${sysconfdir}/logrotate-dmesg.conf
     install -m 0755 ${UNPACKDIR}/vars.sh ${D}${libdir}/init/vars.sh
 
     install -m 0755 ${UNPACKDIR}/umountroot ${D}${sysconfdir}/init.d/umountroot
