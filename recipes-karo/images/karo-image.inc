@@ -30,8 +30,6 @@ DEPENDS:append = " qemuwrapper-cross"
 # boot partition, so don't install them into the rootfs images.
 BAD_RECOMMENDATIONS += "kernel-image* kernel-devicetree"
 
-PACKAGE_INSTALL += "${@ bb.utils.contains('DISTRO_FEATURES', 'rauc', "u-boot-script", "", d)}"
-
 DEBUG_TOOLS ?= " \
     gdbserver \
     i2c-tools \
@@ -62,8 +60,6 @@ IMAGE_INSTALL:append = " \
     less \
     libstdc++ \
     ${@bb.utils.contains('DISTRO_FEATURES','wifi','linux-firmware-pcie8997','',d)} \
-    ${@bb.utils.contains('DISTRO_FEATURES', 'rauc', 'rauc', '', d)} \
-    ${@bb.utils.contains('DISTRO_FEATURES', 'rauc', 'libdevmapper', '', d)} \
     ${@bb.utils.contains('MACHINE_FEATURES','nxp-wifi','kernel-module-nxp89xx','',d)} \
     ${@bb.utils.contains('MACHINE_FEATURES','nxp-wifi','firmware-nxp-wifi-nxp8987-sdio','',d)} \
     lsof \
