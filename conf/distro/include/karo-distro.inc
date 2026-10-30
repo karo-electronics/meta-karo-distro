@@ -2,19 +2,12 @@ POKY_DISTRO ??= "poky"
 require conf/distro/${POKY_DISTRO}.conf
 
 # The init manager is selected through the standard INIT_MANAGER
-# variable (conf/distro/include/init-manager-${INIT_MANAGER}.inc):
-# set INIT_MANAGER = "systemd" in the configuration to build with
-# systemd instead of the default sysvinit.
+# variable (conf/distro/include/init-manager-${INIT_MANAGER}.inc).
+# Nothing here sets it, so the OE-Core default applies, which is
+# systemd since the wrynose release; set INIT_MANAGER = "sysvinit"
+# in the configuration to build with sysvinit instead.
 
 DISTRO_VERSION = "6.18-${DISTRO_CODENAME}"
-
-POKY_DEFAULT_DISTRO_FEATURES:remove = "\
-    largefile \
-    opengl \
-    ptest \
-    vulkan \
-    wayland \
-"
 
 DISTRO_FEATURES_DEFAULTS ?= "\
     acl \
