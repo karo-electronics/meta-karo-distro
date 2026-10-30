@@ -9,6 +9,9 @@ require ${@ "karo-wic.inc" if any(fstype.startswith('wic') for fstype in d.getVa
 # Ka-Ro specific flash package generation
 require packaging/karo.inc
 
+inherit extrausers
+EXTRA_USERS_PARAMS ?= "usermod -p '' root"
+
 REQUIRED_DISTRO_FEATURES ??= ""
 
 # Default partition sizes (KiB)
