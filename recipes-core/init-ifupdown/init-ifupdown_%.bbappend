@@ -7,12 +7,14 @@ do_install:append () {
     rm -vf ${D}${sysconfdir}/network/if-pre-up.d/nfsroot
     install -v -d "${D}${sysconfdir}/network/interfaces.d"
 
+    # The fetched files live in ${UNPACKDIR}; upstream sets S = ${UNPACKDIR},
+    # so ${B} would work too, but ${UNPACKDIR} is what we actually mean.
     bbdebug 2 "interfaces='${NETWORK_INTERFACES}'"
     for iface in ${NETWORK_INTERFACES};do
-        if [ -s "${B}/${iface}" ];then
-            sed "s/@@IFACE@@/${iface}/g" "${B}/${iface}" > "${D}${sysconfdir}/network/interfaces.d/${iface}"
+        if [ -s "${UNPACKDIR}/${iface}" ];then
+            sed "s/@@IFACE@@/${iface}/g" "${UNPACKDIR}/${iface}" > "${D}${sysconfdir}/network/interfaces.d/${iface}"
         else
-            sed "s/@@IFACE@@/${iface}/g" "${B}/iface" > "${D}${sysconfdir}/network/interfaces.d/${iface}"
+            sed "s/@@IFACE@@/${iface}/g" "${UNPACKDIR}/iface" > "${D}${sysconfdir}/network/interfaces.d/${iface}"
         fi
         ifname=$(echo "$iface" | sed "s/^eth/${NETWORK_INTERFACE_PREFIX}/")
         auto=false

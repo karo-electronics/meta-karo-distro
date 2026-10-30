@@ -1,9 +1,12 @@
 FILESEXTRAPATHS:prepend := "${THISDIR}/files:"
 
+# bootmisc.sh, checkroot.sh, mountall.sh etc. are Ka-Ro modified copies
+# that shadow the upstream initscripts files through FILESEXTRAPATHS
+# (no SRC_URI entry needed); umountroot and vars.sh are Ka-Ro specific
+# and must be added explicitly. init_files lists the scripts that carry
+# the @@LIBDIR@@ placeholder for the sed substitution in do_install.
 init_files = "bootmisc.sh umountroot"
-SRC_URI:append = "${@ "".join(map(lambda f: " file://%s" % f, d.getVar('init_files').split()))}"
-
-SRC_URI:append = " file://vars.sh"
+SRC_URI:append = " file://umountroot file://vars.sh"
 
 FILES:${PN} += "${libdir}/init/vars.sh"
 CONFFILES:${PN} += "${sysconfdir}/init.d/umountroot"

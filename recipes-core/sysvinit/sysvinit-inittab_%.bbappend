@@ -1,7 +1,7 @@
 FILESEXTRAPATHS:prepend := "${THISDIR}/${PN}:"
 
 SRC_URI:remove = "\
-	file://start_getty \
+    file://start_getty \
 "
 
 do_install () {
@@ -11,18 +11,18 @@ do_install () {
     i=0
     cons="${SERIAL_CONSOLES}"
     for c in ${cons};do
-	if [ $i = 0 ];then
-	    grep -q '# Serial consoles on the standard serial ports' ${D}${sysconfdir}/inittab && break
-	    cat <<EOF >> ${D}${sysconfdir}/inittab
+    if [ $i = 0 ];then
+        grep -q '# Serial consoles on the standard serial ports' ${D}${sysconfdir}/inittab && break
+        cat <<EOF >> ${D}${sysconfdir}/inittab
 #
 # Serial consoles on the standard serial ports
 EOF
-	fi
-	speed=$(echo ${c} | cut -d\; -f 1)
-	device=$(echo ${c} | cut -d\; -f 2)
-	label=$(echo ${device} | sed s/tty//)
-	echo "${label}:123:respawn:${sbindir}/ttyrun ${device} ${base_sbindir}/getty -L ${speed} ${device} linux" >> ${D}${sysconfdir}/inittab
-	i=`expr $i + 1`
+    fi
+    speed=$(echo ${c} | cut -d\; -f 1)
+    device=$(echo ${c} | cut -d\; -f 2)
+    label=$(echo ${device} | sed s/tty//)
+    echo "${label}:123:respawn:${sbindir}/ttyrun ${device} ${base_sbindir}/getty -L ${speed} ${device} linux" >> ${D}${sysconfdir}/inittab
+    i=`expr $i + 1`
     done
 
     if [ "${USE_VT}" = "1" ]; then

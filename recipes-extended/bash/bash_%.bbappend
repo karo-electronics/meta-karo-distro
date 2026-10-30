@@ -1,11 +1,13 @@
 FILESEXTRAPATHS:prepend := "${THISDIR}/files:"
+
 SRC_URI:append = " \
-	       	  file://bash_aliases\
-	       	  file://bash_login\
+    file://bash_aliases \
+    file://bash_login \
 "
+
 FILES:${PN} += " \
-	       ${ROOT_HOME}/.bash_aliases \
-	       ${ROOT_HOME}/.bash_login \
+    ${ROOT_HOME}/.bash_aliases \
+    ${ROOT_HOME}/.bash_login \
 "
 
 do_install:append() {

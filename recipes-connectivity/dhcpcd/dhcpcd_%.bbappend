@@ -82,6 +82,6 @@ EOF
     fi
 
     install -v -m 0755 -d ${D}${localstatedir}/lib/dhcpcd
-    install -v -m 0755 /dev/null ${D}${localstatedir}/lib/dhcpcd/dhcpcd.duid
+    install -v -m 0644 /dev/null ${D}${localstatedir}/lib/dhcpcd/dhcpcd.duid
     ln -snvf ${localstatedir}/lib/dhcpcd/dhcpcd.duid ${D}${sysconfdir}/
 }

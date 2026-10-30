@@ -5,6 +5,8 @@
 # installed, the glob does not expand and the sed call fails. Install a
 # placeholder socket so the glob always matches and remove it again
 # afterwards.
+#
+# Drop this bbappend once oe-core guards the sed call on the glob.
 
 do_install:prepend() {
     if ! ${@bb.utils.contains('DISTRO_FEATURES', 'ipv6', 'true', 'false', d)} \
