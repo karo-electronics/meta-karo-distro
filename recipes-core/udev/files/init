@@ -76,6 +76,12 @@ case "$1" in
     LANG=C awk '$2 == "/dev" && ($3 == "devtmpfs") { exit 1 }' /proc/mounts && {
 	mount -n -o mode=0755 -t devtmpfs udev /dev
     }
+    # mount the tmpfs on /run, if not already done; on a read-only rootfs
+    # mountall.sh only mounts it from /etc/fstab after this script, and udevd
+    # needs a writable /run for its control socket
+    LANG=C awk '$2 == "/run" && ($3 == "tmpfs") { exit 1 }' /proc/mounts && {
+	mount -n -o mode=0755,nodev,nosuid,strictatime -t tmpfs tmpfs /run
+    }
     [ -e /dev/pts ] || mkdir -m 0755 /dev/pts
     [ -e /dev/shm ] || mkdir -m 1777 /dev/shm
 
