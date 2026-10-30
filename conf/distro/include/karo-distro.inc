@@ -23,7 +23,7 @@ DISTRO_FEATURES_DEFAULTS ?= "\
     vfat \
     xattr \
 "
-DISTRO_FEATURES_DEFAULTS:append:mx9-nxp-bsp = " edac"
+DISTRO_FEATURES_DEFAULTS:append = " flexcan pcie csi-camera imx219 raspi-display tc358867 lvds dsi83"
 
 # Prefix of the network interface names as seen by the target kernel.
 # The kernel names the MACs 'ethX' by probe order. Under systemd, udev's
