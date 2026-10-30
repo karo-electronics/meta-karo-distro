@@ -48,9 +48,6 @@ NETWORK_INTERFACE_PREFIX:use-nxp-bsp = "${@ bb.utils.contains('DISTRO_FEATURES',
 NETWORK_INTERFACES ??= "eth0"
 NETWORK_INTERFACES_AUTO ??= "${NETWORK_INTERFACES}"
 
-# for fw_printenv/fw_setenv
-UBOOT_INITIAL_ENV ?= "u-boot-initial-env"
-
 IMAGE_NAME_SUFFIX = ""
 
 # The read-only-rootfs distro feature (set by the
