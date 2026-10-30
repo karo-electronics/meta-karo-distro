@@ -23,24 +23,32 @@ SRC_URI:append = " \
     ${@ bb.utils.contains('TARGET_ARCH', 'x86_64', '', 'file://no-sha-hwaccel.cfg', d)} \
 "
 
+# The inetd/busybox-cron/busybox-httpd files shadowed through
+# FILESEXTRAPATHS only add LSB init info headers, so update-rc.d
+# derives the runlevel ordering from the scripts. Shadowing (instead
+# of a patch) is the standard mechanism here: the files live in
+# ${UNPACKDIR} outside the busybox source tree, which SRC_URI patches
+# cannot reach.
+
 PACKAGES =+ "${PN}-inetd"
 FILES:${PN}-inetd = "${sysconfdir}/init.d/${PN}-inetd"
 PROVIDES += "${PN}-inetd"
 
+# busybox-inetd is recommended into every image with busybox, so the
+# inetd super server starts on the sysvinit/mdev images. oe-core ships
+# /etc/inetd.conf with every service commented out, so nothing is
+# served by default; users enable services by editing the
+# configuration.
 INITSCRIPT_NAME:${PN}-inetd = "${PN}-inetd"
 INITSCRIPT_PARAMS:${PN}-inetd = "start 02 2 3 4 5 . stop 01 0 1 6 ."
 INITSCRIPT_PACKAGES += "${PN}-inetd"
 RDEPENDS:${PN}-inetd = "busybox"
 RRECOMMENDS:${PN} += "${INITSCRIPT_PACKAGES}"
 
-inherit useradd
-
-USERADD_PACKAGES += "${PN}"
-USERADD_PARAM:${PN} = ""
-GROUPADD_PARAM:${PN} = "--system utmp"
-
-# need /etc/group in the staging directory
-DEPENDS += "base-passwd"
+# The utmp group is provided by the base-passwd recipe; /run/utmp is
+# created with the right group at boot (initscripts bootmisc.sh with
+# sysvinit, tmpfiles with systemd), so busybox itself needs neither
+# the useradd class nor a base-passwd staging dependency.
 
 # when pam is selected in the DISTRO_FEATURES the target-libpam must be installed
 # for the busybox build to work
@@ -67,7 +75,9 @@ do_install:append () {
         if ${@ bb.utils.contains('MACHINE_FEATURES', 'emmc', 'true', 'false', d)};then
             if grep -q "CONFIG_INIT=y" ${B}/.config && \
                     ${@bb.utils.contains('VIRTUAL-RUNTIME_init_manager','mdev-busybox','true','false',d)}; then
-                # Change the value of ENABLE_ROOTFS_FSCK in ${sysconfdir}/default/rcS to yes
+                # Change the value of ENABLE_ROOTFS_FSCK in ${sysconfdir}/default/rcS to yes.
+                # The sysvinit bbappend applies the same change to the rcS-default
+                # file of the sysvinit recipe.
                 sed -i '/^ENABLE_ROOTFS_FSCK=/s/no/yes/' ${D}${sysconfdir}/default/rcS
             fi
         fi

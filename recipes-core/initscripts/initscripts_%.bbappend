@@ -1,12 +1,19 @@
 FILESEXTRAPATHS:prepend := "${THISDIR}/files:"
 
-# bootmisc.sh, checkroot.sh, mountall.sh etc. are Ka-Ro modified copies
-# that shadow the upstream initscripts files through FILESEXTRAPATHS
-# (no SRC_URI entry needed); umountroot and vars.sh are Ka-Ro specific
-# and must be added explicitly. init_files lists the scripts that carry
-# the @@LIBDIR@@ placeholder for the sed substitution in do_install.
+# The delta between the Ka-Ro initscripts and the upstream oe-core
+# scripts is expressed as a patch (bootmisc.sh, checkroot.sh,
+# mountall.sh, reboot, umountfs, functions), so that it surfaces as a
+# conflict whenever oe-core changes these files, instead of silently
+# shadowing them through FILESEXTRAPATHS. umountroot and vars.sh are
+# Ka-Ro specific and have no upstream counterpart. init_files lists the
+# scripts that carry the @@LIBDIR@@ placeholder for the sed
+# substitution in do_install.
 init_files = "bootmisc.sh umountroot"
-SRC_URI:append = " file://umountroot file://vars.sh"
+SRC_URI:append = " \
+    file://0001-initscripts-Ka-Ro-specific-boot-shutdown-behavior.patch \
+    file://umountroot \
+    file://vars.sh \
+"
 
 FILES:${PN} += "${libdir}/init/vars.sh"
 CONFFILES:${PN} += "${sysconfdir}/init.d/umountroot"

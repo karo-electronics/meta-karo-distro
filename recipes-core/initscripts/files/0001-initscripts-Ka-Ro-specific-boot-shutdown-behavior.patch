@@ -1,0 +1,401 @@
+From 29fdbd0dc398900ba6de0bdbed51269be17324d1 Mon Sep 17 00:00:00 2001
+From: Robin Lintermann <rl@karo-electronics.de>
+Date: Fri, 30 Oct 2026 10:35:26 +0000
+Subject: [PATCH] initscripts: Ka-Ro specific boot/shutdown behavior
+
+- bootmisc.sh: create /run/utmp with utmp group ownership, keep the
+  nologin flag file on the persistent /var/lib/initscripts tree, use
+  the shared vars.sh sourcing point (@@LIBDIR@@ placeholder) and skip
+  work that other recipes own on Ka-Ro images (motd, timestamp, sysctl,
+  hwclock)
+- checkroot.sh: drop the fstab/rcS writability warning
+- mountall.sh: use /run/initctl as the sysvinit control channel
+- reboot: bring interfaces down on shutdown unless NFS mounts require
+  them up (replaces the SED_HALTARGS stub)
+- umountfs: persist selected /var trees to /etc/.var, unmount tmpfs
+  explicitly and keep NFS mounts alive for NFS-root systems
+- functions: drop the unused log_*_msg helpers
+
+Upstream-Status: Inappropriate [karo specific]
+
+Signed-off-by: Robin Lintermann <rl@karo-electronics.de>
+---
+ bootmisc.sh  | 123 ++++++++++++++++++++++-----------------------------
+ checkroot.sh |  14 +-----
+ functions    |  21 ---------
+ mountall.sh  |  25 +++++------
+ reboot       |  36 ++++++++++++++-
+ umountfs     |  23 ++++++++--
+ 6 files changed, 118 insertions(+), 124 deletions(-)
+ mode change 100755 => 100644 bootmisc.sh
+ mode change 100755 => 100644 checkroot.sh
+ mode change 100755 => 100644 mountall.sh
+ mode change 100755 => 100644 reboot
+ mode change 100755 => 100644 umountfs
+
+diff --git a/bootmisc.sh b/bootmisc.sh
+old mode 100755
+new mode 100644
+index 6068a8c..7806ee4
+--- a/bootmisc.sh
++++ b/bootmisc.sh
+@@ -5,84 +5,65 @@
+ 
+ ### BEGIN INIT INFO
+ # Provides:          bootmisc
+-# Required-Start:    $local_fs mountvirtfs
+-# Required-Stop:     $local_fs
++# Required-Start:    $remote_fs
++# Required-Stop:
++# Should-Start:      udev
+ # Default-Start:     S
+-# Default-Stop:      0 6
+-# Short-Description: Misc and other.
++# Default-Stop:
++# Short-Description: Miscellaneous things to be done during bootup.
++# Description:       Some cleanup.  Note, it need to run after mountnfs-bootclean.sh.
+ ### END INIT INFO
+ 
+-TIMESTAMP_FILE=/etc/timestamp
++PATH=/sbin:/usr/sbin:/bin:/usr/bin
++[ "$DELAYLOGIN" ] || DELAYLOGIN=yes
++. @@LIBDIR@@/init/vars.sh
+ 
+-. /etc/default/rcS
+-[ -f /etc/default/timestamp ] && . /etc/default/timestamp
+-#
+-# Put a nologin file in /etc to prevent people from logging in before
+-# system startup is complete.
+-#
+-if test "$DELAYLOGIN" = yes
+-then
+-  echo "System bootup in progress - please wait" > /etc/nologin
+-  cp /etc/nologin /etc/nologin.boot
+-fi
++do_start () {
++	#
++	# If login delaying is enabled then create the flag file
++	# which prevents logins before startup is complete
++	#
++	case "$DELAYLOGIN" in
++	  Y*|y*)
++		echo "System bootup in progress - please wait" > /var/lib/initscripts/nologin
++		;;
++	esac
+ 
+-#
+-# Set pseudo-terminal access permissions.
+-#
+-if test -c /dev/ttyp0
+-then
+-	chmod 666 /dev/tty[p-za-e][0-9a-f]
+-	chown root:tty /dev/tty[p-za-e][0-9a-f]
+-fi
++	# Create /run/utmp so we can login.
++	: > /run/utmp
++	if grep -q ^utmp: /etc/group
++	then
++		chmod 664 /run/utmp
++		chgrp utmp /run/utmp
++	fi
+ 
+-#
+-# Apply /proc settings if defined
+-#
+-SYSCTL_CONF="/etc/sysctl.conf"
+-if [ -f "${SYSCTL_CONF}" ]
+-then
+-	if [ -x "/sbin/sysctl" ]
++	# Set pseudo-terminal access permissions.
++	if [ ! -e /dev/.udev ] && [ -c /dev/ttyp0 ]
+ 	then
+-		# busybox sysctl does not support -q
+-		VERBOSE_REDIR="1>/dev/null"
+-		if [ "${VERBOSE}" != "no" ]; then
+-			VERBOSE_REDIR="1>&1"
+-		fi
+-		eval /sbin/sysctl -p "${SYSCTL_CONF}" $VERBOSE_REDIR
+-	else
+-		echo "To have ${SYSCTL_CONF} applied during boot, install package <procps>."
++		chmod -f 666 /dev/tty[p-za-e][0-9a-f]
++		chown -f root:tty /dev/tty[p-za-e][0-9a-f]
+ 	fi
+-fi
+ 
+-#
+-# Update /etc/motd.
+-#
+-if test "$EDITMOTD" != no
+-then
+-	uname -a > /etc/motd.tmp
+-	sed 1d /etc/motd >> /etc/motd.tmp
+-	mv /etc/motd.tmp /etc/motd
+-fi
++	# Remove bootclean's flag files.
++	# Don't run bootclean again after this!
++	rm -f /tmp/.clean /run/.clean /var/lock/.clean
++}
+ 
+-#
+-# This is as good a place as any for a sanity check
+-#
+-# Set the system clock from hardware clock
+-# If the timestamp is more recent than the current time,
+-# use the timestamp instead.
+-test -x /etc/init.d/hwclock.sh && /etc/init.d/hwclock.sh start
+-if test -e "$TIMESTAMP_FILE"
+-then
+-	SYSTEMDATE=`date -u +%4Y%2m%2d%2H%2M%2S`
+-	read TIMESTAMP < "$TIMESTAMP_FILE"
+-	if [ ${TIMESTAMP} -gt $SYSTEMDATE ]; then
+-		# format the timestamp as date expects it (2m2d2H2M4Y.2S)
+-		TS_YR=${TIMESTAMP%??????????}
+-		TS_SEC=${TIMESTAMP#????????????}
+-		TS_FIRST12=${TIMESTAMP%??}
+-		TS_MIDDLE8=${TS_FIRST12#????}
+-		date -u ${TS_MIDDLE8}${TS_YR}.${TS_SEC}
+-		test -x /etc/init.d/hwclock.sh && /etc/init.d/hwclock.sh stop
+-	fi
+-fi
+-: exit 0
++case "$1" in
++  start|"")
++	do_start
++	;;
++  restart|reload|force-reload)
++	echo "Error: argument '$1' not supported" >&2
++	exit 3
++	;;
++  stop)
++	# No-op
++	;;
++  *)
++	echo "Usage: bootmisc.sh [start|stop]" >&2
++	exit 3
++	;;
++esac
++
++:
+diff --git a/checkroot.sh b/checkroot.sh
+old mode 100755
+new mode 100644
+index 1c7057b..5e8917c
+--- a/checkroot.sh
++++ b/checkroot.sh
+@@ -6,7 +6,7 @@
+ ### BEGIN INIT INFO
+ # Provides:          checkroot
+ # Required-Start:    udev
+-# Required-Stop:     
++# Required-Stop:
+ # Default-Start:     S
+ # Default-Stop:
+ # Short-Description: Check to root file system.
+@@ -58,16 +58,6 @@ do
+ done
+ exec 0>&9 9>&-
+ 
+-# Check for conflicting configurations
+-if [ "$rootmode" = "ro" -a "$ROOTFS_READ_ONLY" = "no" ] || \
+-	[ "$rootmode" = "rw" -a "$ROOTFS_READ_ONLY" = "yes" ]; then
+-	echo ""
+-	echo "WARN: conflicting configurations in /etc/fstab and /etc/default/rcS"
+-	echo "      regarding the writability of rootfs. Please fix one of them."
+-	echo ""
+-fi
+-
+-
+ #
+ # Activate the swap device(s) in /etc/fstab. This needs to be done
+ # before fsck, since fsck can be quite memory-hungry.
+@@ -78,7 +68,7 @@ test "$VERBOSE" != no && echo "Activating swap"
+ #
+ # Check the root filesystem.
+ #
+-if test -f /fastboot || test "$rootcheck" = "no"
++if test -f /fastboot || test $rootcheck = no
+ then
+   test $rootcheck = yes && echo "Fast boot, no filesystem check"
+ else
+diff --git a/functions b/functions
+index 7fc19c8..35aebd4 100755
+--- a/functions
++++ b/functions
+@@ -92,24 +92,3 @@ passed() {
+     echo -n -e "${BRACKET}[${SUCCESS} PASS ${BRACKET}]${NORMAL}"
+     return $rc
+ }
+-
+-log_success_msg()
+-{
+-    echo -n $@
+-    success
+-    echo
+-}
+-
+-log_failure_msg()
+-{
+-    echo -n $@
+-    failure
+-    echo
+-}
+-
+-log_warning_msg()
+-{
+-    echo -n $@
+-    warning
+-    echo
+-}
+diff --git a/mountall.sh b/mountall.sh
+old mode 100755
+new mode 100644
+index e87b291..06415cf
+--- a/mountall.sh
++++ b/mountall.sh
+@@ -5,8 +5,8 @@
+ 
+ ### BEGIN INIT INFO
+ # Provides:          mountall
+-# Required-Start:    mountvirtfs
+-# Required-Stop: 
++# Required-Start:    checkroot checkfs mountvirtfs
++# Required-Stop:
+ # Default-Start:     S
+ # Default-Stop:
+ # Short-Description: Mount all filesystems.
+@@ -21,22 +21,20 @@
+ # about this. So we mount "proc" filesystems without -v.
+ #
+ test "$VERBOSE" != no && echo "Mounting local filesystems..."
+-mount -at nonfs,nosmbfs,noncpfs 2>/dev/null
++mount -at nonfs,smbfs,ncpfs 2>/dev/null
+ 
+ 
+ # We might have mounted something over /run; see if
+-# /dev/initctl is present.  Look for
+-# /sbin/init.sysvinit to verify that sysvinit (and
+-# not busybox or systemd) is installed as default init).
+-INITCTL="/dev/initctl"
++# /run/initctl is present.
++# Verify that sysvinit (and not busybox or systemd) is installed as default init).
++INITCTL="/run/initctl"
+ if [ ! -p "$INITCTL" ] && [ "${INIT_SYSTEM}" = "sysvinit" ]; then
+     # Create new control channel
+-		rm -f "$INITCTL"
+-		mknod -m 600 "$INITCTL" p
++    rm -f "$INITCTL"
++    mknod -m 600 "$INITCTL" p
+ 
+-		# Reopen control channel.
+-		PID="$(pidof -s /sbin/init || echo 1)"
+-		[ -n "$PID" ] && kill -s USR1 "$PID"
++    # Reopen control channel.
++    kill -s USR1 1
+ fi
+ 
+ #
+@@ -44,6 +42,3 @@ fi
+ # a file on a now mounted filesystem.
+ #
+ [ -x /sbin/swapon ] && swapon -a
+-
+-: exit 0
+-
+diff --git a/reboot b/reboot
+old mode 100755
+new mode 100644
+index 91e3972..adb58a7
+--- a/reboot
++++ b/reboot
+@@ -15,5 +15,37 @@
+ 
+ PATH=/sbin:/bin:/usr/sbin:/usr/bin
+ 
+-echo -n "Rebooting... "
+-reboot SED_HALTARGS
++. /etc/default/rcS
++
++do_stop () {
++	# Message should end with a newline since kFreeBSD may
++	# print more stuff (see #323749)
++	[ $VERBOSE = no ] || echo "Will now restart"
++
++	netdown=""
++	if sed -n 's/^[^ ]* \([^ ]*\) \([^ ]*\) .*$/\1 \2/p' /proc/mounts | grep -q "^/ nfs$";then
++		echo "NOT shutting down network interfaces: / is an NFS mount"
++	elif sed -n 's/^[^ ]* \([^ ]*\) \([^ ]*\) .*$/\2/p' /proc/mounts | grep -qE '^(nfs|smbfs)$';then
++		echo "NOT shutting down network interfaces: NFS/SMB shares still mounted."
++	else
++		netdown=-i
++	fi
++	reboot -d -f $netdown
++}
++
++case "$1" in
++  start)
++	# No-op
++	;;
++  restart|reload|force-reload)
++	echo "Error: argument '$1' not supported" >&2
++	exit 3
++	;;
++  stop)
++	do_stop
++	;;
++  *)
++	echo "Usage: $0 start|stop" >&2
++	exit 3
++	;;
++esac
+diff --git a/umountfs b/umountfs
+old mode 100755
+new mode 100644
+index a8691e5..16a72ff
+--- a/umountfs
++++ b/umountfs
+@@ -6,7 +6,7 @@
+ ### BEGIN INIT INFO
+ # Provides:          umountfs
+ # Required-Start:
+-# Required-Stop:     
++# Required-Stop:
+ # Default-Start:
+ # Default-Stop:      0 6
+ # Short-Description: Turn off swap and unmount all local file systems.
+@@ -15,14 +15,31 @@
+ 
+ PATH=/sbin:/bin:/usr/sbin:/usr/bin
+ 
++# make changes to certain tmp directories persistent
++if [ -d /etc/.var -a -n "$(ls /etc/.var/)" ];then
++    mount /etc/.var -o remount,rw
++    for d in tmp/ lib/ log/wtmp;do
++	rsync -avu --delete "/var/$d" "/etc/.var/$d"
++    done
++    mount /etc/.var -o remount,rw
++fi
++
++umount -f -a -t tmpfs
++
+ echo "Deactivating swap..."
+ [ -x /sbin/swapoff ] && swapoff -a
+ 
+-# We leave /proc mounted.
+ echo "Unmounting local filesystems..."
+ grep -q /mnt/ram /proc/mounts && mount -o remount,ro /mnt/ram
+ mount -o remount,ro /
+ 
+-umount -f -a -r > /dev/null 2>&1
++netmnt=""
++if sed -n 's/^[^ ]* \([^ ]*\) \([^ ]*\) .*$/\1 \2/p' /proc/mounts | grep -q "^/ nfs$";then
++    echo "NOT unmounting NFS filesystems due to NFSROOT"
++    netmnt=,nfs
++fi
++
++umount -f -a -r -t nodevpts,devtmpfs,proc,sysfs,tmpfs,usbfs${netmnt}
++mount
+ 
+ : exit 0
+-- 
+2.43.0
+

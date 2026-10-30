@@ -1,5 +1,7 @@
 FILESEXTRAPATHS:prepend := "${THISDIR}/files:"
 
+# The systemd bbappend ships the same firmware rule for images running
+# systemd udev instead of eudev.
 SRC_URI:append = "\
     file://firmware.rules \
     file://rtcsymlink.sh \
