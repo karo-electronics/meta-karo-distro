@@ -4,8 +4,9 @@
 # Generates the flash package directory containing the U-Boot binaries
 # and the uuu.auto script.
 #
-
-require karo.inc
+# Included after packaging/karo.inc, which carries the common flash
+# package logic; do not require it again here.
+#
 
 do_create_flash_package[depends] += "virtual/bootloader:do_deploy"
 do_create_flash_package[depends] += "imx-boot:do_deploy"
