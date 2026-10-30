@@ -1,11 +1,7 @@
 POKY_DISTRO ??= "poky"
 require conf/distro/${POKY_DISTRO}.conf
 
-# The init manager is selected through the standard INIT_MANAGER
-# variable (conf/distro/include/init-manager-${INIT_MANAGER}.inc).
-# Nothing here sets it, so the OE-Core default applies, which is
-# systemd since the wrynose release; set INIT_MANAGER = "sysvinit"
-# in the configuration to build with sysvinit instead.
+INIT_MANAGER = "${@bb.utils.contains('DISTRO_FEATURES', 'systemd', 'systemd', 'sysvinit', d)}"
 
 DISTRO_VERSION = "6.18-${DISTRO_CODENAME}"
 
