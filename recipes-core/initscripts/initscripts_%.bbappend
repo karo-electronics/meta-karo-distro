@@ -3,9 +3,9 @@ FILESEXTRAPATHS:prepend := "${THISDIR}/files:"
 # bootmisc.sh, checkroot.sh, mountall.sh, reboot and umountfs are
 # Ka-Ro copies that shadow the upstream initscripts files through
 # FILESEXTRAPATHS (no SRC_URI entry needed); umountroot and vars.sh
-# are Ka-Ro specific and must be added explicitly. init_files lists
-# the scripts that carry the @@LIBDIR@@ placeholder for the sed
-# substitution in do_install.
+# are Ka-Ro specific and must be added explicitly. bootmisc.sh and
+# umountroot source vars.sh from its install location,
+# /usr/lib/init/vars.sh (the Debian convention for this helper).
 #
 # Deltas that were carried by older Ka-Ro copies and turned out to be
 # unnecessary are dropped in favor of the upstream files:
@@ -13,7 +13,6 @@ FILESEXTRAPATHS:prepend := "${THISDIR}/files:"
 #    log_warning_msg helpers are unused; the upstream file is a
 #    superset and works as-is.
 #  - devpts: whitespace-only difference.
-init_files = "bootmisc.sh umountroot"
 SRC_URI:append = " file://umountroot file://vars.sh"
 
 FILES:${PN} += "${libdir}/init/vars.sh"
@@ -37,8 +36,4 @@ do_install:append () {
 
     update-rc.d -r ${D} -v checkroot.sh start 03 S .
     update-rc.d -r ${D} -v mountall.sh start 05 S .
-
-    for f in ${init_files};do
-        sed -i "s:@@LIBDIR@@:${libdir}:g" "${D}${sysconfdir}/init.d/$f"
-    done
 }

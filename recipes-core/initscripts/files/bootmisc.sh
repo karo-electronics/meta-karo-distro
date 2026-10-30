@@ -16,7 +16,7 @@
 
 PATH=/sbin:/usr/sbin:/bin:/usr/bin
 [ "$DELAYLOGIN" ] || DELAYLOGIN=yes
-. @@LIBDIR@@/init/vars.sh
+. /usr/lib/init/vars.sh
 
 do_start () {
 	#
