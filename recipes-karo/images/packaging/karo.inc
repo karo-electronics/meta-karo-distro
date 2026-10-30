@@ -3,11 +3,6 @@
 # (bootloader binaries plus flash scripts).
 #
 
-# Vendor of the BSP the flash package is generated for, e.g. 'nxp' on
-# the NXP BSP (set through the use-nxp-bsp override) or the
-# corresponding value on the mainline BSP. Fail with a clear error if
-# the BSP layer did not set a vendor: the vendor require in the image
-# recipes could not resolve otherwise.
 KARO_PACKAGING_VENDOR:use-nxp-bsp = "nxp"
 
 def karo_packaging_vendor_inc(d):
@@ -16,7 +11,9 @@ def karo_packaging_vendor_inc(d):
         bb.fatal("KARO_PACKAGING_VENDOR is not set on machine '%s': the "
                  "BSP layer must provide the flash packaging include "
                  "(e.g. KARO_PACKAGING_VENDOR = \"nxp\")" % d.getVar('MACHINE'))
-    return "packaging/karo-%s.inc" % vendor
+    return "karo-%s.inc" % vendor
+
+require ${@karo_packaging_vendor_inc(d)}
 
 FILESEXTRAPATHS:prepend := "${THISDIR}/uuu-script-templates:"
 

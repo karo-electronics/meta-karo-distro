@@ -5,32 +5,32 @@ ROOTFS_PARTITION_SIZE ?= "3145728"
 require recipes-karo/images/karo-image-weston.bb
 
 GOOGLE_CORAL_PKGS = " \
-        libedgetpu \
+    libedgetpu \
 "
 
 OPENCV_PKGS:imxgpu = " \
-        opencv-apps \
-        opencv-samples \
-        python3-opencv \
-        python3-pygobject \
+    opencv-apps \
+    opencv-samples \
+    python3-opencv \
+    python3-pygobject \
 "
 
 IMAGE_INSTALL:append = " \
-        ${GOOGLE_CORAL_PKGS} \
-        packagegroup-fsl-tools-gpu \
-        packagegroup-fsl-tools-gpu-external \
-        packagegroup-imx-ml \
-        python3-pip \
-        tzdata \
+    ${GOOGLE_CORAL_PKGS} \
+    packagegroup-fsl-tools-gpu \
+    packagegroup-fsl-tools-gpu-external \
+    packagegroup-imx-ml \
+    python3-pip \
+    tzdata \
 "
 
 IMAGE_INSTALL:append:imxgpu = " \
-        ${OPENCV_PKGS} \
+    ${OPENCV_PKGS} \
 "
 
 TOOLCHAIN_TARGET_TASK:append = " \
-        tensorflow-lite-dev \
-        onnxruntime-dev \
+    tensorflow-lite-dev \
+    onnxruntime-dev \
 "
 
 # Only meaningful on NXP BSP machines

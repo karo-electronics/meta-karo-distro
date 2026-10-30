@@ -6,13 +6,8 @@ inherit nopackages
 
 PACKAGE_ARCH = "${MACHINE_ARCH}"
 
-# Vendor specific flash package generation (see packaging/karo.inc):
-# packaging/karo.inc carries the common flash package logic and the
-# vendor selection helper; the second require resolves to
-# packaging/karo-<vendor>.inc for the BSP vendor set in
-# KARO_PACKAGING_VENDOR.
+# Ka-Ro specific flash package generation
 require packaging/karo.inc
-require ${@karo_packaging_vendor_inc(d)}
 
 # The factory package contains bootloader binaries and flash scripts
 # only, no Linux image is built here, so only flash the bootloader.

@@ -5,15 +5,15 @@ require karo-image-ml.bb
 REQUIRED_DISTRO_FEATURES = "x11 wayland"
 
 IMAGE_INSTALL:append = " \
-        kernel-module-basler-camera \
-        pylon \
-        python3-pypylon \
-        gentl-producer \
-        v4l-utils \
-        xauth \
-        imx-vpu-hantro-daemon \
-        packagegroup-fsl-gstreamer1.0 \
-        packagegroup-fsl-gstreamer1.0-full \
+    kernel-module-basler-camera \
+    pylon \
+    python3-pypylon \
+    gentl-producer \
+    v4l-utils \
+    xauth \
+    imx-vpu-hantro-daemon \
+    packagegroup-fsl-gstreamer1.0 \
+    packagegroup-fsl-gstreamer1.0-full \
 "
 
 # Only meaningful on NXP BSP machines

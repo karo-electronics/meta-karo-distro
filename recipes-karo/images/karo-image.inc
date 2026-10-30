@@ -6,12 +6,8 @@ IMAGE_FSTYPES:append = " wic.zst"
 
 require ${@ "karo-wic.inc" if any(fstype.startswith('wic') for fstype in d.getVar('IMAGE_FSTYPES').split()) else ""}
 
-# Vendor specific flash package generation: packaging/karo.inc carries
-# the common flash package logic and the vendor selection helper; the
-# second require resolves to packaging/karo-<vendor>.inc for the BSP
-# vendor set in KARO_PACKAGING_VENDOR.
+# Ka-Ro specific flash package generation
 require packaging/karo.inc
-require ${@karo_packaging_vendor_inc(d)}
 
 REQUIRED_DISTRO_FEATURES ??= ""
 
