@@ -72,6 +72,8 @@ TOOLCHAIN_HOST_TASK:append = " \
 
 IMX_MALI_DRIVERS ??= "mali-imx mesa"
 
+PACKAGECONFIG:append:pn-gstreamer1.0-plugins-ugly = " x264"
+
 PACKAGECONFIG:append:pn-pulseaudio = " autospawn-for-root"
 
 PACKAGECONFIG:append:pn-mesa-demos = " wayland"
