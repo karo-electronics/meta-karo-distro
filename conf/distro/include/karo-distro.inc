@@ -68,8 +68,6 @@ VIRTUAL-RUNTIME_base-utils-hwclock = "util-linux-hwclock"
 # busybox and util-linux both provide fdisk
 PREFERRED_PROVIDER_fdisk = "util-linux"
 
-PACKAGECONFIG:append:pn-gstreamer1.0-plugins-ugly = " x264"
-
 # The Ka-Ro images do not rely on the openssl features of these recipes.
 # Recipes must not inspect IMAGE_INSTALL (image content) to pick their
 # PACKAGECONFIG: decide once, at distro level.
