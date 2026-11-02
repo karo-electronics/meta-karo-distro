@@ -49,7 +49,6 @@ IMAGE_INSTALL:append = " \
     dosfstools \
     e2fsprogs \
     e2fsprogs-resize2fs \
-    ${@bb.utils.contains('DISTRO_FEATURES','edac','edac-utils','',d)} \
     ethtool \
     file \
     ${@bb.utils.contains('MACHINE_FEATURES', 'gpu', d.getVar('GPU_USERLAND_LIBRARIES_INSTALL') or '', '', d)} \
@@ -57,9 +56,6 @@ IMAGE_INSTALL:append = " \
     ldd \
     less \
     libstdc++ \
-    ${@bb.utils.contains('DISTRO_FEATURES','wifi','linux-firmware-pcie8997','',d)} \
-    ${@bb.utils.contains('MACHINE_FEATURES','nxp-wifi','kernel-module-nxp89xx','',d)} \
-    ${@bb.utils.contains('MACHINE_FEATURES','nxp-wifi','firmware-nxp-wifi-nxp8987-sdio','',d)} \
     lsof \
     mmc-utils \
     ncurses \
@@ -79,7 +75,6 @@ IMAGE_INSTALL:append = " \
     ${@bb.utils.contains('DISTRO_FEATURES','csi-camera','v4l-utils','',d)} \
     ${@bb.utils.contains('DISTRO_FEATURES','u-boot-fw-utils','u-boot-fw-utils u-boot-default-env','',d)} \
     ${@bb.utils.contains('DISTRO_FEATURES','wifi','wpa-supplicant','',d)} \
-    ${@bb.utils.contains('DISTRO_FEATURES','bcm4373','linux-firmware-bcm4373','',d)} \
     ${@bb.utils.contains('DISTRO_FEATURES','copro','packagegroup-copro','',d)} \
 "
 
