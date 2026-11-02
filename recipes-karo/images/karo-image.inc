@@ -75,7 +75,6 @@ IMAGE_INSTALL:append = " \
     ${@bb.utils.contains('DISTRO_FEATURES','csi-camera','v4l-utils','',d)} \
     ${@bb.utils.contains('DISTRO_FEATURES','u-boot-fw-utils','u-boot-fw-utils u-boot-default-env','',d)} \
     ${@bb.utils.contains('DISTRO_FEATURES','wifi','wpa-supplicant','',d)} \
-    ${@bb.utils.contains('DISTRO_FEATURES','copro','packagegroup-copro','',d)} \
 "
 
 IMAGE_INSTALL:append:use-nxp-bsp = " \
