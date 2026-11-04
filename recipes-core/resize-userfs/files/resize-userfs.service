@@ -1,0 +1,11 @@
+[Unit]
+Description=Grow the userfs partition into the remaining storage space
+After=local-fs.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/sbin/resize-userfs
+RemainAfterExit=yes
+
+[Install]
+WantedBy=multi-user.target

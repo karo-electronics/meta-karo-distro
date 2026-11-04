@@ -18,8 +18,12 @@ REQUIRED_DISTRO_FEATURES ??= ""
 # The i.MX95 root filesystem (kernel modules, NXP firmware, debug tools)
 # needs headroom for package management, hence the 192 MiB rootfs default.
 BOOTFS_PARTITION_SIZE ??= "65536"
-ROOTFS_PARTITION_SIZE ??= "196608"
+ROOTFS_PARTITION_SIZE ??= "131072"
 USERFS_PARTITION_SIZE ??= "131072"
+
+# First-boot auto-resize of the userfs partition into
+# the remaining storage space. Enabled by default.
+KARO_RESIZE_USERFS ??= "1"
 
 # qemuwrapper-cross for running postinst scripts at rootfs time
 DEPENDS:append = " qemuwrapper-cross"

@@ -2,6 +2,8 @@ inherit export-wic-partitions
 # Partition images exported from the wic partition generation.
 WIC_PARTITIONS_EXPORT ?= "boot rootfs userfs"
 
+IMAGE_INSTALL:append = " ${@bb.utils.contains('KARO_RESIZE_USERFS', '1', 'resize-userfs', '', d)}"
+
 WKS_FILE_BASE = "karo-image"
 
 WKS_FILE = "${WKS_FILE_BASE}.wks.in"
