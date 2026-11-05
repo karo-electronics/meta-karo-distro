@@ -26,7 +26,7 @@ do_install:append () {
     install -m 0755 ${UNPACKDIR}/vars.sh ${D}${libdir}/init/vars.sh
 
     install -m 0755 ${UNPACKDIR}/umountroot ${D}${sysconfdir}/init.d/umountroot
-    update-rc.d -r ${D} -v umountroot start 41 0 6 .
+    update-rc.d -r ${D} -v umountroot stop 41 0 6 .
 
     install -m 0755 ${UNPACKDIR}/checkfs.sh ${D}${sysconfdir}/init.d/checkfs.sh
     update-rc.d -r ${D} -v checkfs.sh start 04 S .

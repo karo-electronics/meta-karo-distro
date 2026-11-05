@@ -13,12 +13,11 @@ FILES:${PN} += " \
 
 SRC_URI:append = " \
     file://ntp.conf \
-    file://resolv.conf \
 "
 
-# /etc/ntp.conf (and /etc/resolv.conf on sysvinit systems) is a symlink
-# into the /run/dhcpcd/hook-state tree, which is seeded at boot by
-# populate-volatile.sh from ${libdir}/dhcpcd. DHCP_SEED_INTERFACE is
+# /etc/ntp.conf is a symlink into the /run/dhcpcd/hook-state tree,
+# which is seeded at boot by populate-volatile.sh from ${libdir}/dhcpcd.
+# DHCP_SEED_INTERFACE is
 # the name of the interface whose hook state provides the seed files:
 # the configured primary interface, else the first automatic
 # interface, else the first configured interface. The names in
@@ -90,16 +89,12 @@ f root root 0644 /run/dhcpcd/hook-state/ntp.conf/${DHCP_SEED_INTERFACE}.dhcp ${l
 EOF
     ln -snvf /run/dhcpcd/hook-state/ntp.conf/${DHCP_SEED_INTERFACE}.dhcp ${D}${sysconfdir}/ntp.conf
 
-    if ${@ bb.utils.contains('DISTRO_FEATURES', 'systemd', 'false', 'true', d)};then
-        install -v -m 0644 ${UNPACKDIR}/resolv.conf ${D}${libdir}/dhcpcd/resolv.conf
-        cat << EOF >> ${D}${sysconfdir}/default/volatiles/99_dhcpcd
-d root root 0755 /run/dhcpcd/hook-state/resolv.conf none
-f root root 0644 /run/dhcpcd/hook-state/resolv.conf/${DHCP_SEED_INTERFACE}.dhcp ${libdir}/dhcpcd/resolv.conf
-EOF
-        ln -snvf /run/dhcpcd/hook-state/resolv.conf/${DHCP_SEED_INTERFACE}.dhcp ${D}${sysconfdir}/resolv.conf
-    else
+    if ${@ bb.utils.contains('DISTRO_FEATURES', 'systemd', 'true', 'false', d)}; then
         # On systemd systems /etc/resolv.conf is owned by the systemd
         # recipe, which installs the resolv-conf.systemd alternative.
+        # On sysvinit systems initscripts' 00_core volatiles owns
+        # /etc/resolv.conf (symlink to /var/run/resolv.conf on the /run
+        # tmpfs) and dhcpcd's 20-resolv.conf hook writes through it.
         ln -snvf resolv-conf.systemd ${D}${sysconfdir}/resolv.conf
     fi
 

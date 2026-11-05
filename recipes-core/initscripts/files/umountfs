@@ -15,15 +15,6 @@
 
 PATH=/sbin:/bin:/usr/sbin:/usr/bin
 
-# make changes to certain tmp directories persistent
-if [ -d /etc/.var -a -n "$(ls /etc/.var/)" ];then
-    mount /etc/.var -o remount,rw
-    for d in tmp/ lib/ log/wtmp;do
-	rsync -avu --delete "/var/$d" "/etc/.var/$d"
-    done
-    mount /etc/.var -o remount,rw
-fi
-
 umount -f -a -t tmpfs
 
 echo "Deactivating swap..."
