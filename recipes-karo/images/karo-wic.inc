@@ -15,8 +15,8 @@ KARO_PACKAGE_INCLUDE_WIC ??= "1"
 # Copy the wic image into the flash package directory.
 python do_create_flash_package:append() {
     if d.getVar('KARO_PACKAGE_INCLUDE_WIC') == "1":
-        do_copyfile("%s/%s-%s.wic.zst" % (d.getVar('DEPLOY_DIR_IMAGE'),
-                                          d.getVar('BPN'),
-                                          d.getVar('MACHINE')),
+        do_copyfile("%s/%s.wic.zst" % (d.getVar('DEPLOY_DIR_IMAGE'), d.getVar('IMAGE_LINK_NAME')),
+                    d.getVar('KARO_PACKAGE_DIR'))
+        do_copyfile("%s/%s.wic.bmap" % (d.getVar('DEPLOY_DIR_IMAGE'), d.getVar('IMAGE_LINK_NAME')),
                     d.getVar('KARO_PACKAGE_DIR'))
 }

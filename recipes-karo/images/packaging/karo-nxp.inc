@@ -16,7 +16,7 @@ do_create_flash_package[depends] += "imx-boot:do_deploy"
 IMAGE_BOOTLOADER ?= "imx-boot"
 
 KARO_UUU_FLASH_CMD_bootloader ?= "FB: flash mmc0boot0 ${IMAGE_BOOTLOADER}-${MACHINE}-default.bin"
-KARO_UUU_FLASH_CMD_rootfs ?= "FB: flash -raw2sparse mmc0 ${BPN}-${MACHINE}.wic.zst/*"
+KARO_UUU_FLASH_CMD_rootfs ?= "FB: flash -raw2sparse -bmap ${IMAGE_LINK_NAME}.wic.bmap mmc0 ${IMAGE_LINK_NAME}.wic.zst/*"
 
 python do_create_flash_package() {
     import os

@@ -2,7 +2,7 @@ LICENSE = "MIT"
 
 inherit core-image features_check
 
-IMAGE_FSTYPES:append = " wic.zst"
+IMAGE_FSTYPES:append = " wic.zst wic.bmap"
 
 require ${@ "karo-wic.inc" if any(fstype.startswith('wic') for fstype in d.getVar('IMAGE_FSTYPES').split()) else ""}
 
