@@ -41,6 +41,6 @@ FILES:${PN} += "${systemd_system_unitdir}/resize-userfs.service"
 
 RDEPENDS:${PN} = " \
     e2fsprogs-resize2fs \
-    util-linux-partx \
     util-linux-sfdisk \
+    util-linux-partx \
 "

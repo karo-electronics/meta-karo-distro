@@ -46,6 +46,12 @@ details):
 * `BOOTFS_PARTITION_SIZE`, `ROOTFS_PARTITION_SIZE`,
   `USERFS_PARTITION_SIZE` - image partition sizes in KiB
   (`recipes-karo/images/karo-image.inc`)
+* `KARO_RESIZE_USERFS` - `1` (default) installs the `resize-userfs`
+  boot service on wic images, which grows the userfs partition
+  (/usr/local) and its ext4 filesystem into the free space left on the
+  storage device; set to `0` to keep the userfs partition at
+  `USERFS_PARTITION_SIZE` (`recipes-karo/images/karo-image.inc`,
+  `recipes-karo/images/karo-wic.inc`)
 
 ## License
 

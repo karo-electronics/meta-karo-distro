@@ -23,9 +23,9 @@ IMAGE_INSTALL:append = " \
     ${@bb.utils.contains('DISTRO_FEATURES', 'x11 wayland', 'weston-xwayland xterm', '', d)} \
 "
 
-IMAGE_INSTALL:append:use-nxp-bsp = " \
-    packagegroup-imx-isp \
+IMAGE_INSTALL:append:mx95-nxp-bsp = " \
     packagegroup-fsl-gstreamer1.0 \
+    ${@bb.utils.contains('DISTRO_FEATURES', 'csi-camera', 'packagegroup-imx-isp', '', d)} \
 "
 
 ROOTFS_PARTITION_SIZE ?= "2097152"
