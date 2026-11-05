@@ -26,7 +26,6 @@ IMAGE_INSTALL:append = " \
 IMAGE_INSTALL:append:use-nxp-bsp = " \
     packagegroup-imx-isp \
     packagegroup-fsl-gstreamer1.0 \
-    packagegroup-fsl-gstreamer1.0-full \
 "
 
 ROOTFS_PARTITION_SIZE ?= "2097152"
