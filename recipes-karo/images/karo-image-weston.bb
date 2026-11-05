@@ -13,16 +13,20 @@ REQUIRED_DISTRO_FEATURES = "wayland"
 
 CORE_IMAGE_BASE_INSTALL:append = " \
     glmark2 \
-    weston \
-    weston-init \
-    weston-examples \
 "
 
 IMAGE_INSTALL:append = " \
+    adwaita-icon-theme-cursors \
     gst-examples \
     libdrm \
     libdrm-tests \
     ${@bb.utils.contains('DISTRO_FEATURES', 'x11 wayland', 'weston-xwayland xterm', '', d)} \
+"
+
+IMAGE_INSTALL:append:use-nxp-bsp = " \
+    packagegroup-imx-isp \
+    packagegroup-fsl-gstreamer1.0 \
+    packagegroup-fsl-gstreamer1.0-full \
 "
 
 ROOTFS_PARTITION_SIZE ?= "2097152"
