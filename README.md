@@ -20,9 +20,11 @@ For documentation see our Yocto Guide: https://karo-electronics.github.io/docs/y
   `conf/layer.conf`), and `meta-imx-ml` (collection
   `imx-machine-learning`, pulled in through `BBFILES_DYNAMIC`)
 
-The init manager follows the standard `INIT_MANAGER` variable; the
-OE-Core default applies unless set otherwise (systemd since the
-wrynose release). The recipes support sysvinit and systemd.
+The init manager follows the standard `INIT_MANAGER` variable (derived
+from `DISTRO_FEATURES`; the `karo-distro/systemd` fragment switches to
+systemd). All images, including `karo-image-weston`, build and run with
+both sysvinit and systemd, and with a read-only root filesystem
+(`karo-distro/read-only-rootfs` fragment) or a writable one.
 
 ## Layer configuration variables
 
