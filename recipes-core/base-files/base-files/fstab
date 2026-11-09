@@ -8,7 +8,7 @@
 # END-DEV-NOTE
 # device		dir			type		options		dump	fsck
 
-/dev/root       /           auto        defaults    0       1
+LABEL=rootfs    /           auto        defaults    0       1
 proc			/proc		proc		defaults	0		0
 sysfs			/sys		sysfs		defaults	0		0
 devtmpfs		/dev		devtmpfs	defaults	0		0
