@@ -11,10 +11,6 @@ PART_DEV=$(basename "$(awk '$2 == "/usr/local" { print $1; exit }' /proc/mounts)
 PART_NUM=$(cat "/sys/class/block/$PART_DEV/partition")
 DEV=$(basename "$(dirname "$(readlink "/sys/class/block/$PART_DEV")")")
 
-# Move the backup GPT to the real end of the device first.
-# This updates the headers with the actual device size.
-sfdisk -q --no-reread --no-tell-kernel --relocate gpt-bak-std "/dev/$DEV" 2>/dev/null || exit 1
-
 # Nothing to do if no unpartitioned space is left.
 FREE_SECTORS=$(sfdisk -F "/dev/$DEV" 2>/dev/null | awk 'NR == 1 { print $(NF - 1) }')
 [ "$FREE_SECTORS" -gt 0 ] 2>/dev/null || exit 0

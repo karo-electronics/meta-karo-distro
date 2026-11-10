@@ -3,25 +3,15 @@
 # (bootloader binaries plus flash scripts).
 #
 
+# Vendor specific flash package generation for NXP, RZG2 and STM32MP-based machines
 KARO_PACKAGING_VENDOR:use-nxp-bsp = "nxp"
 
-def karo_packaging_vendor_inc(d):
-    vendor = (d.getVar('KARO_PACKAGING_VENDOR') or '').strip()
-    if not vendor:
-        bb.fatal("KARO_PACKAGING_VENDOR is not set on machine '%s': the "
-                 "BSP layer must provide the flash packaging include "
-                 "(e.g. KARO_PACKAGING_VENDOR = \"nxp\")" % d.getVar('MACHINE'))
-    return "karo-%s.inc" % vendor
-
-require ${@karo_packaging_vendor_inc(d)}
+require karo-${KARO_PACKAGING_VENDOR}.inc
 
 FILESEXTRAPATHS:prepend := "${THISDIR}/uuu-script-templates:"
 
-UUU_TEMPLATE_NAME ??= "uuu.auto.template"
-
 def karo_layer_file(d, filename):
     import bb.fetch2
-
     path = bb.fetch2.localpath("file://%s" % filename, d)
     if not os.path.exists(path):
         bb.fatal("Cannot find '%s' in FILESPATH" % filename)
@@ -30,8 +20,13 @@ def karo_layer_file(d, filename):
 # Rerun do_create_flash_package when the template changes.
 do_create_flash_package[file-checksums] = "${@karo_layer_file(d, d.getVar('UUU_TEMPLATE_NAME'))}:True"
 
+UUU_TEMPLATE_NAME ??= "uuu.auto.template"
+
 # Directory where the flash package is assembled
 KARO_PACKAGE_DIR = "${DEPLOY_DIR_IMAGE}/${BPN}"
+
+KARO_UUU_UCMD ?= "oem ucmd:"
+KARO_UUU_UCMD:use-nxp-bsp ?= "ucmd "
 
 # Ordered list of flash steps rendered into the '### Flashing partitions'
 # section of uuu.auto. The uuu command of each step is configured with
@@ -48,6 +43,14 @@ KARO_PACKAGE_DIR = "${DEPLOY_DIR_IMAGE}/${BPN}"
 # to disable it, or override a command to change
 # the flash behavior for a specific machine or image.
 KARO_UUU_FLASH_STEPS ??= "rootfs bootloader"
+
+# Fix-up GPT partition table. Default enabled for eMMC devices.
+KARO_FLASH_FIX_GPT ?= "${@bb.utils.contains('MACHINE_FEATURES', 'emmc', '1', '0', d)}"
+
+KARO_UUU_FLASH_STEPS:append = " ${@bb.utils.contains('KARO_FLASH_FIX_GPT', '1', 'readgpt writegpt', '', d)}"
+
+KARO_UUU_FLASH_CMD_readgpt ?= "FB: ${KARO_UUU_UCMD}gpt read mmc 0 parts"
+KARO_UUU_FLASH_CMD_writegpt ?= "FB: ${KARO_UUU_UCMD}gpt write mmc 0 ${parts}"
 
 do_create_flash_package[dirs] = "${DEPLOY_DIR_IMAGE}"
 
@@ -86,10 +89,9 @@ def karo_uuu_flash_cmds(d):
 
 def karo_generate_uuu_script(d, extra_subs=None):
     """
-    Render the uuu.auto.template from the layer (see karo_layer_file)
-    into the flash package directory as uuu.auto. Available
-    placeholders: $image, $machine, $flash_cmds and everything passed
-    in extra_subs.
+    Render the uuu.auto.template from the layer into the flash package
+    directory as uuu.auto. Available placeholders: $image, $machine,
+    $flash_cmds and everything passed in extra_subs.
     """
     from string import Template
 
