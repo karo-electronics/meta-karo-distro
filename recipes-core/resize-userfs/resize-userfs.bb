@@ -6,15 +6,13 @@ LIC_FILES_CHKSUM = "file://${COMMON_LICENSE_DIR}/MIT;md5=0835ade698e0bcf8506ecda
 
 SRC_URI = " \
     file://resize-userfs.sh \
-    ${@bb.utils.contains('DISTRO_FEATURES', 'systemd', 'file://resize-userfs.service', 'file://resize-userfs.init', d)} \
+    file://resize-userfs.service \
+    file://resize-userfs.init \
 "
 
 S = "${UNPACKDIR}"
 
-# Install exactly one init implementation, matching the init manager of
-# the build: the inherited class enables the unit or the init script at
-# image assembly time.
-inherit ${@bb.utils.contains('DISTRO_FEATURES', 'systemd', 'systemd', 'update-rc.d', d)}
+inherit systemd update-rc.d
 
 do_install() {
     install -d ${D}${sbindir}
