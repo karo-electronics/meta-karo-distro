@@ -23,8 +23,9 @@ For documentation see our Yocto Guide: https://karo-electronics.github.io/docs/y
 The init manager follows the standard `INIT_MANAGER` variable (derived
 from `DISTRO_FEATURES`; the `karo-distro/systemd` fragment switches to
 systemd). All images, including `karo-image-weston`, build and run with
-both sysvinit and systemd, and with a read-only root filesystem
-(`karo-distro/read-only-rootfs` fragment) or a writable one.
+both sysvinit and systemd. `karo-image-minimal` supports `read-only-rootfs`
+and comes with it enabled per default, while all other graphical images
+only work correctly with a read-write rootfs.
 
 ## Layer configuration variables
 
