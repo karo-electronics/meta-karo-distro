@@ -1,0 +1,30 @@
+#!/bin/sh
+
+### BEGIN INIT INFO
+# Provides:          mali-imx
+# Required-Start:    $local_fs
+# Required-Stop:
+# Default-Start:     S
+# Default-Stop:
+# Short-Description: Apply Mali/Mesa GPU driver configuration
+# Description:       Applies the GPU driver configuration from
+#                    /etc/mali-imx/mali-imx.conf by running
+#                    /usr/libexec/mali-imx-boot. SysVinit counterpart
+#                    of mali-imx.service.
+### END INIT INFO
+
+case "$1" in
+    start)
+        /usr/libexec/mali-imx-boot
+        ;;
+    stop|restart|force-reload)
+        exit 0
+        ;;
+    status)
+        exit 3
+        ;;
+    *)
+        echo "Usage: $0 {start|stop|restart|force-reload|status}" >&2
+        exit 1
+        ;;
+esac
