@@ -67,6 +67,8 @@ TOOLCHAIN_HOST_TASK:append = " \
 "
 
 IMX_MALI_DRIVERS ??= "mali-imx mesa"
+# i.MX95 (Mali G310) dual-driver mode: NXP mesa.inc builds the panfrost driver only with libclc.
+PACKAGECONFIG:append:pn-mesa:mx95-nxp-bsp = " libclc"
 
 PACKAGECONFIG:append:pn-gstreamer1.0-plugins-ugly = " x264"
 
