@@ -47,10 +47,9 @@ KARO_UUU_FLASH_STEPS ??= "rootfs bootloader"
 # Fix-up GPT partition table. Default enabled for eMMC devices.
 KARO_FLASH_FIX_GPT ?= "${@bb.utils.contains('MACHINE_FEATURES', 'emmc', '1', '0', d)}"
 
-KARO_UUU_FLASH_STEPS:append = " ${@bb.utils.contains('KARO_FLASH_FIX_GPT', '1', 'readgpt writegpt', '', d)}"
+KARO_UUU_FLASH_STEPS:append = " ${@bb.utils.contains('KARO_FLASH_FIX_GPT', '1', 'fixgpt', '', d)}"
 
-KARO_UUU_FLASH_CMD_readgpt ?= "FB: ${KARO_UUU_UCMD}gpt read mmc 0 parts"
-KARO_UUU_FLASH_CMD_writegpt ?= "FB: ${KARO_UUU_UCMD}gpt write mmc 0 ${parts}"
+KARO_UUU_FLASH_CMD_fixgpt ?= "FB: ${KARO_UUU_UCMD}gpt rename mmc 0 1 boot"
 
 do_create_flash_package[dirs] = "${DEPLOY_DIR_IMAGE}"
 
