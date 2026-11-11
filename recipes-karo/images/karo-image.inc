@@ -15,10 +15,8 @@ EXTRA_USERS_PARAMS ?= "usermod -p '' root"
 REQUIRED_DISTRO_FEATURES ??= ""
 
 # Default partition sizes (KiB)
-# The i.MX95 root filesystem (kernel modules, NXP firmware, debug tools)
-# needs headroom for package management, hence the 192 MiB rootfs default.
 BOOTFS_PARTITION_SIZE ??= "65536"
-ROOTFS_PARTITION_SIZE ??= "131072"
+ROOTFS_PARTITION_SIZE ??= "${@bb.utils.contains('DISTRO_FEATURES','systemd','196608','131072',d)}"
 USERFS_PARTITION_SIZE ??= "131072"
 
 # First-boot auto-resize of the userfs partition into
