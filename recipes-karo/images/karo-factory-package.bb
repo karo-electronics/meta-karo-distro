@@ -13,7 +13,7 @@ require packaging/karo.inc
 # only, no Linux image is built here, so only flash the bootloader
 # and erase the GPT partition table.
 KARO_UUU_FLASH_STEPS = "gpt erase bootloader"
-KARO_UUU_FLASH_CMD_gpt = "FB: ${KARO_UUU_UCMD}gpt write mmc 0 'start=1MiB,name=data,size=0;'"
+KARO_UUU_FLASH_CMD_gpt = "FB: ${KARO_UUU_UCMD}gpt write mmc 0 'start=1MiB,name=data,size=2MiB;'"
 KARO_UUU_FLASH_CMD_erase = "FB: erase data"
 KARO_FLASH_FIX_GPT = "0"
 
