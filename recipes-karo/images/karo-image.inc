@@ -2,12 +2,17 @@ LICENSE = "MIT"
 
 inherit core-image features_check rootfs-postprocess
 
+# Set to "1" to enable STM32CubeProgrammer flashlayout
+# generation for STM32MP-based machines.
+KARO_STM32_CUBE_PROGRAMMER ?= "0"
+
 IMAGE_FSTYPES:append = " ${@bb.utils.contains('MACHINE_FEATURES', 'nand', 'ubi', 'wic.zst', d)}"
 
 require ${@ "karo-wic.inc" if any(fstype.startswith('wic') for fstype in d.getVar('IMAGE_FSTYPES').split()) else ""}
 
 require ${@ "karo-ubi.inc" if "ubi" in d.getVar('IMAGE_FSTYPES').split() else ""}
 
+require ${@ "st-machine-common-stm32mp.inc" if 'stm32mpcommon' in d.getVar('MACHINEOVERRIDES') and d.getVar('KARO_STM32_CUBE_PROGRAMMER') == '1' else ""}
 
 # Ka-Ro specific flash package generation
 require packaging/karo.inc
@@ -27,11 +32,11 @@ BOOTFS_PARTITION_SIZE ??= "65536"
 ROOTFS_PARTITION_SIZE ??= "131072"
 USERFS_PARTITION_SIZE ??= "131072"
 
-DEPENDS:append = " cross-localedef-native qemuwrapper-cross"
-
 # First-boot auto-resize of the userfs partition into the remaining
 # storage space. Enabled by default, except when rauc is used.
 KARO_RESIZE_USERFS ??= "${@ bb.utils.contains('DISTRO_FEATURES', 'rauc', '0', '1', d)}"
+
+DEPENDS:append = " cross-localedef-native qemuwrapper-cross"
 
 # Kernel image and devicetree files are provided by the dedicated
 # boot partition, so don't install them into the rootfs images.
