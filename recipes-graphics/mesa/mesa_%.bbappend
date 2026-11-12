@@ -1,4 +1,6 @@
-PACKAGECONFIG:append:tx6 = " etnaviv kmsro opengl egl gles gbm dri gallium"
+# i.MX6 S/DL/Q/QP: Vivante GPU through etnaviv
+PACKAGECONFIG:append:mx6q-nxp-bsp = " etnaviv kmsro"
+PACKAGECONFIG:append:mx6dl-nxp-bsp = " etnaviv kmsro"
 #PACKAGECONFIG:append:stm32mp1common = " etnaviv kmsro opengl egl gles gbm dri gallium"
 PACKAGECONFIG:append:rzg2 = " panfrost kmsro"
 
