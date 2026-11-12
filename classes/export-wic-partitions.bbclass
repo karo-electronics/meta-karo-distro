@@ -26,7 +26,7 @@
 # This class is typically inherited together with image_types_wic, e.g.
 # from a wic-specific include file.
 
-WIC_PARTITIONS_EXPORT ?= ""
+WIC_PARTITIONS_EXPORT ??= ""
 
 python do_export_wic_partitions() {
     import subprocess
