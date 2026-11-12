@@ -1,0 +1,29 @@
+#!/bin/sh
+
+### BEGIN INIT INFO
+# Provides:          resize-userfs
+# Required-Start:    $local_fs
+# Required-Stop:
+# Default-Start:     S
+# Default-Stop:
+# Short-Description: Grow the userfs partition into the remaining storage space
+# Description:       On the first boot after flashing, grow the userfs
+#                    partition and its ext4 filesystem into the free space
+#                    remaining on the storage device.
+### END INIT INFO
+
+case "$1" in
+    start)
+        /usr/sbin/resize-userfs
+        ;;
+    stop|restart|force-reload)
+        exit 0
+        ;;
+    status)
+        exit 3
+        ;;
+    *)
+        echo "Usage: $0 {start|stop|restart|force-reload|status}" >&2
+        exit 1
+        ;;
+esac
