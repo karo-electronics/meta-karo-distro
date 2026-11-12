@@ -4,6 +4,8 @@ inherit export-wic-partitions
 # also generating a RAUC update bundle. They are included in the flash package
 # by default (see KARO_PACKAGE_INCLUDE_PARTITIONS in packaging/karo.inc).
 WIC_PARTITIONS_EXPORT ?= "boot rootfs userfs"
+IMAGE_INSTALL:append = " ${@bb.utils.contains('KARO_RESIZE_USERFS', '1', 'resize-userfs', '', d)}"
+
 
 WKS_FILE_BASE = "karo-image"
 WKS_FILE_BASE:stm32mpcommon = "karo-image-st"

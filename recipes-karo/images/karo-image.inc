@@ -32,6 +32,10 @@ USERFS_PARTITION_SIZE ??= "131072"
 
 DEPENDS:append = " cross-localedef-native qemuwrapper-cross"
 
+# First-boot auto-resize of the userfs partition into the remaining
+# storage space. Enabled by default, except when rauc is used.
+KARO_RESIZE_USERFS ??= "${@ bb.utils.contains('DISTRO_FEATURES', 'rauc', '0', '1', d)}"
+
 # Kernel image and devicetree files are provided by the dedicated
 # boot partition, so don't install them into the rootfs images.
 BAD_RECOMMENDATIONS += "kernel-image* kernel-devicetree"

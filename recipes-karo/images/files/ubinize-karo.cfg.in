@@ -19,4 +19,4 @@ vol_id=2
 vol_size=@USERFS_PARTITION_SIZE@KiB
 vol_type=dynamic
 vol_name=userfs
-vol_flags=autoresize
+@USERFS_VOL_FLAGS@

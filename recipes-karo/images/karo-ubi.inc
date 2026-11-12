@@ -6,7 +6,8 @@ IMAGE_INSTALL:append = " mtd-utils"
 # Multi-volume UBI image: the .ubi image carries three volumes:
 #   boot   (vol_id 0): kernel image and DTB files
 #   rootfs (vol_id 1): the root filesystem
-#   userfs (vol_id 2): volume mounted at /usr/local, autoresized into the remaining flash
+#   userfs (vol_id 2): volume mounted at /usr/local, autoresized into the
+#   remaining flash when KARO_RESIZE_USERFS=1
 BOOTFS_PARTITION_SIZE ?= "16384"
 ROOTFS_PARTITION_SIZE ?= "65536"
 USERFS_PARTITION_SIZE ?= "16384"
@@ -81,10 +82,18 @@ karo_ubi_volumes() {
 }
 
 karo_write_ubi_config() {
+    # vol_flags=autoresize lets the userfs volume grow into the remaining
+    # flash; left out when KARO_RESIZE_USERFS is not "1" (e.g. with rauc)
+    if [ "${KARO_RESIZE_USERFS}" = "1" ]; then
+        userfs_vol_flags="vol_flags=autoresize"
+    else
+        userfs_vol_flags=""
+    fi
     sed -e "s|@WORKDIR@|${WORKDIR}|g" \
         -e "s|@BOOTFS_PARTITION_SIZE@|${BOOTFS_PARTITION_SIZE}|g" \
         -e "s|@ROOTFS_PARTITION_SIZE@|${ROOTFS_PARTITION_SIZE}|g" \
         -e "s|@USERFS_PARTITION_SIZE@|${USERFS_PARTITION_SIZE}|g" \
+        -e "s|@USERFS_VOL_FLAGS@|${userfs_vol_flags}|g" \
         "${WORKDIR}/${KARO_UBINIZE_CFG}" > ${WORKDIR}/ubinize-${IMAGE_NAME}.cfg
 }
 
