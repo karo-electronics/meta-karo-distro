@@ -8,12 +8,9 @@ require ${@ "karo-wic.inc" if any(fstype.startswith('wic') for fstype in d.getVa
 
 require ${@ "karo-ubi.inc" if "ubi" in d.getVar('IMAGE_FSTYPES').split() else ""}
 
-# Vendor specific flash package generation for NXP, RZG2 and STM32MP-based machines
-KARO_PACKAGING_VENDOR:use-nxp-bsp = "nxp"
-KARO_PACKAGING_VENDOR:rzg2 = "rzg2"
-KARO_PACKAGING_VENDOR:stm32mpcommon = "stm"
 
-require packaging/karo-${KARO_PACKAGING_VENDOR}.inc
+# Ka-Ro specific flash package generation
+require packaging/karo.inc
 
 inherit extrausers
 EXTRA_USERS_PARAMS ?= "usermod -p '' root"

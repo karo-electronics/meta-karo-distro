@@ -5,8 +5,6 @@
 # binaries, the uuu.auto script and the start-fastboot.sh script.
 #
 
-require karo.inc
-
 # Set to "1" to enable STM32CubeProgrammer flashlayout generation for
 # STM32MP-based machines. This includes st-machine-common-stm32mp.inc,
 # which defines the boot/rootfs/userfs partition images and install

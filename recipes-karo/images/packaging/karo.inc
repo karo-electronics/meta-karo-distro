@@ -3,6 +3,13 @@
 # (bootloader binaries plus flash scripts).
 #
 
+# Vendor specific flash package generation for NXP, RZG2 and STM32MP-based machines
+KARO_PACKAGING_VENDOR:use-nxp-bsp = "nxp"
+KARO_PACKAGING_VENDOR:rzg2 = "rzg2"
+KARO_PACKAGING_VENDOR:stm32mpcommon = "stm"
+
+require karo-${KARO_PACKAGING_VENDOR}.inc
+
 FILESEXTRAPATHS:prepend := "${THISDIR}/uuu-script-templates:"
 
 python () {
@@ -11,12 +18,15 @@ python () {
     d.delVarFlag('do_unpack', 'noexec')
 }
 
-UUU_TEMPLATE_NAME ??= "uuu.auto.template"
+UUU_TEMPLATE_NAME ??= "${@bb.utils.contains('MACHINE_FEATURES', 'nand', 'uuu-nand.auto.template', 'uuu.auto.template', d)}"
 
 SRC_URI:append = " file://${UUU_TEMPLATE_NAME}"
 
 # Directory where the flash package is assembled
 KARO_PACKAGE_DIR = "${DEPLOY_DIR_IMAGE}/${BPN}"
+
+KARO_UUU_UCMD ?= "oem ucmd:"
+KARO_UUU_UCMD:use-nxp-bsp ?= "ucmd "
 
 # Ordered list of flash steps rendered into the '### Flashing partitions'
 # section of uuu.auto. The uuu command of each step is configured with
@@ -33,6 +43,14 @@ KARO_PACKAGE_DIR = "${DEPLOY_DIR_IMAGE}/${BPN}"
 # to disable it, or override a command to change
 # the flash behavior for a specific machine or image.
 KARO_UUU_FLASH_STEPS ??= "rootfs bootloader"
+
+# Fix-up GPT partition table. Default enabled for eMMC devices.
+KARO_FLASH_FIX_GPT ?= "${@bb.utils.contains('MACHINE_FEATURES', 'emmc', '1', '0', d)}"
+
+KARO_UUU_FLASH_STEPS:append = " ${@bb.utils.contains('KARO_FLASH_FIX_GPT', '1', 'fixgpt', '', d)}"
+
+KARO_UUU_FLASH_CMD_fixgpt ?= "FB: ${KARO_UUU_UCMD}gpt rename mmc 0 1 boot"
+KARO_UUU_FLASH_CMD_fixgpt:stm32mpcommon ?= "FB: ${KARO_UUU_UCMD}gpt rename mmc 0 2 boot"
 
 do_create_flash_package[dirs] = "${DEPLOY_DIR_IMAGE}"
 

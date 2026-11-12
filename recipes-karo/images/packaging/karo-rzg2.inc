@@ -6,8 +6,6 @@
 # install-bootloader.sh script.
 #
 
-require karo.inc
-
 SRC_URI:append = " file://install-bootloader.template"
 
 do_create_flash_package[depends] += "\

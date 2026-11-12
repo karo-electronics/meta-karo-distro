@@ -7,11 +7,7 @@ SDP: boot -f $image_bootloader-$machine-mfg.bin
 
 FB: ucmd mmc partconf $${emmc_dev} $${emmc_boot_ack} $${emmc_boot_part} 0
 
-FB: ucmd mmc dev $${emmc_dev} $${emmc_boot_part}
-
 FB: ucmd env erase
-
-FB: ucmd mmc dev $${emmc_dev} 0
 
 ### Flashing partitions
 $flash_cmds
