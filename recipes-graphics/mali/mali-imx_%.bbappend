@@ -25,7 +25,16 @@ do_install:append() {
         install -d ${D}${sysconfdir}/init.d
         install -m 0755 ${UNPACKDIR}/mali-imx.init ${D}${sysconfdir}/init.d/mali-imx
     fi
-    # kbase loads "mali_csffw.bin" from the firmware root; linux-firmware ships it under arm/mali/arch10.12/
-    install -d ${D}${nonarch_base_libdir}/firmware
-    ln -sf arm/mali/arch10.12/mali_csffw.bin ${D}${nonarch_base_libdir}/firmware/mali_csffw.bin
+    # kbase loads "mali_csffw.bin" via request_firmware(), which only
+    # searches /lib/firmware, i.e. ${nonarch_base_libdir}/firmware. Use the
+    # firmware shipped by the DDK itself (${libdir}/firmware): its header
+    # version must match the kernel driver's FIRMWARE_HEADER_VERSION, which
+    # the linux-firmware arch10.12 copy does not (the driver rejects it with
+    # "Firmware header version not understood"). On usrmerge systems
+    # ${libdir} and ${nonarch_base_libdir} coincide via the /lib symlink, so
+    # only install on non-usrmerge systems.
+    if [ "${libdir}" != "${nonarch_base_libdir}" ]; then
+        install -d ${D}${nonarch_base_libdir}/firmware
+        install -m 0644 ${D}${libdir}/firmware/mali_csffw.bin ${D}${nonarch_base_libdir}/firmware/
+    fi
 }
