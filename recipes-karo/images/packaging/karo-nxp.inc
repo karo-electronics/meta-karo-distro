@@ -11,11 +11,7 @@
 do_create_flash_package[depends] += "virtual/bootloader:do_deploy"
 do_create_flash_package[depends] += "imx-boot:do_deploy"
 
-# Name of the bootloader flash image deployed by the imx-boot recipe.
-# meta-freescale used to provide this variable.
-IMAGE_BOOTLOADER ?= "imx-boot"
-
-KARO_UUU_FLASH_CMD_bootloader ?= "FB: flash mmc0boot0 ${IMAGE_BOOTLOADER}-${MACHINE}-default.bin"
+KARO_UUU_FLASH_CMD_bootloader ?= "FB: flash mmc0boot0 u-boot-${MACHINE}-default.bin"
 KARO_UUU_FLASH_CMD_rootfs ?= "FB: flash -raw2sparse -bmap ${IMAGE_LINK_NAME}.wic.bmap mmc0 ${IMAGE_LINK_NAME}.wic.zst/*"
 
 python do_create_flash_package() {
@@ -32,20 +28,16 @@ python do_create_flash_package() {
     bb.utils.mkdirhier(img_dirname)
 
     # generate uuu auto script
-    karo_generate_uuu_script(d, extra_subs={
-        'image_bootloader': image_bootloader,
-    })
+    karo_generate_uuu_script(d)
 
     # copy bootloader binaries into the package directory
     for uboot_type in d.getVar('UBOOT_CONFIG').split():
-        src = "%s/%s-%s-%s.bin" % (img_deploy_dir, image_bootloader, machine, uboot_type)
-        dst = os.path.join(img_dirname, "%s-%s-%s.bin" % (image_bootloader, machine, uboot_type))
+        src = os.path.join(img_deploy_dir, "%s-%s-%s.bin" % (image_bootloader, machine, uboot_type))
+        dst = os.path.join(img_dirname, "u-boot-%s-%s.bin" % (machine, uboot_type))
         if not os.path.exists(src):
-            # Since wrynose, the imx-boot recipe deploys one image per
-            # build target, e.g. imx-boot-<machine>-<type>.bin-flash_a55.
-            # Copy it under the targetless name so that the uuu script
-            # and the flash package layout stay the same for all
-            # machines.
+            # The imx-boot recipe deploys one image per build target.
+            # Copy it under the targetless name so that we have
+            # unified binary names accross all machines.
             for target in (d.getVar('IMXBOOT_TARGETS') or '').split():
                 candidate = "%s-%s" % (src, target)
                 if os.path.exists(candidate):
